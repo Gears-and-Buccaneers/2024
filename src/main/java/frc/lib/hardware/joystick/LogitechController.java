@@ -44,4 +44,5 @@ public class LogitechController {
         UP_LEFT = new Trigger(() -> joystick.getPOV() == 315);
         CENTER = new Trigger(() -> joystick.getPOV() == -1);
     }
+
 }
