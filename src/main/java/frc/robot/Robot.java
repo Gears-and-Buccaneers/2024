@@ -2,15 +2,19 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.hardware.joystick.*;
-import frc.robot.joystics.Logictech;
-import frc.robot.joystics.Oporator;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.joystics.*;
 
 public class Robot extends TimedRobot {
-  private Oporator oporator = new Logictech(1);
+  private Oporator oporator = new SamLogitech(1);
 
   @Override
   public void robotInit() {
+    configerButtonBindings();
+  }
+
+  public void configerButtonBindings() {
+    oporator.deploy().onTrue(new InstantCommand());
   }
 
   @Override
