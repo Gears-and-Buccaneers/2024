@@ -5,21 +5,21 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
-import frc.robot.Subsytems.Intake;
+import frc.robot.Subsytems.Intake.IntakeSub;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class IntakeUTest {
     static final double DELTA = 1e-2; // acceptable deviation range
-    Intake m_intake;
+    IntakeSub m_intake;
     PWMSim m_simMotor;
     DoubleSolenoidSim m_simPiston;
 
     @BeforeEach // this method will run before each test
     void setup() {
         assert HAL.initialize(500, 0); // initialize the HAL, crash if failed
-        m_intake = new Intake(); // create our intake
+        m_intake = new IntakeSub(); // create our intake
         m_simMotor = new PWMSim(10); // create our simulation PWM motor controller
         m_simPiston = new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 2, 3); // create our simulation solenoid
     }

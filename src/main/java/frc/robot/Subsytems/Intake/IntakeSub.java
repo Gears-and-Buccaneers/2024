@@ -1,14 +1,14 @@
-package frc.robot.Subsytems;
+package frc.robot.Subsytems.Intake;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
-public class Intake implements AutoCloseable {
+public class IntakeSub implements AutoCloseable {
     private final PWMSparkMax m_motor;
     private final DoubleSolenoid m_piston;
 
-    public Intake() {
+    public IntakeSub() {
         m_motor = new PWMSparkMax(10);
         m_piston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
     }
