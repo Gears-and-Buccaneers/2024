@@ -5,55 +5,64 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
-import frc.robot.Subsytems.Intake.IntakeSub;
+import frc.robot.Subsytems.Intake.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class IntakeUTest {
     static final double DELTA = 1e-2; // acceptable deviation range
-    IntakeSub m_intake;
-    PWMSim m_simMotor;
-    DoubleSolenoidSim m_simPiston;
+    IntakeSub intake;
+    IntakeIO intakeIO;
 
     @BeforeEach // this method will run before each test
     void setup() {
         assert HAL.initialize(500, 0); // initialize the HAL, crash if failed
-        m_intake = new IntakeSub(); // create our intake
-        m_simMotor = new PWMSim(10); // create our simulation PWM motor controller
-        m_simPiston = new DoubleSolenoidSim(PneumaticsModuleType.CTREPCM, 2, 3); // create our simulation solenoid
+        intakeIO = new IntakeIOSim();
+        intake = new IntakeSub(intakeIO);
     }
 
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     @AfterEach // this method will run after each test
     void shutdown() throws Exception {
-        m_intake.close(); // destroy our intake object
+        intake.close(); // destroy our intake object
     }
 
     @Test // marks this method as a test
-    void doesntWorkWhenClosed() {
-        m_intake.retract(); // close the intake
-        m_intake.activate(0.5); // try to activate the motor
-        assertEquals(
-                0.0, m_simMotor.getSpeed(), DELTA); // make sure that the value set to the motor is 0
+    void retractThenIntakePice() {
+        intake.retract(); // close the intake
+        intake.intakePice(); // try to activate the motor
+
+        assertEquals(6.0, intake.getInputs().MotorVoltsOutput, DELTA);
+        assertEquals(true, intake.getInputs().isDeployed);
     }
 
     @Test
-    void worksWhenOpen() {
-        m_intake.extend();
-        m_intake.activate(0.5);
-        assertEquals(0.5, m_simMotor.getSpeed(), DELTA);
+    void IntakePice() {
+        intake.intakePice(); // try to activate the motor
+
+        assertEquals(6.0, intake.getInputs().MotorVoltsOutput, DELTA);
+        assertEquals(true, intake.getInputs().isDeployed);
     }
 
     @Test
-    void retractTest() {
-        m_intake.retract();
-        assertEquals(DoubleSolenoid.Value.kReverse, m_simPiston.get());
+    void ExstendThenIntakePice() {
+        intake.extend(); // close the intake
+        intake.intakePice(); // try to activate the motor
+
+        assertEquals(6.0, intake.getInputs().MotorVoltsOutput, DELTA);
+        assertEquals(true, intake.getInputs().isDeployed);
     }
 
     @Test
-    void deployTest() {
-        m_intake.extend();
-        assertEquals(DoubleSolenoid.Value.kForward, m_simPiston.get());
+    void Extend() {
+        intake.extend();
+        assertEquals(true, intake.getInputs().isDeployed);
+    }
+
+    @Test
+    void Retract() {
+        intake.retract();
+        assertEquals(false, intake.getInputs().isDeployed);
     }
 }

@@ -31,7 +31,7 @@ public class SparkMax implements AdcanvedMotor {
     }
 
     @Override
-    public double setVolts(double volts) {
+    public void setVolts(double volts) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setVolts'");
     }
@@ -40,6 +40,12 @@ public class SparkMax implements AdcanvedMotor {
     public void close() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'close'");
+    }
+
+    @Override
+    public double getVolts() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getVolts'");
     }
 
 }

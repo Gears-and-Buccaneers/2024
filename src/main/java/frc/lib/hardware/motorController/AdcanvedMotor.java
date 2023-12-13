@@ -9,7 +9,10 @@ public interface AdcanvedMotor {
 
     double getMotorTemperature();
 
-    double setVolts(double volts);
+    void setVolts(double volts);
+
+    double getVolts();
 
     void close();
+
 }

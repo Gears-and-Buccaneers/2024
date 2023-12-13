@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import frc.lib.hardware.motorController.*;
 
-public class IntakeIOHardware implements IntakeIO, AutoCloseable {
+public class IntakeIOHardware implements IntakeIO {
     private final AdcanvedMotor motor;
     private final DoubleSolenoid m_piston;
 
@@ -23,6 +23,7 @@ public class IntakeIOHardware implements IntakeIO, AutoCloseable {
         inputs.motorCurrentAmps = new double[] { motor.getOutputCurrent() };
         inputs.motorTempCelcius = new double[] { motor.getMotorTemperature() };
         inputs.isDeployed = m_piston.get() == DoubleSolenoid.Value.kForward;
+        inputs.MotorVoltsOutput = motor.getVolts();
     }
 
     public void extend() {
