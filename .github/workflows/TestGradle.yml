@@ -1,4 +1,4 @@
-name: Test FRC code
+name: Unit Test
 
 on: [pull_request, workflow_dispatch]
   
