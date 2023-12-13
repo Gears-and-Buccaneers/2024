@@ -17,7 +17,7 @@ public class Intake implements AutoCloseable {
     }
 
     public void deploy() {
-        m_piston.set(DoubleSolenoid.Value.kForward);
+        m_piston.set(DoubleSolenoid.Value.kReverse);
     }
 
     public void retract() {
