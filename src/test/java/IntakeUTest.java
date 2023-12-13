@@ -1,10 +1,6 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.simulation.DoubleSolenoidSim;
-import edu.wpi.first.wpilibj.simulation.PWMSim;
 import frc.robot.Subsytems.Intake.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +41,16 @@ class IntakeUTest {
         assertEquals(true, intake.getInputs().isDeployed);
     }
 
+    @Test // marks this method as a test
+    void EjectPice() {
+        intake.ejectPice(); // try to activate the motor
+
+        assertEquals(-6.0, intake.getInputs().MotorVoltsOutput, DELTA);
+        assertEquals(true, intake.getInputs().isDeployed);
+    }
+
     @Test
-    void ExstendThenIntakePice() {
+    void ExstendsThenIntakePice() {
         intake.extend(); // close the intake
         intake.intakePice(); // try to activate the motor
 
@@ -55,13 +59,13 @@ class IntakeUTest {
     }
 
     @Test
-    void Extend() {
+    void Extends() {
         intake.extend();
         assertEquals(true, intake.getInputs().isDeployed);
     }
 
     @Test
-    void Retract() {
+    void Retracts() {
         intake.retract();
         assertEquals(false, intake.getInputs().isDeployed);
     }
