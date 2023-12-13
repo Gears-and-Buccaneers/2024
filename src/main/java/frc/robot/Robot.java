@@ -10,12 +10,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Subsytems.Intake.IntakeIO;
-import frc.robot.Subsytems.Intake.IntakeIOHardware;
-import frc.robot.Subsytems.Intake.IntakeSub;
+
+import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 
+// https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/subsystems/gripper/GripperIO.java
+// https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
+// started to implment advantage kit
 public class Robot extends LoggedRobot {
   private Oporator oporator = new SamLogitech(1);
 
@@ -47,7 +48,7 @@ public class Robot extends LoggedRobot {
 
   public void configerButtonBindings() {
     oporator.intakePice().whileTrue(intakeSub.intakePice());
-    oporator.intakePice().onFalse(intakeSub.retract());
+    oporator.intakePice().onFalse(intakeSub.retract().ignoringDisable(true));
 
     oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
     oporator.OuttakePice().onFalse(intakeSub.retract());
