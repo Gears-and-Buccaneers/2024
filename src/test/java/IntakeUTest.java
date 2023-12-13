@@ -40,7 +40,7 @@ class IntakeUTest {
 
     @Test
     void worksWhenOpen() {
-        m_intake.deploy();
+        m_intake.extend();
         m_intake.activate(0.5);
         assertEquals(0.5, m_simMotor.getSpeed(), DELTA);
     }
@@ -53,7 +53,7 @@ class IntakeUTest {
 
     @Test
     void deployTest() {
-        m_intake.deploy();
+        m_intake.extend();
         assertEquals(DoubleSolenoid.Value.kForward, m_simPiston.get());
     }
 }

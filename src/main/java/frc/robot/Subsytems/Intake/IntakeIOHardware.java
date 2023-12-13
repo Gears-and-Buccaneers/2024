@@ -19,14 +19,13 @@ public class IntakeIOHardware implements IntakeIO, AutoCloseable {
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.positionRad = 10;
-        inputs.velocityRadPerSec = 11;
-        inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
-        inputs.currentAmps = new double[] { motor.getOutputCurrent() };
-        inputs.tempCelcius = new double[] { motor.getMotorTemperature() };
+        inputs.motorAppliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
+        inputs.motorCurrentAmps = new double[] { motor.getOutputCurrent() };
+        inputs.motorTempCelcius = new double[] { motor.getMotorTemperature() };
+        inputs.isDeployed = m_piston.get() == DoubleSolenoid.Value.kForward;
     }
 
-    public void deploy() {
+    public void extend() {
         m_piston.set(DoubleSolenoid.Value.kForward);
     }
 
@@ -35,12 +34,8 @@ public class IntakeIOHardware implements IntakeIO, AutoCloseable {
         motor.setVolts(0); // turn off the motor
     }
 
-    public void activate(double speed) {
-        if (isDeployed()) {
-            motor.setVolts(speed / 12);
-        } else { // if piston isn't open, do nothing
-            motor.setVolts(0);
-        }
+    public void setVoltage(double speed) {
+        motor.setVolts(speed / 12);
     }
 
     public boolean isDeployed() {
