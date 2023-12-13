@@ -17,9 +17,9 @@ spotless {
         endWithNewline()
     }
 }
-afterEvaluate {
-    tasks.getByName('spotlessCheck').dependsOn(tasks.getByName('spotlessApply'))
-}
+// afterEvaluate {
+//     tasks.getByName('spotlessCheck').dependsOn(tasks.getByName('spotlessApply'))
+// }
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
