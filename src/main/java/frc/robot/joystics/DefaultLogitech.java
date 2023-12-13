@@ -9,23 +9,13 @@ public class DefaultLogitech extends LogitechController implements Oporator {
     }
 
     @Override
-    public Trigger deploy() {
+    public Trigger intakePice() {
+        return LB;
+    }
+
+    @Override
+    public Trigger OuttakePice() {
         return X;
-    }
-
-    @Override
-    public Trigger retract() {
-        return B;
-    }
-
-    @Override
-    public Trigger intake() {
-        return A;
-    }
-
-    @Override
-    public Trigger outtake() {
-        return Y;
     }
 
 }

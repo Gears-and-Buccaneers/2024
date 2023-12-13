@@ -11,10 +11,15 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Subsytems.Intake.IntakeIO;
+import frc.robot.Subsytems.Intake.IntakeIOHardware;
+import frc.robot.Subsytems.Intake.IntakeSub;
 import frc.robot.joystics.*;
 
 public class Robot extends LoggedRobot {
   private Oporator oporator = new SamLogitech(1);
+
+  private IntakeSub intakeSub;
 
   @Override
   public void robotInit() {
@@ -36,10 +41,16 @@ public class Robot extends LoggedRobot {
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
                     // be added.
     configerButtonBindings();
+
+    intakeSub = new IntakeSub(new IntakeIOHardware());
   }
 
   public void configerButtonBindings() {
-    oporator.deploy().onTrue(new InstantCommand());
+    oporator.intakePice().whileTrue(intakeSub.intakePice());
+    oporator.intakePice().onFalse(intakeSub.retract());
+
+    oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
+    oporator.OuttakePice().onFalse(intakeSub.retract());
   }
 
   @Override

@@ -9,23 +9,13 @@ public class SamLogitech extends LogitechController implements Oporator {
     }
 
     @Override
-    public Trigger deploy() {
-        return A;
-    }
-
-    @Override
-    public Trigger retract() {
-        return B;
-    }
-
-    @Override
-    public Trigger intake() {
-        return X;
-    }
-
-    @Override
-    public Trigger outtake() {
+    public Trigger intakePice() {
         return Y;
+    }
+
+    @Override
+    public Trigger OuttakePice() {
+        return A;
     }
 
 }
