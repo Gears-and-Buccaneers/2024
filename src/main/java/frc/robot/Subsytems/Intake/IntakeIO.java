@@ -9,8 +9,8 @@ public interface IntakeIO extends AutoCloseable {
         public double motorAppliedVolts = 0.0;
         public double[] motorCurrentAmps = new double[] {};
         public double[] motorTempCelcius = new double[] {};
-        public boolean isDeployed = false;
-        public double MotorVoltsOutput = 0.0;
+        public boolean isDeployed = false; // for unit test
+        public double MotorVoltsOutput = 0.0; // for unit test
     }
 
     /** Updates the set of loggable inputs. */
