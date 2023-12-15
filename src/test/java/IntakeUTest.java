@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class IntakeUTest {
     static final double DELTA = 1e-2; // acceptable deviation range
     IntakeSub intake;
-    IntakeIO intakeIO;
+    IntakeRequirments intakeIO;
 
     @BeforeEach // this method will run before each test
     void setup() {

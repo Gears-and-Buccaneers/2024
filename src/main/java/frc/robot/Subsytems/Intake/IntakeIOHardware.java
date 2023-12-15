@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import frc.lib.hardware.motorController.*;
 
-public class IntakeIOHardware implements IntakeIO {
+public class IntakeIOHardware implements IntakeRequirments {
     private final AdcanvedMotor motor;
     private final DoubleSolenoid m_piston;
 

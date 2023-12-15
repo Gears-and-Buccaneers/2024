@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSub extends SubsystemBase implements AutoCloseable {
-    private final IntakeIO intakeIO;
+    private final IntakeRequirments intakeIO;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-    public IntakeSub(IntakeIO intakeIO) {
+    public IntakeSub(IntakeRequirments intakeIO) {
         System.out.println("[Init] Creating Intake w/ " + intakeIO.getClass().getSimpleName());
         this.intakeIO = intakeIO;
 

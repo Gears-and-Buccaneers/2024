@@ -1,6 +1,6 @@
 package frc.robot.Subsytems.Intake;
 
-public class IntakeIOSim implements IntakeIO {
+public class IntakeIOSim implements IntakeRequirments {
 
     @Override
     public void setVoltage(double volts) {

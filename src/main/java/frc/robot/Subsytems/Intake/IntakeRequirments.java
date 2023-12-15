@@ -2,7 +2,7 @@ package frc.robot.Subsytems.Intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO extends AutoCloseable {
+public interface IntakeRequirments extends AutoCloseable {
     /** Contains all of the input data received from hardware. */
     @AutoLog
     public static class IntakeIOInputs {
