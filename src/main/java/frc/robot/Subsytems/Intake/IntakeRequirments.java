@@ -17,14 +17,17 @@ public interface IntakeRequirments extends AutoCloseable {
     public default void updateInputs(IntakeIOInputs inputs) {
     }
 
+    // Controling the hardware
     /** Run the gripper open loop at the specified voltage. [-12,12] */
     public void setVoltage(double volts);
 
+    /** Exstends the intake */
     public void extend();
 
+    /** retracts the intake */
     public void retract();
 
-    /** Enable or disable brake mode on the gripper. */
+    /** Enable or disable brake mode on the intake. */
     public default void setBrakeMode(boolean enable) {
     }
 }
