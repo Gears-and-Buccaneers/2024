@@ -21,6 +21,7 @@ public class Robot extends LoggedRobot {
   private Oporator oporator = new SamLogitech(1);
 
   private IntakeSub intakeSub;
+  private PowerDistribution powerDistribution;
 
   @Override
   public void robotInit() {
@@ -29,7 +30,7 @@ public class Robot extends LoggedRobot {
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-      new PowerDistribution(1, ModuleType.kCTRE); // Enables power distribution logging
+      powerDistribution = new PowerDistribution(0, ModuleType.kCTRE); // Enables power distribution logging
     } else {
       setUseTiming(false); // Run as fast as possible
       String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
@@ -61,6 +62,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
+    powerDistribution.close();
   }
 
   @Override
