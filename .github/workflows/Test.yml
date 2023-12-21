@@ -1,7 +1,6 @@
 name: Unit Test
 
 on:
-  push:
   pull_request:
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
