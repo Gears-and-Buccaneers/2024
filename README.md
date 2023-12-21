@@ -5,7 +5,7 @@
 
 [![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)]([https://YOUR-USERNAME.github.io/YOUR-REPO/](https://github.com/Gears-and-Buccaneers/2024RobotCode/actions/workflows/)javadoc/)
 <br>this is the code for 2024 and will be populated
-
+https://gears-and-buccaneers.github.io/2024RobotCode/
 
 This is testing for 2024. it has advantage scope and unit test.
 
