@@ -27,7 +27,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    IMU imu = new Pigeon();
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
     if (isReal()) {
