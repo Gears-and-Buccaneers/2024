@@ -1,18 +1,17 @@
 package frc.lib.hardware.motorController;
 
 public interface AdcanvedMotor {
-    double getAppliedOutput();
+  double getAppliedOutput();
 
-    double getBusVoltage();
+  double getBusVoltage();
 
-    double getOutputCurrent();
+  double getOutputCurrent();
 
-    double getMotorTemperature();
+  double getMotorTemperature();
 
-    void setVolts(double volts);
+  void setVolts(double volts);
 
-    double getVolts();
+  double getVolts();
 
-    void close();
-
+  void close();
 }

@@ -1,5 +1,3 @@
 package frc.lib.hardware.motorController.Sim;
 
-public interface SimMotor {
-
-}
+public interface SimMotor {}
