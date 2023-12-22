@@ -5,8 +5,12 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 public class Pigeon implements IMU {
     private Pigeon2 pigeon2;
 
+    public Pigeon(int canID) {
+        pigeon2 = new Pigeon2(canID);
+    }
+
     public Pigeon() {
-        pigeon2 = new Pigeon2(0);
+        this(0);
     }
 
     @Override

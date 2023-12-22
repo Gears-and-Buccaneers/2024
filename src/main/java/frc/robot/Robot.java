@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import frc.lib.hardware.sensor.imu.*;
+
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 
@@ -25,7 +27,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    
+    IMU imu = new Pigeon();
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
     if (isReal()) {
