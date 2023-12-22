@@ -1,6 +1,10 @@
 frc.lib.hardware.joystick
 frc.lib.hardware.motorController
 frc.lib.hardware.motorController.Sim
+frc.lib.hardware.sensor.distanceSensors
+frc.lib.hardware.sensor.encoders
+frc.lib.hardware.sensor.imu
+frc.lib.hardware.sensor.proximitySwitch
 frc.robot
 frc.robot.joystics
 frc.robot.Subsytems.Intake
