@@ -49,10 +49,10 @@ public class Robot extends LoggedRobot {
 
   public void configerButtonBindings() {
     oporator.intakePice().whileTrue(intakeSub.intakePice());
-    oporator.intakePice().onFalse(intakeSub.retract().ignoringDisable(true));
+    oporator.intakePice().onFalse(intakeSub.stopIntake());
 
     oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
-    oporator.OuttakePice().onFalse(intakeSub.retract());
+    oporator.intakePice().onFalse(intakeSub.stopIntake());
   }
 
   @Override

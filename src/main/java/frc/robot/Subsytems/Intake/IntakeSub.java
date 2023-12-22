@@ -2,7 +2,6 @@ package frc.robot.Subsytems.Intake;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -29,37 +28,27 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
 
     public Command intakePice() {
         return run(() -> {
-            intakeIO.extend();
-        }).andThen(run(() -> {
-            if (inputs.isDeployed) {
-                intakeIO.setVoltage(6);
-            } else {
-                DriverStation.reportWarning("Can not spin motoer. Intake is not deploed", false);
-            }
-        }));
-    }
-
-    public Command ejectPice() {
-        return run(() -> {
-            intakeIO.extend();
-        }).andThen(run(() -> {
-            if (inputs.isDeployed) {
-                intakeIO.setVoltage(-6);
-            } else {
-                DriverStation.reportWarning("Can not spin motoer. Intake is not deploed", false);
-            }
-        }));
-    }
-
-    public Command extend() {
-        return run(() -> {
-            intakeIO.extend();
+            intakeIO.setVoltage(6);
+        }).handleInterrupt(() -> {
+            intakeIO.setVoltage(0);
         });
     }
 
-    public Command retract() {
+    /**
+     * @return A command that sets the voltage of the Intake to 6 when executed, and
+     *         sets it to 0 when interrupted.
+     */
+    public Command ejectPice() {
         return run(() -> {
-            intakeIO.retract();
+            intakeIO.setVoltage(6);
+        }).handleInterrupt(() -> {
+            intakeIO.setVoltage(0);
+        });
+    }
+
+    public Command stopIntake() {
+        return run(() -> {
+            intakeIO.setVoltage(0);
         });
     }
 

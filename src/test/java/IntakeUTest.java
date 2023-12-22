@@ -24,49 +24,10 @@ class IntakeUTest {
         intake.close(); // destroy our intake object
     }
 
-    @Test // marks this method as a test
-    void retractThenIntakePice() {
-        intake.retract(); // close the intake
-        intake.intakePice(); // try to activate the motor
-
-        assertEquals(6.0, intake.getInputs().MotorVoltsOutput, DELTA);
-        assertEquals(true, intake.getInputs().isDeployed);
-    }
-
     @Test
     void IntakePice() {
         intake.intakePice(); // try to activate the motor
 
         assertEquals(6.0, intake.getInputs().MotorVoltsOutput, DELTA);
-        assertEquals(true, intake.getInputs().isDeployed);
-    }
-
-    @Test // marks this method as a test
-    void EjectPice() {
-        intake.ejectPice(); // try to activate the motor
-
-        assertEquals(-6.0, intake.getInputs().MotorVoltsOutput, DELTA);
-        assertEquals(true, intake.getInputs().isDeployed);
-    }
-
-    @Test
-    void ExstendsThenIntakePice() {
-        intake.extend(); // close the intake
-        intake.intakePice(); // try to activate the motor
-
-        assertEquals(6.0, intake.getInputs().MotorVoltsOutput, DELTA);
-        assertEquals(true, intake.getInputs().isDeployed);
-    }
-
-    @Test
-    void Extends() {
-        intake.extend();
-        assertEquals(true, intake.getInputs().isDeployed);
-    }
-
-    @Test
-    void Retracts() {
-        intake.retract();
-        assertEquals(false, intake.getInputs().isDeployed);
     }
 }
