@@ -1,6 +1,6 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
-public interface ProximitySwitchRequirments {
+public interface ProximitySwitch {
     /**
      * @return true if open false if closed
      */

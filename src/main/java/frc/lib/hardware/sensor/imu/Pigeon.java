@@ -2,7 +2,7 @@ package frc.lib.hardware.sensor.imu;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-public class Pigeon implements IMURequirments {
+public class Pigeon implements IMU {
     private Pigeon2 pigeon2;
 
     public Pigeon() {

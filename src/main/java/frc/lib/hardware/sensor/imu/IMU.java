@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 /**
  * refer to https://docs.wpilib.org/en/latest/docs/hardware/sensors/proximity-switches.html for more infomation
  */
-public interface IMURequirments {
+public interface IMU {
     double getPitch();
     double getYaw();
     double getRoll();
