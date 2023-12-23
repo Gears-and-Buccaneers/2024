@@ -34,4 +34,6 @@ public interface DrivetrainRequirments extends AutoCloseable {
   Pose2d getPose2d();
 
   void configAutoBuilder(SubsystemBase subsystemBase);
+
+  void loadPreferences();
 }

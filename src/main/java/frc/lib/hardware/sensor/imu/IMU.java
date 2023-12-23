@@ -13,7 +13,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
  * Rotation3d object
  */
 public interface IMU {
-  double getPitch();
+
+double getPitch();
 
   double getYaw();
 
@@ -24,4 +25,6 @@ public interface IMU {
   public default Rotation3d getRotation3d() {
     return new Rotation3d(getRoll(), getPitch(), getYaw());
   }
+
+boolean connected();
 }

@@ -7,6 +7,8 @@ public class Pigeon implements IMU {
 
   public Pigeon(int canID) {
     pigeon2 = new Pigeon2(canID);
+
+    pigeon2.setYaw(0.0);
   }
 
   public Pigeon() {
@@ -31,5 +33,10 @@ public class Pigeon implements IMU {
   @Override
   public void zeroIMU() {
     pigeon2.reset();
+  }
+
+  @Override
+  public boolean connected() {
+    return true;
   }
 }
