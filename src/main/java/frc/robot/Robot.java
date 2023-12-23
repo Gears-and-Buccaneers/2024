@@ -11,38 +11,39 @@ import org.littletonrobotics.junction.Logger;
 // https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
 // started to implment advantage kit
 public class Robot extends LoggedRobot {
-  private Oporator oporator = new SamLogitech(1);
+  private Oporator oporator = new SamKeyboard(0);
 
   private IntakeSub intakeSub;
-  private PowerDistribution powerDistribution;
+  private IntakeRequirments IntakeIOHardware;
 
   @Override
   public void robotInit() {
-    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
-
-    // if (isReal()) {
-    // Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
-    // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    // powerDistribution = new PowerDistribution(0, ModuleType.kCTRE); // Enables
-    // power
-    // distribution logging
-    // } else {
-    // setUseTiming(false); // Run as fast as possible
-    // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
-    // AdvantageScope
-    // (or prompt the user)
-    // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-    // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
-    // "_sim"))); //
-    // Save outputs to a new log
-    // }
-
-    // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in
-    // the "Understanding Data Flow" page
-    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
-    // be added.
-
-    intakeSub = new IntakeSub(new IntakeIOHardware());
+    // Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    // // if (isReal()) {
+    // // Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+    // // Logger.addDataReceiver(new NT4Publisher()); // Publish data to
+    // NetworkTables
+    // // powerDistribution = new PowerDistribution(0, ModuleType.kCTRE); // Enables
+    // // power
+    // // distribution logging
+    // // } else {
+    // // setUseTiming(false); // Run as fast as possible
+    // // String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
+    // // AdvantageScope
+    // // (or prompt the user)
+    // // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+    // // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
+    // // "_sim"))); //
+    // // Save outputs to a new log
+    // // }
+    // // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps"
+    // in
+    // // the "Understanding Data Flow" page
+    // Logger.start(); // Start logging! No more data receivers, replay sources, or
+    // metadata values may
+    // // be added.
+    IntakeIOHardware = new IntakeIOHardware();
+    intakeSub = new IntakeSub(IntakeIOHardware);
 
     configerButtonBindings();
   }
@@ -52,7 +53,7 @@ public class Robot extends LoggedRobot {
     oporator.intakePice().onFalse(intakeSub.stopIntake());
 
     oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
-    oporator.intakePice().onFalse(intakeSub.stopIntake());
+    oporator.OuttakePice().onFalse(intakeSub.stopIntake());
   }
 
   @Override
@@ -86,6 +87,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    IntakeIOHardware.loadPreferences()
   }
 
   @Override

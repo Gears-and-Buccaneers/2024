@@ -2,7 +2,9 @@ package frc.robot.Subsytems.Intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeRequirments extends AutoCloseable {
+import frc.robot.Subsytems.SubsytemRequirments;
+
+public interface IntakeRequirments extends SubsytemRequirments {
 
   /** Contains all of the input data received from hardware. */
   @AutoLog
@@ -14,12 +16,17 @@ public interface IntakeRequirments extends AutoCloseable {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(IntakeIOInputs inputs) {}
+  public default void updateInputs(IntakeIOInputs inputs) {
+  }
 
   // Controling the hardware
-  /** Run the gripper open loop at the specified voltage. [-12,12] */
-  public void setVoltage(double volts);
+  public void setOutakeVoltage();
+
+  public void setIntakeVoltage();
+
+  public void off();
 
   /** Enable or disable brake mode on the intake. */
-  public default void setBrakeMode(boolean enable) {}
+  public default void setBrakeMode(boolean enable) {
+  }
 }

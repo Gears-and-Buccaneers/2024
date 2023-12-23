@@ -1,1 +1,35 @@
-{}
+{
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX (v6)[10]": {
+        "header": {
+          "open": true
+        }
+      }
+    },
+    "PowerDistributions": {
+      "0": {
+        "PowerDistribution[0]": {
+          "open": true
+        }
+      },
+      "window": {
+        "visible": true
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX (v6) [10]": "Motor Controller"
+    }
+  },
+  "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    }
+  }
+}

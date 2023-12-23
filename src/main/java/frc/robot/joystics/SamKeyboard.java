@@ -1,35 +1,35 @@
 package frc.robot.joystics;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.hardware.joystick.LogitechController;
+import frc.lib.hardware.joystick.*;
 
-public class SamLogitech extends LogitechController implements Oporator {
-  public SamLogitech(int port) {
+public class SamKeyboard extends Keyboard implements Oporator {
+  public SamKeyboard(int port) {
     super(port);
   }
 
   @Override
   public Trigger intakePice() {
-    return Y;
+    return ONE;
   }
 
   @Override
   public Trigger OuttakePice() {
-    return A;
+    return TWO;
   }
 
   @Override
   public double getDrivtrainTranslationX() {
-    return LS_X.get();
+    return DandA.get();
   }
 
   @Override
   public double getDrivtrainTranslationY() {
-    return LS_Y.get();
+    return WandS.get();
   }
 
   @Override
   public double getDrivtrainRotation() {
-    return RS_Y.get();
+    return EandQ.get();
   }
 }

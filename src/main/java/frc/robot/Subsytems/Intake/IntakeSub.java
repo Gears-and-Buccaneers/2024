@@ -27,11 +27,11 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
 
   public Command intakePice() {
     return run(() -> {
-          intakeIO.setVoltage(6);
+          intakeIO.setIntakeVoltage();
         })
         .handleInterrupt(
             () -> {
-              intakeIO.setVoltage(0);
+              intakeIO.off();
             });
   }
 
@@ -41,18 +41,18 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
    */
   public Command ejectPice() {
     return run(() -> {
-          intakeIO.setVoltage(6);
+          intakeIO.setOutakeVoltage();
         })
         .handleInterrupt(
             () -> {
-              intakeIO.setVoltage(0);
+              intakeIO.off();
             });
   }
 
   public Command stopIntake() {
     return run(
         () -> {
-          intakeIO.setVoltage(0);
+          intakeIO.off();
         });
   }
 
