@@ -87,7 +87,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    IntakeIOHardware.loadPreferences()
+    IntakeIOHardware.loadPreferences();
   }
 
   @Override

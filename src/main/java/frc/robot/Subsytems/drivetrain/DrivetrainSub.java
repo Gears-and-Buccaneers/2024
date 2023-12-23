@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.joystics.Oporator;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 // https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java this will help
@@ -15,6 +17,7 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
 
   private final DrivetrainInputsAutoLogged inputs = new DrivetrainInputsAutoLogged();
 
+  @AutoLogOutput
   public Field2d field = new Field2d();
 
   public DrivetrainSub(DrivetrainRequirments drivetrain) {
