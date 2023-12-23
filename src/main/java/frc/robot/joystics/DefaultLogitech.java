@@ -10,11 +10,32 @@ public class DefaultLogitech extends LogitechController implements Oporator {
 
   @Override
   public Trigger intakePice() {
-    return LB;
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'intakePice'");
   }
 
   @Override
   public Trigger OuttakePice() {
-    return X;
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'OuttakePice'");
   }
+
+  @Override
+  public double getDrivtrainTranslationX() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getDrivtrainTranslationX'");
+  }
+
+  @Override
+  public double getDrivtrainTranslationY() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getDrivtrainTranslationY'");
+  }
+
+  @Override
+  public double getDrivtrainRotation() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getDrivtrainRotation'");
+  }
+
 }

@@ -22,4 +22,14 @@ public class SamLogitech extends LogitechController implements Oporator {
   public double getDrivtrainTranslationX() {
     return LS_X.get();
   }
+
+  @Override
+  public double getDrivtrainTranslationY() {
+    return LS_Y.get();
+  }
+
+  @Override
+  public double getDrivtrainRotation() {
+    return RS_Y.get();
+  }
 }

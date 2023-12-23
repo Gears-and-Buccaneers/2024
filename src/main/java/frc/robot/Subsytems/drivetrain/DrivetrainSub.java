@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.joystics.Oporator;
+
 //https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java this will help
 //https://docs.wpilib.org/en/latest/docs/software/advanced-controls/controllers/profiled-pidcontroller.html
 //https://docs.wpilib.org/en/latest/docs/software/advanced-controls/filters/index.html
@@ -22,6 +23,8 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
         System.out.println("[Init] Creating"
                 + this.getClass().getSimpleName() + " w/ "
                 + this.drivetrain.getClass().getSimpleName());
+
+        this.drivetrain.configAutoBuilder(this);
     }
 
     @Override

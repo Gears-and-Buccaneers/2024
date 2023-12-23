@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public interface DrivetrainRequirments extends AutoCloseable {
 
@@ -32,5 +33,7 @@ public interface DrivetrainRequirments extends AutoCloseable {
     void updateOdometry(Rotation2d yaw, double state);
 
     Pose2d getPose2d();
+
+    void configAutoBuilder(SubsystemBase subsystemBase);
 
 }

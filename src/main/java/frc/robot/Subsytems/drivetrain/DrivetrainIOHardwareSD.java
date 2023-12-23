@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.hardware.sensor.imu.*;
 
 public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
@@ -41,24 +42,11 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
             new Translation2d(-0.265, -0.265)
     };
 
-    public DrivetrainIOHardwareSD() {
-        AutoBuilder.configureHolonomic(
-                this::getPose2d, // Robot pose supplier
-                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeed, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-                                                 // Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        maxSpeed, // Max module speed, in m/s
-                        drivetrainRadius, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                this // Reference to this subsystem to set requirements
-        );
-
+    public DrivetrainIOHardwareSD(SubsystemBase subsystemBase) {
+        
     }
+
+    
 
     // odometry-------------------------------------------
     public Pose2d getPose2d() {
@@ -113,5 +101,26 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
     public void updateOdometry(Rotation2d yaw, double state) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateOdometry'");
+    }
+
+
+
+    @Override
+    public void configAutoBuilder(SubsystemBase subsystemBase) {
+        AutoBuilder.configureHolonomic(
+                this::getPose2d, // Robot pose supplier
+                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::setChassisSpeed, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+                                                 // Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        maxSpeed, // Max module speed, in m/s
+                        drivetrainRadius, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                subsystemBase // Reference to this subsystem to set requirements
+        );
     }
 }
