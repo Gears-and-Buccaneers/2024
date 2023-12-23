@@ -290,6 +290,18 @@ implements <a href="DrivetrainRequirments.html" title="interface in frc.robot.Su
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="updateInputs(frc.robot.Subsytems.drivetrain.DrivetrainRequirments.DrivetrainInputs)">
+<h3>updateInputs</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateInputs</span><wbr><span class="parameters">(<a href="DrivetrainRequirments.DrivetrainInputs.html" title="class in frc.robot.Subsytems.drivetrain">DrivetrainRequirments.DrivetrainInputs</a>&nbsp;inputs)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="DrivetrainRequirments.html#updateInputs(frc.robot.Subsytems.drivetrain.DrivetrainRequirments.DrivetrainInputs)">DrivetrainRequirments</a></code></span></div>
+<div class="block">Updates the set of loggable inputs.</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="DrivetrainRequirments.html#updateInputs(frc.robot.Subsytems.drivetrain.DrivetrainRequirments.DrivetrainInputs)">updateInputs</a></code>&nbsp;in interface&nbsp;<code><a href="DrivetrainRequirments.html" title="interface in frc.robot.Subsytems.drivetrain">DrivetrainRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getPose2d()">
 <h3>getPose2d</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Pose2d</span>&nbsp;<span class="element-name">getPose2d</span>()</div>
@@ -340,31 +352,6 @@ implements <a href="DrivetrainRequirments.html" title="interface in frc.robot.Su
 </section>
 </li>
 <li>
-<section class="detail" id="close()">
-<h3>close</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()
-           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
-<dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="updateInputs(frc.robot.Subsytems.drivetrain.DrivetrainRequirments.DrivetrainInputs)">
-<h3>updateInputs</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateInputs</span><wbr><span class="parameters">(<a href="DrivetrainRequirments.DrivetrainInputs.html" title="class in frc.robot.Subsytems.drivetrain">DrivetrainRequirments.DrivetrainInputs</a>&nbsp;inputs)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="DrivetrainRequirments.html#updateInputs(frc.robot.Subsytems.drivetrain.DrivetrainRequirments.DrivetrainInputs)">DrivetrainRequirments</a></code></span></div>
-<div class="block">Updates the set of loggable inputs.</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="DrivetrainRequirments.html#updateInputs(frc.robot.Subsytems.drivetrain.DrivetrainRequirments.DrivetrainInputs)">updateInputs</a></code>&nbsp;in interface&nbsp;<code><a href="DrivetrainRequirments.html" title="interface in frc.robot.Subsytems.drivetrain">DrivetrainRequirments</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="stopChassis()">
 <h3>stopChassis</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stopChassis</span>()</div>
@@ -382,6 +369,19 @@ implements <a href="DrivetrainRequirments.html" title="interface in frc.robot.Su
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="DrivetrainRequirments.html#updateOdometry(edu.wpi.first.math.geometry.Rotation2d,double)">updateOdometry</a></code>&nbsp;in interface&nbsp;<code><a href="DrivetrainRequirments.html" title="interface in frc.robot.Subsytems.drivetrain">DrivetrainRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code></dd>
 </dl>
 </section>
 </li>
