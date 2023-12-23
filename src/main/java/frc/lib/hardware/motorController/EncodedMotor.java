@@ -1,6 +1,6 @@
 package frc.lib.hardware.motorController;
 
-public interface AdcanvedMotor {
+public interface EncodedMotor {
   double getAppliedOutput();
 
   double getBusVoltage();

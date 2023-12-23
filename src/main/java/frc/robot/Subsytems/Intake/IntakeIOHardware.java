@@ -3,10 +3,10 @@ package frc.robot.Subsytems.Intake;
 import frc.lib.hardware.motorController.*;
 
 public class IntakeIOHardware implements IntakeRequirments {
-  private final AdcanvedMotor motor;
+  private final EncodedMotor motor;
 
   public IntakeIOHardware() {
-    motor = new SparkMax(10);
+    motor = new tallonFX(10);
   }
 
   @Override

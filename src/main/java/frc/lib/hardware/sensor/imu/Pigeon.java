@@ -46,4 +46,9 @@ public class Pigeon implements IMU {
   public Rotation2d getYaw2d() {
     return Rotation2d.fromDegrees(getYaw());
   }
+
+  @Override
+  public void close() throws Exception {
+    pigeon2.close();
+  }
 }

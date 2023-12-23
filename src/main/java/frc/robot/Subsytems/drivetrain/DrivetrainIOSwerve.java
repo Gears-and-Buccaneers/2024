@@ -135,7 +135,7 @@ public class DrivetrainIOSwerve implements DrivetrainRequirments {
 
     @Override
     public void close() throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'close'");
+        imu.close();
+        modules.close();
     }
 }

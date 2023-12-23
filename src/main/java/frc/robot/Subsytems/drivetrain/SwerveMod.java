@@ -28,5 +28,10 @@ public class SwerveMod implements Module {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getPos'");
     }
+    @Override
+    public void close() throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'close'");
+    }
 
 }

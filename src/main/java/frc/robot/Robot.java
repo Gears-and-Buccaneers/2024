@@ -41,9 +41,10 @@ public class Robot extends LoggedRobot {
     // the "Understanding Data Flow" page
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
     // be added.
-    configerButtonBindings();
 
     intakeSub = new IntakeSub(new IntakeIOHardware());
+
+    configerButtonBindings();
   }
 
   public void configerButtonBindings() {
@@ -61,7 +62,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    powerDistribution.close();
   }
 
   @Override
