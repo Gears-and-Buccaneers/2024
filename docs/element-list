@@ -7,4 +7,5 @@ frc.lib.hardware.sensor.imu
 frc.lib.hardware.sensor.proximitySwitch
 frc.robot
 frc.robot.joystics
+frc.robot.Subsytems.drivetrain
 frc.robot.Subsytems.Intake
