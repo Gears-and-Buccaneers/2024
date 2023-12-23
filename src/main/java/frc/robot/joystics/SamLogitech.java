@@ -17,4 +17,9 @@ public class SamLogitech extends LogitechController implements Oporator {
   public Trigger OuttakePice() {
     return A;
   }
+
+  @Override
+  public double getDrivtrainTranslationX() {
+    return LS_X.get();
+  }
 }

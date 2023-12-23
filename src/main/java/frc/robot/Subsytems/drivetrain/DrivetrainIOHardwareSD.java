@@ -7,11 +7,13 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.lib.hardware.sensor.imu.*;
 
 public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
-
+    public IMU imu = new Pigeon(0);
 
     public Field2d field = new Field2d();
     public SwerveDriveOdometry odometry;
@@ -71,5 +73,27 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
 
     public static class Module{
 
+    }
+
+    @Override
+    public void setChassisSpeed(ChassisSpeeds speeds) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setChassisSpeed'");
+    }
+
+
+
+    @Override
+    public ChassisSpeeds getChassisSpeed() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getChassisSpeed'");
+    }
+
+
+
+    @Override
+    public void zeroGyro() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'zeroGyro'");
     }
 }
