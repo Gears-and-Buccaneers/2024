@@ -6,6 +6,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -15,7 +16,6 @@ import frc.lib.hardware.sensor.imu.*;
 public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
     public IMU imu = new Pigeon(0);
 
-    public Field2d field = new Field2d();
     public SwerveDriveOdometry odometry;
 
     /**
@@ -60,18 +60,16 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
 
     }
 
-
-    
     // odometry-------------------------------------------
     public Pose2d getPose2d() {
         return odometry.getPoseMeters();
     }
 
     public void resetOdometry(Pose2d pose) {
-        odometry.reset(imu.getYaw(), getDrivetrainState(), pose);
+        // odometry.reset(imu.getYaw(), getDrivetrainState(), pose);
     }
 
-    public static class Module{
+    public static class Module {
 
     }
 
@@ -81,19 +79,39 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
         throw new UnsupportedOperationException("Unimplemented method 'setChassisSpeed'");
     }
 
-
-
     @Override
     public ChassisSpeeds getChassisSpeed() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getChassisSpeed'");
     }
 
-
-
     @Override
     public void zeroGyro() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'zeroGyro'");
+    }
+
+    @Override
+    public void close() throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'close'");
+    }
+
+    @Override
+    public void updateInputs(DrivetrainInputs inputs) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateInputs'");
+    }
+
+    @Override
+    public void stopChassis() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'stopChassis'");
+    }
+
+    @Override
+    public void updateOdometry(Rotation2d yaw, double state) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateOdometry'");
     }
 }

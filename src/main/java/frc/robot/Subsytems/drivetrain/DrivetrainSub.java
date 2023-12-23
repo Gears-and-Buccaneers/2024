@@ -2,18 +2,20 @@ package frc.robot.Subsytems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.joystics.Oporator;
-
+//https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/armsimulation/subsystems/Arm.java this will help
+//https://docs.wpilib.org/en/latest/docs/software/advanced-controls/controllers/profiled-pidcontroller.html
+//https://docs.wpilib.org/en/latest/docs/software/advanced-controls/filters/index.html
 public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
     private final DrivetrainRequirments drivetrain;
 
     private final DrivetrainInputsAutoLogged inputs = new DrivetrainInputsAutoLogged();
+
+    public Field2d field = new Field2d();
 
     public DrivetrainSub(DrivetrainRequirments drivetrain) {
         this.drivetrain = drivetrain;
@@ -28,44 +30,28 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
         Logger.processInputs(this.getClass().getSimpleName(), inputs);
 
         if (getInputs().GyroConnected) {
-            odometry.update(getInputs().yaw, getDrivetrainState());
+            drivetrain.updateOdometry(getInputs().yaw, 1.0);
         }
 
-        var pose = odometry.getPoseMeters();
-        field.setRobotPose(pose);
-
-        System.out.println("pose: " + pose.toString());
-
-        SmartDashboard.putString("Chassie Speed Calcualted", getChassisSpeed().toString());
-        // SmartDashboard.putData(imu);
-        SmartDashboard.putData("Field", field);
-
-        SmartDashboard.putNumber("Odometry yaw", pose.getRotation().getDegrees());
-
-        for (ModuleBase module : modules) {
-            SmartDashboard.putData("Mod" + module.number + ": State", module);
-        }
+        field.setRobotPose(drivetrain.getPose2d());
     }
 
     public DrivetrainInputsAutoLogged getInputs() {
         return inputs;
     }
 
-    /**
-     * drives the drivetrain
-     *
-     * @param translation      the x and y compnet of the movment (meaters/second)
-     * @param rotation         the rotation of the robot (radians/second)
-     * @param notFieldRelative false for field relitive
-     */
     public Command drive(Oporator controler, boolean fieldRelative) {
         return run(() -> {
             ChassisSpeeds speeds = new ChassisSpeeds(
                     controler.getDrivtrainTranslationX(),
                     controler.getDrivtrainTranslationY(),
                     controler.getDrivtrainRotation());
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getInputs().yaw);
+            if (fieldRelative) {
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getInputs().yaw);
+            }
             drivetrain.setChassisSpeed(speeds);
+        }).handleInterrupt(() -> {
+            drivetrain.stopChassis();
         });
     }
 

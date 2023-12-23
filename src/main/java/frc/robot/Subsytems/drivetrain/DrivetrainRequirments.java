@@ -11,7 +11,7 @@ public interface DrivetrainRequirments extends AutoCloseable {
     @AutoLog
     public static class DrivetrainInputs {
         public boolean GyroConnected = false;
-        public Rotation2d yaw = 0;
+        public Rotation2d yaw = new Rotation2d();
     }
 
     /** Updates the set of loggable inputs. */
@@ -23,9 +23,13 @@ public interface DrivetrainRequirments extends AutoCloseable {
 
     ChassisSpeeds getChassisSpeed();
 
+    void stopChassis();
+
     void zeroGyro();
 
     void resetOdometry(Pose2d pose);
+
+    void updateOdometry(Rotation2d yaw, double state);
 
     Pose2d getPose2d();
 
