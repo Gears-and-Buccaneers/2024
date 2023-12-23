@@ -2,6 +2,8 @@ package frc.lib.hardware.sensor.imu;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Pigeon implements IMU {
   private Pigeon2 pigeon2;
 
@@ -38,5 +40,10 @@ public class Pigeon implements IMU {
   @Override
   public boolean connected() {
     return true;
+  }
+
+  @Override
+  public Rotation2d getYaw2d() {
+    return Rotation2d.fromDegrees(getYaw());
   }
 }

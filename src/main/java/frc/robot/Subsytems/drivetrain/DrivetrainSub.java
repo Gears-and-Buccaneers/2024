@@ -34,7 +34,7 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
     Logger.processInputs(this.getClass().getSimpleName(), inputs);
 
     if (getInputs().GyroConnected) {
-      drivetrain.updateOdometry(getInputs().yaw, 1.0);
+      drivetrain.updateOdometry();
     }
 
     field.setRobotPose(drivetrain.getPose2d());

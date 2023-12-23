@@ -1,5 +1,6 @@
 package frc.lib.hardware.sensor.imu;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 /**
@@ -14,9 +15,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
  */
 public interface IMU {
 
-double getPitch();
+  double getPitch();
 
   double getYaw();
+
+  Rotation2d getYaw2d();
 
   double getRoll();
 
@@ -26,5 +29,5 @@ double getPitch();
     return new Rotation3d(getRoll(), getPitch(), getYaw());
   }
 
-boolean connected();
+  boolean connected();
 }

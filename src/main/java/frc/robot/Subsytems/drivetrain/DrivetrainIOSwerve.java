@@ -5,32 +5,31 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.hardware.sensor.imu.*;
 
-public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
+public class DrivetrainIOSwerve implements DrivetrainRequirments {
     public IMU imu;
 
+    public SwerveDriveKinematics kinematics;
     public SwerveDriveOdometry odometry;
 
-    /** FL, FR, BL, BR */
-    public Module[] modules;
-
     public double maxSpeed = 4.0;
+    public double absoluteMaxSpeed = 4.0;
     public double maxAcceleration = 3.0;
     public double maxAngularVelocity = 8.0;
     public double maxAngularAcceleration = 4.0;
-    /** meaters from center fathest out point */
-    public double drivetrainRadius = 0.4;
+    public double drivetrainRadius = 0.4; // meaters from center fathest out point
 
-    
-
-    /** Locations of the wheels relative to the robot center. FL, FR, BL, BR */
+    /**
+     * Locations of the wheels relative to the robot center. FL, FR, BL, BR meaters
+     */
     Translation2d[] wheelLocations = {
             new Translation2d(0.265, 0.265),
             new Translation2d(0.265, -0.265),
@@ -38,32 +37,43 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
             new Translation2d(-0.265, -0.265)
     };
 
-    public DrivetrainIOHardwareSD(SubsystemBase subsystemBase) {
+    private Module modules;
+
+    public DrivetrainIOSwerve(SubsystemBase subsystemBase) {
         System.out.println("[Init] Creating " + this.getClass().getSimpleName());
 
-        //IMU configs
+        // IMU configs
         imu = new Pigeon(0);
-        //Init Prefrences
-        Preferences.initDouble("maxSpeed", maxSpeed);
+
+        initPrefrences();
+
+        modules = new SwerveMod(0);
+        kinematics = new SwerveDriveKinematics(
+                wheelLocations[0],
+                wheelLocations[1],
+                wheelLocations[2],
+                wheelLocations[3]);
+
+        odometry = new SwerveDriveOdometry(kinematics, imu.getYaw2d(), modules.modulePositions());
     }
 
     // Chassis Speeds ------------------------
     @Override
     public ChassisSpeeds getChassisSpeed() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getChassisSpeed'");
+        return kinematics.toChassisSpeeds(modules.get());
     }
 
     @Override
     public void setChassisSpeed(ChassisSpeeds speeds) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setChassisSpeed'");
+        SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, absoluteMaxSpeed);
+
+        modules.set(moduleStates);
     }
 
     @Override
     public void stopChassis() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stopChassis'");
+
     }
 
     // odometry-------------------------------------------
@@ -72,13 +82,12 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
     }
 
     public void resetOdometry(Pose2d pose) {
-        // odometry.reset(imu.getYaw(), getDrivetrainState(), pose);
+        odometry.resetPosition(imu.getYaw2d(), modules.getPos(), pose);
     }
 
     @Override
-    public void updateOdometry(Rotation2d yaw, double state) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateOdometry'");
+    public void updateOdometry() {
+        odometry.update(imu.getYaw2d(), modules.getPos());
     }
 
     @Override
@@ -110,14 +119,13 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
         );
     }
 
+    private void initPrefrences() {
+        Preferences.initDouble("maxSpeed", maxSpeed);
+    }
+
     // auto sendable and auto closable
     public void loadPreferences() {
-        // Read Preferences for Arm setpoint and kP on entering Teleop
         maxSpeed = Preferences.getDouble("maxSpeed", maxSpeed);
-        // if (m_armKp != Preferences.getDouble(Constants.kArmPKey, m_armKp)) {
-        //     m_armKp = Preferences.getDouble(Constants.kArmPKey, m_armKp);
-        //     m_controller.setP(m_armKp);
-        // }
     }
 
     @Override
