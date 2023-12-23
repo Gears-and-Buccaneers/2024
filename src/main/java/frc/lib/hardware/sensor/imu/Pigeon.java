@@ -27,4 +27,9 @@ public class Pigeon implements IMU {
   public double getRoll() {
     return pigeon2.getRoll().getValueAsDouble();
   }
+
+  @Override
+  public void zeroIMU() {
+    pigeon2.reset();
+  }
 }
