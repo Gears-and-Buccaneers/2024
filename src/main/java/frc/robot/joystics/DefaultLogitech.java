@@ -37,5 +37,4 @@ public class DefaultLogitech extends LogitechController implements Oporator {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getDrivtrainRotation'");
   }
-
 }

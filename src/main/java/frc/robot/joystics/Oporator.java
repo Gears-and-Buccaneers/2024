@@ -11,6 +11,8 @@ public interface Oporator {
   Trigger OuttakePice();
 
   double getDrivtrainTranslationX();
+
   double getDrivtrainTranslationY();
+
   double getDrivtrainRotation();
 }
