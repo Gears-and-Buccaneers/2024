@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.hardware.sensor.imu.*;
 
@@ -43,10 +42,8 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
     };
 
     public DrivetrainIOHardwareSD(SubsystemBase subsystemBase) {
-        
-    }
 
-    
+    }
 
     // odometry-------------------------------------------
     public Pose2d getPose2d() {
@@ -102,8 +99,6 @@ public class DrivetrainIOHardwareSD implements DrivetrainRequirments {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateOdometry'");
     }
-
-
 
     @Override
     public void configAutoBuilder(SubsystemBase subsystemBase) {
