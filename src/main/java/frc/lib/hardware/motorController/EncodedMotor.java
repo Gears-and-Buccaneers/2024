@@ -1,6 +1,6 @@
 package frc.lib.hardware.motorController;
 
-public interface EncodedMotor {
+public interface EncodedMotor extends Motor  {
   double getAppliedOutput();
 
   double getBusVoltage();
