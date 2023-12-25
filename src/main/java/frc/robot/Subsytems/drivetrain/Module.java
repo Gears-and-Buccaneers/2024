@@ -3,13 +3,14 @@ package frc.robot.Subsytems.drivetrain;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-public interface Module extends AutoCloseable{
-    String moduleName = "";
-    public SwerveModulePosition[] modulePositions();
+public interface Module extends AutoCloseable {
+  String moduleName = "";
 
-    void set(SwerveModuleState[] state);
+  public SwerveModulePosition[] modulePositions();
 
-    SwerveModuleState[] get();
+  void set(SwerveModuleState[] state);
 
-    SwerveModulePosition[] getPos();
+  SwerveModuleState[] get();
+
+  SwerveModulePosition[] getPos();
 }

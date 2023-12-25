@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.joystics.Oporator;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -17,8 +16,7 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
 
   private final DrivetrainInputsAutoLogged inputs = new DrivetrainInputsAutoLogged();
 
-  @AutoLogOutput
-  public Field2d field = new Field2d();
+  @AutoLogOutput public Field2d field = new Field2d();
 
   public DrivetrainSub(DrivetrainRequirments drivetrain) {
     this.drivetrain = drivetrain;

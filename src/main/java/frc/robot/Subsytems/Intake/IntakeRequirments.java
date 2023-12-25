@@ -1,8 +1,7 @@
 package frc.robot.Subsytems.Intake;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import frc.robot.Subsytems.SubsytemRequirments;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface IntakeRequirments extends SubsytemRequirments {
 
@@ -16,8 +15,7 @@ public interface IntakeRequirments extends SubsytemRequirments {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(IntakeIOInputs inputs) {
-  }
+  public default void updateInputs(IntakeIOInputs inputs) {}
 
   // Controling the hardware
   public void setOutakeVoltage();
@@ -27,6 +25,5 @@ public interface IntakeRequirments extends SubsytemRequirments {
   public void off();
 
   /** Enable or disable brake mode on the intake. */
-  public default void setBrakeMode(boolean enable) {
-  }
+  public default void setBrakeMode(boolean enable) {}
 }

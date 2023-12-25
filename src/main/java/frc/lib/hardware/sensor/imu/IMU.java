@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
  * roll = imu.getRoll(); // Get the roll value Rotation3d rotation = imu.getRotation3d(); // Get the
  * Rotation3d object
  */
-public interface IMU extends AutoCloseable{
+public interface IMU extends AutoCloseable {
 
   double getPitch();
 

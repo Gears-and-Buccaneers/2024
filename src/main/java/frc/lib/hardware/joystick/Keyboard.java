@@ -7,16 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class Keyboard {
   private static final double deadband = 0.05;
 
-  public final Trigger ONE,
-      TWO,
-      THREE,
-      FOUR,
-      FIVE,
-      SIX,
-      SEVEN,
-      EIGHT,
-      NINE,
-      ZERO;
+  public final Trigger ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO;
   public final JoystickAxis WandS, DandA, EandQ;
 
   public Keyboard(int port) {
