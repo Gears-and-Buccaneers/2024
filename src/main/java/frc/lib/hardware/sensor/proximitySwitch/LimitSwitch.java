@@ -8,11 +8,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class LimitSwitch implements ProximitySwitch {
   private DigitalInput limitSwitch;
+  private int DIOChannel;
 
   /**
    * @param DIOChannel the DIO channel for the digital input 0-9 are on-board
    */
   public LimitSwitch(int DIOChannel) {
+    this.DIOChannel = DIOChannel;
     limitSwitch = new DigitalInput(DIOChannel);
   }
 
@@ -27,15 +29,16 @@ public class LimitSwitch implements ProximitySwitch {
     return true; // TODO probaly Should FIx
   }
 
-  //Unit Testing
+  // Unit Testing
   @Override
   public void close() throws Exception {
     limitSwitch.close();
   }
 
-  //Simulating
+  // Simulating
   @Override
   public void run() {
+    // TODO work on this
     limitSwitch.setSimDevice(null);
   }
 
