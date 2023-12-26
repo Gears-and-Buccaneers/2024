@@ -1,8 +1,11 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.littletonrobotics.junction.LogTable;
 
-public interface ProximitySwitch {
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.hardware.sensor.SensorRequirments;
+
+public interface ProximitySwitch extends SensorRequirments {
   /**
    * @return true if open false if closed
    */
@@ -27,5 +30,13 @@ public interface ProximitySwitch {
         () -> {
           return isOpen();
         });
+  }
+
+  default void toLog(LogTable table) {
+    table.put(this.getClass().getSimpleName() + "/Open", get());
+  }
+
+  default void fromLog(LogTable table) {
+    throw new UnsupportedOperationException("Unimplemented method 'fromLog'");
   }
 }

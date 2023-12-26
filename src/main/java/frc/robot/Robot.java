@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
@@ -17,6 +18,12 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
+    if (RobotBase.isSimulation()) {
+      System.out.println("Simulated Yay");
+    }
+    if (RobotBase.isReal()) {
+      System.out.println("real robot Yay");
+    }
     // Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
     // // if (isReal()) {
     // // Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
