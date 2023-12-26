@@ -73,7 +73,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code>, <code><a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></code>, <code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -81,15 +81,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">IMU</span><span class="extends-implements">
-extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
-<div class="block">The IMU interface defines methods for retrieving the pitch, yaw, and roll values of an IMU
- (Inertial Measurement Unit) sensor. It also includes a default method for obtaining a Rotation3d
- object using the pitch, yaw, and roll values.
-
- <p>Example Usage: IMU imu = new MyIMU(); // Instantiate an IMU object double pitch =
- imu.getPitch(); // Get the pitch value double yaw = imu.getYaw(); // Get the yaw value double
- roll = imu.getRoll(); // Get the roll value Rotation3d rotation = imu.getRotation3d(); // Get the
- Rotation3d object</div>
+extends <a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -104,33 +96,51 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#connected()" class="member-name-link">connected</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#fromLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">fromLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPitch()" class="member-name-link">getPitch</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRoll()" class="member-name-link">getRoll</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPitchVelocity()" class="member-name-link">getPitchVelocity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRoll()" class="member-name-link">getRoll</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getRollVelocity()" class="member-name-link">getRollVelocity</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default edu.wpi.first.math.geometry.Rotation3d</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getRotation3d()" class="member-name-link">getRotation3d</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getYaw()" class="member-name-link">getYaw</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getYaw2d()" class="member-name-link">getYaw2d</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getYawVelocity()" class="member-name-link">getYawVelocity</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#zeroIMU()" class="member-name-link">zeroIMU</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#offsetIMU(edu.wpi.first.math.geometry.Rotation2d)" class="member-name-link">offsetIMU</a><wbr>(edu.wpi.first.math.geometry.Rotation2d&nbsp;offset)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#zeroIMU()" class="member-name-link">zeroIMU</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.AutoCloseable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-frc.lib.hardware.sensor.SensorRequirments">Methods inherited from interface&nbsp;frc.lib.hardware.sensor.<a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></h3>
+<code><a href="../SensorRequirments.html#connected()">connected</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-frc.lib.hardware.sim.SimProfile">Methods inherited from interface&nbsp;frc.lib.hardware.sim.<a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></h3>
+<code><a href="../../sim/SimProfile.html#getPeriod()">getPeriod</a>, <a href="../../sim/SimProfile.html#run()">run</a></code></div>
 </section>
 </li>
 </ul>
@@ -145,31 +155,49 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <li>
 <section class="detail" id="getPitch()">
 <h3>getPitch</h3>
-<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getPitch</span>()</div>
+<div class="member-signature"><span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getPitch</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getPitchVelocity()">
+<h3>getPitchVelocity</h3>
+<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getPitchVelocity</span>()</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getYaw()">
 <h3>getYaw</h3>
-<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getYaw</span>()</div>
+<div class="member-signature"><span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getYaw</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="getYaw2d()">
-<h3>getYaw2d</h3>
-<div class="member-signature"><span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getYaw2d</span>()</div>
+<section class="detail" id="getYawVelocity()">
+<h3>getYawVelocity</h3>
+<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getYawVelocity</span>()</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getRoll()">
 <h3>getRoll</h3>
-<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getRoll</span>()</div>
+<div class="member-signature"><span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getRoll</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getRollVelocity()">
+<h3>getRollVelocity</h3>
+<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getRollVelocity</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="offsetIMU(edu.wpi.first.math.geometry.Rotation2d)">
+<h3>offsetIMU</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">offsetIMU</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Rotation2d&nbsp;offset)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="zeroIMU()">
 <h3>zeroIMU</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">zeroIMU</span>()</div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">zeroIMU</span>()</div>
 </section>
 </li>
 <li>
@@ -179,9 +207,23 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 </section>
 </li>
 <li>
-<section class="detail" id="connected()">
-<h3>connected</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">connected</span>()</div>
+<section class="detail" id="toLog(org.littletonrobotics.junction.LogTable)">
+<h3>toLog</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>toLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="fromLog(org.littletonrobotics.junction.LogTable)">
+<h3>fromLog</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">fromLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>fromLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
+</dl>
 </section>
 </li>
 </ul>

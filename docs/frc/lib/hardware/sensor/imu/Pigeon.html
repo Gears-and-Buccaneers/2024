@@ -76,7 +76,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code>, <code><a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></code>, <code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Pigeon</span>
@@ -93,10 +93,8 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">Pigeon</a>()</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">Pigeon</a><wbr>(int&nbsp;canID)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">Pigeon</a><wbr>(int&nbsp;canID)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -118,19 +116,31 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connected()" class="member-name-link">connected</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPitch()" class="member-name-link">getPitch</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPeriod()" class="member-name-link">getPeriod</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPitch()" class="member-name-link">getPitch</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPitchVelocity()" class="member-name-link">getPitchVelocity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRoll()" class="member-name-link">getRoll</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getYaw()" class="member-name-link">getYaw</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRollVelocity()" class="member-name-link">getRollVelocity</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>edu.wpi.first.math.geometry.Rotation2d</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getYaw2d()" class="member-name-link">getYaw2d</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getYaw()" class="member-name-link">getYaw</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getYawVelocity()" class="member-name-link">getYawVelocity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#offsetIMU(edu.wpi.first.math.geometry.Rotation2d)" class="member-name-link">offsetIMU</a><wbr>(edu.wpi.first.math.geometry.Rotation2d&nbsp;offset)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#zeroIMU()" class="member-name-link">zeroIMU</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#run()" class="member-name-link">run</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -140,7 +150,7 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.lib.hardware.sensor.imu.IMU">Methods inherited from interface&nbsp;frc.lib.hardware.sensor.imu.<a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></h3>
-<code><a href="IMU.html#getRotation3d()">getRotation3d</a></code></div>
+<code><a href="IMU.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a>, <a href="IMU.html#getRotation3d()">getRotation3d</a>, <a href="IMU.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a>, <a href="IMU.html#zeroIMU()">zeroIMU</a></code></div>
 </section>
 </li>
 </ul>
@@ -158,12 +168,6 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Pigeon</span><wbr><span class="parameters">(int&nbsp;canID)</span></div>
 </section>
 </li>
-<li>
-<section class="detail" id="&lt;init&gt;()">
-<h3>Pigeon</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Pigeon</span>()</div>
-</section>
-</li>
 </ul>
 </section>
 </li>
@@ -175,7 +179,7 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <li>
 <section class="detail" id="getPitch()">
 <h3>getPitch</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getPitch</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getPitch</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="IMU.html#getPitch()">getPitch</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
@@ -183,9 +187,19 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 </section>
 </li>
 <li>
+<section class="detail" id="getPitchVelocity()">
+<h3>getPitchVelocity</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getPitchVelocity</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="IMU.html#getPitchVelocity()">getPitchVelocity</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getYaw()">
 <h3>getYaw</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getYaw</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getYaw</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="IMU.html#getYaw()">getYaw</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
@@ -193,9 +207,19 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 </section>
 </li>
 <li>
+<section class="detail" id="getYawVelocity()">
+<h3>getYawVelocity</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getYawVelocity</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="IMU.html#getYawVelocity()">getYawVelocity</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getRoll()">
 <h3>getRoll</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getRoll</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getRoll</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="IMU.html#getRoll()">getRoll</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
@@ -203,12 +227,22 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 </section>
 </li>
 <li>
-<section class="detail" id="zeroIMU()">
-<h3>zeroIMU</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">zeroIMU</span>()</div>
+<section class="detail" id="getRollVelocity()">
+<h3>getRollVelocity</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getRollVelocity</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="IMU.html#zeroIMU()">zeroIMU</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
+<dd><code><a href="IMU.html#getRollVelocity()">getRollVelocity</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="offsetIMU(edu.wpi.first.math.geometry.Rotation2d)">
+<h3>offsetIMU</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">offsetIMU</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Rotation2d&nbsp;offset)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="IMU.html#offsetIMU(edu.wpi.first.math.geometry.Rotation2d)">offsetIMU</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
 </dl>
 </section>
 </li>
@@ -218,17 +252,7 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">connected</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="IMU.html#connected()">connected</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getYaw2d()">
-<h3>getYaw2d</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">edu.wpi.first.math.geometry.Rotation2d</span>&nbsp;<span class="element-name">getYaw2d</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="IMU.html#getYaw2d()">getYaw2d</a></code>&nbsp;in interface&nbsp;<code><a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a></code></dd>
+<dd><code><a href="../SensorRequirments.html#connected()">connected</a></code>&nbsp;in interface&nbsp;<code><a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></code></dd>
 </dl>
 </section>
 </li>
@@ -242,6 +266,26 @@ implements <a href="IMU.html" title="interface in frc.lib.hardware.sensor.imu">I
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run()">
+<h3>run</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../sim/SimProfile.html#run()">run</a></code>&nbsp;in interface&nbsp;<code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getPeriod()">
+<h3>getPeriod</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getPeriod</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../sim/SimProfile.html#getPeriod()">getPeriod</a></code>&nbsp;in interface&nbsp;<code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code></dd>
 </dl>
 </section>
 </li>

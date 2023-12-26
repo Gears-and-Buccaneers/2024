@@ -53,10 +53,12 @@ loadScripts(document, 'script');</script>
 <li><a href="frc/lib/hardware/joystick/package-tree.html">frc.lib.hardware.joystick</a>, </li>
 <li><a href="frc/lib/hardware/motorController/package-tree.html">frc.lib.hardware.motorController</a>, </li>
 <li><a href="frc/lib/hardware/motorController/Sim/package-tree.html">frc.lib.hardware.motorController.Sim</a>, </li>
+<li><a href="frc/lib/hardware/sensor/package-tree.html">frc.lib.hardware.sensor</a>, </li>
 <li><a href="frc/lib/hardware/sensor/distanceSensors/package-tree.html">frc.lib.hardware.sensor.distanceSensors</a>, </li>
 <li><a href="frc/lib/hardware/sensor/encoders/package-tree.html">frc.lib.hardware.sensor.encoders</a>, </li>
 <li><a href="frc/lib/hardware/sensor/imu/package-tree.html">frc.lib.hardware.sensor.imu</a>, </li>
 <li><a href="frc/lib/hardware/sensor/proximitySwitch/package-tree.html">frc.lib.hardware.sensor.proximitySwitch</a>, </li>
+<li><a href="frc/lib/hardware/sim/package-tree.html">frc.lib.hardware.sim</a>, </li>
 <li><a href="frc/robot/package-tree.html">frc.robot</a>, </li>
 <li><a href="frc/robot/joystics/package-tree.html">frc.robot.joystics</a>, </li>
 <li><a href="frc/robot/Subsytems/package-tree.html">frc.robot.Subsytems</a>, </li>
@@ -86,6 +88,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/LimitSwitch.html" class="type-name-link" title="class in frc.lib.hardware.sensor.proximitySwitch">LimitSwitch</a> (implements frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a>)</li>
 <li class="circle">frc.lib.hardware.joystick.<a href="frc/lib/hardware/joystick/LogitechController.html" class="type-name-link" title="class in frc.lib.hardware.joystick">LogitechController</a></li>
 <li class="circle">frc.robot.<a href="frc/robot/Main.html" class="type-name-link" title="class in frc.robot">Main</a></li>
+<li class="circle">frc.lib.hardware.sim.<a href="frc/lib/hardware/sim/PhysicsSim.html" class="type-name-link" title="class in frc.lib.hardware.sim">PhysicsSim</a></li>
 <li class="circle">frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/Pigeon.html" class="type-name-link" title="class in frc.lib.hardware.sensor.imu">Pigeon</a> (implements frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/IMU.html" title="interface in frc.lib.hardware.sensor.imu">IMU</a>)</li>
 <li class="circle">edu.wpi.first.wpilibj.RobotBase (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>)
 <ul>
@@ -118,11 +121,15 @@ loadScripts(document, 'script');</script>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" class="type-name-link external-link" title="class or interface in java.lang">AutoCloseable</a>
 <ul>
 <li class="circle">frc.robot.Subsytems.drivetrain.<a href="frc/robot/Subsytems/drivetrain/DrivetrainRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems.drivetrain">DrivetrainRequirments</a></li>
-<li class="circle">frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/IMU.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.imu">IMU</a></li>
 <li class="circle">frc.robot.Subsytems.drivetrain.<a href="frc/robot/Subsytems/drivetrain/Module.html" class="type-name-link" title="interface in frc.robot.Subsytems.drivetrain">Module</a></li>
 <li class="circle">frc.lib.hardware.motorController.<a href="frc/lib/hardware/motorController/Motor.html" class="type-name-link" title="interface in frc.lib.hardware.motorController">Motor</a>
 <ul>
 <li class="circle">frc.lib.hardware.motorController.<a href="frc/lib/hardware/motorController/EncodedMotor.html" class="type-name-link" title="interface in frc.lib.hardware.motorController">EncodedMotor</a></li>
+</ul>
+</li>
+<li class="circle">frc.lib.hardware.sensor.<a href="frc/lib/hardware/sensor/SensorRequirments.html" class="type-name-link" title="interface in frc.lib.hardware.sensor">SensorRequirments</a> (also extends org.littletonrobotics.junction.inputs.LoggableInputs, frc.lib.hardware.sim.<a href="frc/lib/hardware/sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a>)
+<ul>
+<li class="circle">frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/IMU.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.imu">IMU</a></li>
 </ul>
 </li>
 <li class="circle">frc.robot.Subsytems.<a href="frc/robot/Subsytems/SubsytemRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems">SubsytemRequirments</a>
@@ -134,9 +141,27 @@ loadScripts(document, 'script');</script>
 </li>
 <li class="circle">frc.lib.hardware.sensor.distanceSensors.<a href="frc/lib/hardware/sensor/distanceSensors/DistanceSensor.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.distanceSensors">DistanceSensor</a></li>
 <li class="circle">frc.lib.hardware.sensor.encoders.<a href="frc/lib/hardware/sensor/encoders/Encoder.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.encoders">Encoder</a></li>
+<li class="circle">org.littletonrobotics.junction.inputs.LoggableInputs
+<ul>
+<li class="circle">frc.lib.hardware.sensor.<a href="frc/lib/hardware/sensor/SensorRequirments.html" class="type-name-link" title="interface in frc.lib.hardware.sensor">SensorRequirments</a> (also extends java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, frc.lib.hardware.sim.<a href="frc/lib/hardware/sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a>)
+<ul>
+<li class="circle">frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/IMU.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.imu">IMU</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="circle">frc.robot.joystics.<a href="frc/robot/joystics/Oporator.html" class="type-name-link" title="interface in frc.robot.joystics">Oporator</a></li>
 <li class="circle">frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></li>
 <li class="circle">frc.lib.hardware.motorController.Sim.<a href="frc/lib/hardware/motorController/Sim/SimMotor.html" class="type-name-link" title="interface in frc.lib.hardware.motorController.Sim">SimMotor</a></li>
+<li class="circle">frc.lib.hardware.sim.<a href="frc/lib/hardware/sim/SimProfile.html" class="type-name-link" title="interface in frc.lib.hardware.sim">SimProfile</a>
+<ul>
+<li class="circle">frc.lib.hardware.sensor.<a href="frc/lib/hardware/sensor/SensorRequirments.html" class="type-name-link" title="interface in frc.lib.hardware.sensor">SensorRequirments</a> (also extends java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, org.littletonrobotics.junction.inputs.LoggableInputs)
+<ul>
+<li class="circle">frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/IMU.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.imu">IMU</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="circle">frc.lib.hardware.motorController.Sim.<a href="frc/lib/hardware/motorController/Sim/SimSparkMax.html" class="type-name-link" title="interface in frc.lib.hardware.motorController.Sim">SimSparkMax</a></li>
 </ul>
 </section>
