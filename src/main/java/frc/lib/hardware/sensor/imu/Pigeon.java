@@ -1,53 +1,73 @@
 package frc.lib.hardware.sensor.imu;
 
+import org.littletonrobotics.junction.LogTable;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Pigeon implements IMU {
-  private Pigeon2 pigeon2;
 
-  public Pigeon(int canID) {
-    pigeon2 = new Pigeon2(canID);
+  //Hardware Getting and setting methods-------------------------------
 
-    pigeon2.setYaw(0.0);
-  }
-
-  public Pigeon() {
-    this(0);
+  @Override
+  public Rotation2d getPitch() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getPitch'");
   }
 
   @Override
-  public double getPitch() {
-    return pigeon2.getPitch().getValueAsDouble();
+  public Rotation2d getYaw() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getYaw'");
   }
 
   @Override
-  public double getYaw() {
-    return pigeon2.getYaw().getValueAsDouble();
-  }
-
-  @Override
-  public double getRoll() {
-    return pigeon2.getRoll().getValueAsDouble();
+  public Rotation2d getRoll() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getRoll'");
   }
 
   @Override
   public void zeroIMU() {
-    pigeon2.reset();
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'zeroIMU'");
   }
+
+  //----------------------------------------------------------
 
   @Override
   public boolean connected() {
-    return true;
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'connected'");
   }
 
   @Override
-  public Rotation2d getYaw2d() {
-    return Rotation2d.fromDegrees(getYaw());
+  public void toLog(LogTable table) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'toLog'");
+  }
+
+  @Override
+  public void fromLog(LogTable table) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'fromLog'");
   }
 
   @Override
   public void close() throws Exception {
-    pigeon2.close();
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'close'");
+  }
+
+  @Override
+  public void run() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'run'");
+  }
+
+  @Override
+  public double getPeriod() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getPeriod'");
   }
 }
