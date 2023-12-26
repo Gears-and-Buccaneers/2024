@@ -100,21 +100,6 @@ public class Pigeon implements IMU {
         .equals(StatusCode.OK);
   }
 
-  // Loging
-  @Override
-  public void toLog(LogTable table) {
-    table.put(this.getClass().getSimpleName() + "/Pitch", getPitch().getDegrees());
-    table.put(this.getClass().getSimpleName() + "/PitchVelocity", getPitchVelocity());
-    table.put(this.getClass().getSimpleName() + "/Yaw", getYaw().getDegrees());
-    table.put(this.getClass().getSimpleName() + "/YawVelocity", getYawVelocity());
-    table.put(this.getClass().getSimpleName() + "/Roll", getRoll().getDegrees());
-    table.put(this.getClass().getSimpleName() + "/RollVelocity", getRollVelocity());
-  }
-
-  @Override
-  public void fromLog(LogTable table) {
-  }
-
   // Unit Testing
   @Override
   public void close() throws Exception {
@@ -124,7 +109,12 @@ public class Pigeon implements IMU {
   // Simulating
   @Override
   public void run() {
-    // TODO Auto-generated method stub
+    // TODO TEST THIS!!!!
+    pigeon2.getSimState().setSupplyVoltage(12);
+    pigeon2.getSimState().setPitch(0);
+    pigeon2.getSimState().setRawYaw(0);
+    pigeon2.getSimState().setRoll(0);
+
     throw new UnsupportedOperationException("Unimplemented method 'run'");
   }
 
