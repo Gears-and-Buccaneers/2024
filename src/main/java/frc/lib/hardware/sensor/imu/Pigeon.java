@@ -109,7 +109,7 @@ public class Pigeon implements IMU {
   // Simulating
   @Override
   public void run() {
-    // TODO TEST THIS!!!!(WPI)
+    // TODO TEST THIS!!!!
     pigeon2.getSimState().setSupplyVoltage(12);
     pigeon2.getSimState().setPitch(0);
     pigeon2.getSimState().setRawYaw(0);
