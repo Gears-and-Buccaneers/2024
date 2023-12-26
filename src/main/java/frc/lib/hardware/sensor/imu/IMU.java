@@ -1,11 +1,9 @@
 package frc.lib.hardware.sensor.imu;
 
-import org.littletonrobotics.junction.LogTable;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-
 import frc.lib.hardware.sensor.SensorRequirments;
+import org.littletonrobotics.junction.LogTable;
 
 public interface IMU extends SensorRequirments {
 
@@ -43,7 +41,5 @@ public interface IMU extends SensorRequirments {
   }
 
   @Override
-  default void fromLog(LogTable table) {
-  }
-
+  default void fromLog(LogTable table) {}
 }

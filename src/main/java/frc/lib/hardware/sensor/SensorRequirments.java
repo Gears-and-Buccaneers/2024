@@ -1,10 +1,9 @@
 package frc.lib.hardware.sensor;
 
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 import frc.lib.hardware.sim.SimProfile;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public interface SensorRequirments extends AutoCloseable, LoggableInputs, SimProfile {
 
-    boolean connected();
-
+  boolean connected();
 }

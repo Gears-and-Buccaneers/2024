@@ -23,6 +23,9 @@ public interface ProximitySwitch {
   }
 
   public default Trigger trigger() {
-    return new Trigger(() -> {return isOpen();});
+    return new Trigger(
+        () -> {
+          return isOpen();
+        });
   }
 }

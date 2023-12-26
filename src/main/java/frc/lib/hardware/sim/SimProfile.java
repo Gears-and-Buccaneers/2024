@@ -1,7 +1,7 @@
 package frc.lib.hardware.sim;
 
 public interface SimProfile {
-    void run();
+  void run();
 
-    double getPeriod();
+  double getPeriod();
 }

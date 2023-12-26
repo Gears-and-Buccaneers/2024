@@ -50,7 +50,7 @@ public class DrivetrainIOSwerve implements DrivetrainRequirments {
         new SwerveDriveKinematics(
             wheelLocations[0], wheelLocations[1], wheelLocations[2], wheelLocations[3]);
 
-    odometry = new SwerveDriveOdometry(kinematics, imu.getYaw2d(), modules.modulePositions());
+    odometry = new SwerveDriveOdometry(kinematics, imu.getYaw(), modules.modulePositions());
   }
 
   // Chassis Speeds ------------------------
@@ -76,12 +76,12 @@ public class DrivetrainIOSwerve implements DrivetrainRequirments {
   }
 
   public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(imu.getYaw2d(), modules.getPos(), pose);
+    odometry.resetPosition(imu.getYaw(), modules.getPos(), pose);
   }
 
   @Override
   public void updateOdometry() {
-    odometry.update(imu.getYaw2d(), modules.getPos());
+    odometry.update(imu.getYaw(), modules.getPos());
   }
 
   @Override

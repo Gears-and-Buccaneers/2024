@@ -1,14 +1,11 @@
 package frc.lib.hardware.sensor.imu;
 
-import org.littletonrobotics.junction.LogTable;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Pigeon implements IMU {
@@ -51,7 +48,6 @@ public class Pigeon implements IMU {
     rollVelocity.setUpdateFrequency(25.0);
 
     pigeon2.optimizeBusUtilization();
-
   }
 
   @Override
@@ -94,9 +90,9 @@ public class Pigeon implements IMU {
   @Override
   public boolean connected() {
     return BaseStatusSignal.refreshAll(
-        pitch, pitchVelocity,
-        yaw, yawVelocity,
-        roll, rollVelocity)
+            pitch, pitchVelocity,
+            yaw, yawVelocity,
+            roll, rollVelocity)
         .equals(StatusCode.OK);
   }
 
