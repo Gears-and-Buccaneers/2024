@@ -76,7 +76,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></code></dd>
+<dd><code><a href="ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></code>, <code><a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></code>, <code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">LimitSwitch</span>
@@ -109,8 +109,20 @@ implements <a href="ProximitySwitch.html" title="interface in frc.lib.hardware.s
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connected()" class="member-name-link">connected</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get()" class="member-name-link">get</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPeriod()" class="member-name-link">getPeriod</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#run()" class="member-name-link">run</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -120,7 +132,7 @@ implements <a href="ProximitySwitch.html" title="interface in frc.lib.hardware.s
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.lib.hardware.sensor.proximitySwitch.ProximitySwitch">Methods inherited from interface&nbsp;frc.lib.hardware.sensor.proximitySwitch.<a href="ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></h3>
-<code><a href="ProximitySwitch.html#isClosed()">isClosed</a>, <a href="ProximitySwitch.html#isOpen()">isOpen</a>, <a href="ProximitySwitch.html#trigger()">trigger</a></code></div>
+<code><a href="ProximitySwitch.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a>, <a href="ProximitySwitch.html#isClosed()">isClosed</a>, <a href="ProximitySwitch.html#isOpen()">isOpen</a>, <a href="ProximitySwitch.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a>, <a href="ProximitySwitch.html#trigger()">trigger</a></code></div>
 </section>
 </li>
 </ul>
@@ -159,6 +171,49 @@ implements <a href="ProximitySwitch.html" title="interface in frc.lib.hardware.s
 <dd><code><a href="ProximitySwitch.html#get()">get</a></code>&nbsp;in interface&nbsp;<code><a href="ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></code></dd>
 <dt>Returns:</dt>
 <dd>true if open false if closed</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="connected()">
+<h3>connected</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">connected</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../SensorRequirments.html#connected()">connected</a></code>&nbsp;in interface&nbsp;<code><a href="../SensorRequirments.html" title="interface in frc.lib.hardware.sensor">SensorRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run()">
+<h3>run</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../sim/SimProfile.html#run()">run</a></code>&nbsp;in interface&nbsp;<code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getPeriod()">
+<h3>getPeriod</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getPeriod</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../sim/SimProfile.html#getPeriod()">getPeriod</a></code>&nbsp;in interface&nbsp;<code><a href="../../sim/SimProfile.html" title="interface in frc.lib.hardware.sim">SimProfile</a></code></dd>
 </dl>
 </section>
 </li>
