@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 // started to implment advantage kit
 // Just testing something
 public class Robot extends LoggedRobot {
-  private Oporator oporator = new SamKeyboard(0);
+  private Oporator oporator;
 
   private IntakeSub intakeSub;
   private IntakeRequirments IntakeIOHardware;
@@ -35,6 +35,7 @@ public class Robot extends LoggedRobot {
     intakeSub = new IntakeSub(IntakeIOHardware);
 
     switch1 = new LimitSwitch(2);
+    oporator = new SamKeyboard(0);
 
     configerButtonBindings();
   }

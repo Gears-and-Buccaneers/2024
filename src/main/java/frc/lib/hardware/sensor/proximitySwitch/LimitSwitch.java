@@ -13,7 +13,7 @@ public class LimitSwitch implements ProximitySwitch {
   public LimitSwitch(int DIOChannel) {
     // this.DIOChannel = DIOChannel;
     limitSwitch = new DigitalInput(DIOChannel);
-    System.out.println("[init] Limit switch on port " + DIOChannel);
+    System.out.println("[init] new limit switch on port " + DIOChannel);
   }
 
   @Override

@@ -32,7 +32,7 @@ public interface ProximitySwitch extends SensorRequirments {
   }
 
   default void toLog(LogTable table) {
-    table.put(this.getClass().getSimpleName() + "/Open", get());
+    table.put("Open", get());
   }
 
   default void fromLog(LogTable table) {
