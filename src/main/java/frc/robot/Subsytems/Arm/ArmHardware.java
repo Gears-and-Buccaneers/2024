@@ -2,6 +2,7 @@ package frc.robot.Subsytems.Arm;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -12,11 +13,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.motorController.*;
 
 public class ArmHardware implements ArmRequirments {
-    @AutoLogOutput
     private final SmartMotor motorElvatorPivot;
-    @AutoLogOutput
     private final SmartMotor motorElvatorExstend;
-    @AutoLogOutput
     private final SmartMotor motorWristPivot;
 
     @AutoLogOutput
@@ -29,6 +27,8 @@ public class ArmHardware implements ArmRequirments {
     private MechanismLigament2d elevatorAcual;
     private MechanismLigament2d wristAcual;
 
+    private String logName;
+
     public ArmHardware() {
         motorElvatorPivot = new Falcon500(1);
         motorElvatorExstend = new Falcon500(2);
@@ -39,6 +39,10 @@ public class ArmHardware implements ArmRequirments {
         configMotor(motorWristPivot);
 
         configMech();
+    }
+
+    public void setLogName(String logName) {
+        this.logName = logName;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class ArmHardware implements ArmRequirments {
         elevatorSetpoint.setLength(ft);
     }
 
-    public void updateMech() {
+    public void perodic() {
         elevatorAcual.setAngle(motorElvatorPivot.getRotation());
         elevatorAcual.setLength(motorElvatorExstend.getRotation());
         wristAcual.setAngle(motorWristPivot.getRotation());
@@ -80,10 +84,9 @@ public class ArmHardware implements ArmRequirments {
 
     @Override
     public void toLog(LogTable table) {
-        // table.put("Motor1", motor1);
-        // table.put("Motor2", motor2);
-        // table.put("Motor3", motor3);
-        // table.put("Motor4", motor4);
+        
+        Logger.processInputs(logName + "/elvator Motor", motorElvatorExstend);
+        table.put("234", 123);
     }
 
     @Override

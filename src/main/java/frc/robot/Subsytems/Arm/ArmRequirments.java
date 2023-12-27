@@ -11,7 +11,7 @@ public interface ArmRequirments extends SubsytemRequirments {
 
     void elevatorLengthSetpoint(double ft);
 
-    void updateMech();
+    void perodic();
 
     void stop();
 }

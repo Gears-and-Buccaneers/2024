@@ -1,5 +1,7 @@
 package frc.lib.hardware.motorController;
 
+import org.littletonrobotics.junction.LogTable;
+
 public class Falcon500 implements SmartMotor {
     private int id;
 
@@ -33,5 +35,9 @@ public class Falcon500 implements SmartMotor {
     @Override
     public double getRotation() {
         return 10;
+    }
+
+    public void toLog(LogTable table) {
+        table.put("ID", id);
     }
 }

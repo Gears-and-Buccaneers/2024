@@ -19,4 +19,7 @@ public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
   @Override
   default void fromLog(LogTable table) {
   }
+
+  default void setLogName(String logName) {
+  }
 }
