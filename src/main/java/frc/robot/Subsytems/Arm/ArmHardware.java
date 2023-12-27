@@ -12,8 +12,11 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.motorController.*;
 
 public class ArmHardware implements ArmRequirments {
+    @AutoLogOutput
     private final SmartMotor motorElvatorPivot;
+    @AutoLogOutput
     private final SmartMotor motorElvatorExstend;
+    @AutoLogOutput
     private final SmartMotor motorWristPivot;
 
     @AutoLogOutput
