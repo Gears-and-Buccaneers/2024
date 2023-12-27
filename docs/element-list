@@ -9,4 +9,5 @@ frc.lib.hardware.sim
 frc.robot
 frc.robot.joystics
 frc.robot.Subsytems
+frc.robot.Subsytems.Arm
 frc.robot.Subsytems.Intake

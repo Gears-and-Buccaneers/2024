@@ -61,6 +61,7 @@ loadScripts(document, 'script');</script>
 <li><a href="frc/robot/package-tree.html">frc.robot</a>, </li>
 <li><a href="frc/robot/joystics/package-tree.html">frc.robot.joystics</a>, </li>
 <li><a href="frc/robot/Subsytems/package-tree.html">frc.robot.Subsytems</a>, </li>
+<li><a href="frc/robot/Subsytems/Arm/package-tree.html">frc.robot.Subsytems.Arm</a>, </li>
 <li><a href="frc/robot/Subsytems/Intake/package-tree.html">frc.robot.Subsytems.Intake</a></li>
 </ul>
 </div>
@@ -69,10 +70,11 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" class="type-name-link external-link" title="class or interface in java.lang">Object</a>
 <ul>
+<li class="circle">frc.robot.Subsytems.Arm.<a href="frc/robot/Subsytems/Arm/ArmHardware.html" class="type-name-link" title="class in frc.robot.Subsytems.Arm">ArmHardware</a> (implements frc.robot.Subsytems.Arm.<a href="frc/robot/Subsytems/Arm/ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a>)</li>
+<li class="circle">frc.robot.Subsytems.Arm.<a href="frc/robot/Subsytems/Arm/ArmSub.html" class="type-name-link" title="class in frc.robot.Subsytems.Arm">ArmSub</a></li>
 <li class="circle">frc.lib.hardware.motorController.<a href="frc/lib/hardware/motorController/Falcon500.html" class="type-name-link" title="class in frc.lib.hardware.motorController">Falcon500</a> (implements frc.lib.hardware.motorController.<a href="frc/lib/hardware/motorController/SmartMotor.html" title="interface in frc.lib.hardware.motorController">SmartMotor</a>)</li>
 <li class="circle">frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/Huchoo.html" class="type-name-link" title="class in frc.lib.hardware.sensor.proximitySwitch">Huchoo</a> (implements frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a>)</li>
-<li class="circle">frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeIOHardware.html" class="type-name-link" title="class in frc.robot.Subsytems.Intake">IntakeIOHardware</a> (implements frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a>)</li>
-<li class="circle">frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeRequirments.IntakeIOInputs.html" class="type-name-link" title="class in frc.robot.Subsytems.Intake">IntakeRequirments.IntakeIOInputs</a></li>
+<li class="circle">frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeHardware.html" class="type-name-link" title="class in frc.robot.Subsytems.Intake">IntakeHardware</a> (implements frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a>)</li>
 <li class="circle">frc.lib.hardware.joystick.<a href="frc/lib/hardware/joystick/JoystickAxis.html" class="type-name-link" title="class in frc.lib.hardware.joystick">JoystickAxis</a> (implements java.util.function.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;)</li>
 <li class="circle">frc.lib.hardware.joystick.<a href="frc/lib/hardware/joystick/Keyboard.html" class="type-name-link" title="class in frc.lib.hardware.joystick">Keyboard</a>
 <ul>
@@ -125,8 +127,9 @@ loadScripts(document, 'script');</script>
 <li class="circle">frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></li>
 </ul>
 </li>
-<li class="circle">frc.robot.Subsytems.<a href="frc/robot/Subsytems/SubsytemRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems">SubsytemRequirments</a>
+<li class="circle">frc.robot.Subsytems.<a href="frc/robot/Subsytems/SubsytemRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems">SubsytemRequirments</a> (also extends org.littletonrobotics.junction.inputs.LoggableInputs)
 <ul>
+<li class="circle">frc.robot.Subsytems.Arm.<a href="frc/robot/Subsytems/Arm/ArmRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></li>
 <li class="circle">frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></li>
 </ul>
 </li>
@@ -140,6 +143,12 @@ loadScripts(document, 'script');</script>
 <li class="circle">frc.lib.hardware.sensor.distanceSensors.<a href="frc/lib/hardware/sensor/distanceSensors/DistanceSensor.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.distanceSensors">DistanceSensor</a></li>
 <li class="circle">frc.lib.hardware.sensor.imu.<a href="frc/lib/hardware/sensor/imu/IMU.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.imu">IMU</a></li>
 <li class="circle">frc.lib.hardware.sensor.proximitySwitch.<a href="frc/lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" class="type-name-link" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></li>
+</ul>
+</li>
+<li class="circle">frc.robot.Subsytems.<a href="frc/robot/Subsytems/SubsytemRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems">SubsytemRequirments</a> (also extends java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>)
+<ul>
+<li class="circle">frc.robot.Subsytems.Arm.<a href="frc/robot/Subsytems/Arm/ArmRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></li>
+<li class="circle">frc.robot.Subsytems.Intake.<a href="frc/robot/Subsytems/Intake/IntakeRequirments.html" class="type-name-link" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></li>
 </ul>
 </li>
 </ul>

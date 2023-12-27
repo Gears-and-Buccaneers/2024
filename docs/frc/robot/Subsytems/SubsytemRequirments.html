@@ -73,19 +73,19 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
+<dd><code><a href="Arm/ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code>, <code><a href="Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="Intake/IntakeIOHardware.html" title="class in frc.robot.Subsytems.Intake">IntakeIOHardware</a></code></dd>
+<dd><code><a href="Arm/ArmHardware.html" title="class in frc.robot.Subsytems.Arm">ArmHardware</a></code>, <code><a href="Intake/IntakeHardware.html" title="class in frc.robot.Subsytems.Intake">IntakeHardware</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">SubsytemRequirments</span><span class="extends-implements">
-extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
+extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, org.littletonrobotics.junction.inputs.LoggableInputs</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -109,6 +109,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.AutoCloseable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-org.littletonrobotics.junction.inputs.LoggableInputs">Methods inherited from interface&nbsp;org.littletonrobotics.junction.inputs.LoggableInputs</h3>
+<code>fromLog, toLog</code></div>
 </section>
 </li>
 </ul>
