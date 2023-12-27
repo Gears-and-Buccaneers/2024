@@ -1,5 +1,5 @@
 package frc.lib.hardware.motorController;
 
-public class TalonSRXGB {
+public interface SmartMotor extends Motor{
     
 }

@@ -19,15 +19,14 @@ public class Robot extends LoggedRobot {
   private Oporator oporator;
   private RobotButtons robotButtons;
 
-  //subsytems
+  // subsytems
   private IntakeSub intakeSub;
   private IntakeRequirments intakeIOHardware;
   private ProximitySwitch intakeProximitySwitch;
 
-
   @Override
   public void robotInit() {
-    //Logging
+    // Logging
     Logger.recordMetadata("ProjectName", "MyProject");
     if (RobotBase.isReal()) {
       Logger.addDataReceiver(new NT4Publisher());
@@ -35,7 +34,7 @@ public class Robot extends LoggedRobot {
     Logger.disableDeterministicTimestamps();
     Logger.start();
 
-    //Subsytems
+    // Subsytems
     intakeIOHardware = new IntakeIOHardware();
     intakeProximitySwitch = new Huchoo(3);
     intakeSub = new IntakeSub(intakeIOHardware, intakeProximitySwitch);
@@ -44,10 +43,11 @@ public class Robot extends LoggedRobot {
     robotButtons = new RealRobotButtons();
     oporator = new SamKeyboard(0);
 
-    //Button Bindings
+    // Button Bindings
     configerButtonBindings();
   }
 
+  //this part should be the state machin
   public void configerButtonBindings() {
     robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
     robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
@@ -107,5 +107,15 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testExit() {
+  }
+
+  @Override
+  public void simulationInit() {
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+
   }
 }
