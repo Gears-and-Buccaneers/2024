@@ -29,4 +29,9 @@ public class Falcon500 implements SmartMotor {
     public int getCanID() {
         return id;
     }
+
+    @Override
+    public double getRotation() {
+        return 10;
+    }
 }

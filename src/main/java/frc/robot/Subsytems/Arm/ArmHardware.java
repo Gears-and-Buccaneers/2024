@@ -1,24 +1,30 @@
 package frc.robot.Subsytems.Arm;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogTable;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.motorController.*;
 
 public class ArmHardware implements ArmRequirments {
-    private final Motor motorElvatorPivot;
-    private final Motor motorElvatorExstend;
-    private final Motor motorWristPivot;
+    private final SmartMotor motorElvatorPivot;
+    private final SmartMotor motorElvatorExstend;
+    private final SmartMotor motorWristPivot;
 
+    @AutoLogOutput
     private Mechanism2d mechSetpoint;
     private MechanismLigament2d elevatorSetpoint;
     private MechanismLigament2d wristSetpoint;
+
+    @AutoLogOutput
+    private Mechanism2d mechAcual;
+    private MechanismLigament2d elevatorAcual;
+    private MechanismLigament2d wristAcual;
 
     public ArmHardware() {
         motorElvatorPivot = new Falcon500(1);
@@ -48,7 +54,9 @@ public class ArmHardware implements ArmRequirments {
     }
 
     public void updateMech() {
-        ;
+        elevatorAcual.setAngle(motorElvatorPivot.getRotation());
+        elevatorAcual.setLength(motorElvatorExstend.getRotation());
+        wristAcual.setAngle(motorWristPivot.getRotation());
     }
 
     public void stop() {
@@ -90,11 +98,19 @@ public class ArmHardware implements ArmRequirments {
         // units are in inches
         mechSetpoint = new Mechanism2d(122, 126);
         // the mechanism root node
-        MechanismRoot2d root = mechSetpoint.getRoot("arm", 50, 12);
-        elevatorSetpoint = root.append(
-                new MechanismLigament2d("elevator", 40, 90));
+        MechanismRoot2d rootS = mechSetpoint.getRoot("arm", 50, 12);
+        elevatorSetpoint = rootS.append(
+                new MechanismLigament2d("elevator", 40, 90, 7, new Color8Bit(Color.kPurple)));
         wristSetpoint = elevatorSetpoint.append(
-                new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kPurple)));
-        SmartDashboard.putData("Mech2d Setpoint", mechSetpoint);
+                new MechanismLigament2d("wrist", 15, 0, 5, new Color8Bit(Color.kPurple)));
+
+        // units are in inches
+        mechAcual = new Mechanism2d(122, 126);
+        // the mechanism root node
+        MechanismRoot2d rootA = mechAcual.getRoot("arm", 50, 12);
+        elevatorAcual = rootA.append(
+                new MechanismLigament2d("elevator", 40, 90, 8, new Color8Bit(Color.kCyan)));
+        wristAcual = elevatorAcual.append(
+                new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
     }
 }

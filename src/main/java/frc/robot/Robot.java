@@ -32,6 +32,7 @@ public class Robot extends LoggedRobot {
     if (RobotBase.isReal()) {
       Logger.addDataReceiver(new NT4Publisher());
     }
+    Logger.addDataReceiver(new NT4Publisher());
     Logger.disableDeterministicTimestamps();
     Logger.start();
 

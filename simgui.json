@@ -20,6 +20,8 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/ArmHardware/MechAcual": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/ArmHardware/MechSetpoint": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX (v6) [10]": "Motor Controller",
