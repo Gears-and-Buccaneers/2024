@@ -2,6 +2,7 @@ package frc.lib.hardware.sensor.proximitySwitch;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.hardware.sensor.SensorRequirments;
+
 import org.littletonrobotics.junction.LogTable;
 
 public interface ProximitySwitch extends SensorRequirments {

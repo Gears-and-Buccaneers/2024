@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.hardware.sensor.proximitySwitch.LimitSwitch;
+import frc.lib.hardware.sensor.proximitySwitch.Huchoo;
 import frc.lib.hardware.sensor.proximitySwitch.ProximitySwitch;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
@@ -15,15 +15,19 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 // started to implment advantage kit
 // Just testing something
 public class Robot extends LoggedRobot {
+  // Controlers
   private Oporator oporator;
+  private RobotButtons robotButtons;
 
+  //subsytems
   private IntakeSub intakeSub;
-  private IntakeRequirments IntakeIOHardware;
+  private IntakeRequirments intakeIOHardware;
+  private ProximitySwitch intakeProximitySwitch;
 
-  public ProximitySwitch switch1;
 
   @Override
   public void robotInit() {
+    //Logging
     Logger.recordMetadata("ProjectName", "MyProject");
     if (RobotBase.isReal()) {
       Logger.addDataReceiver(new NT4Publisher());
@@ -31,18 +35,22 @@ public class Robot extends LoggedRobot {
     Logger.disableDeterministicTimestamps();
     Logger.start();
 
-    IntakeIOHardware = new IntakeIOHardware();
-    intakeSub = new IntakeSub(IntakeIOHardware);
+    //Subsytems
+    intakeIOHardware = new IntakeIOHardware();
+    intakeProximitySwitch = new Huchoo(3);
+    intakeSub = new IntakeSub(intakeIOHardware, intakeProximitySwitch);
 
-    switch1 = new LimitSwitch(2);
+    // Controlers
+    robotButtons = new RealRobotButtons();
     oporator = new SamKeyboard(0);
 
+    //Button Bindings
     configerButtonBindings();
   }
 
   public void configerButtonBindings() {
-    switch1.trigger().whileTrue(intakeSub.intakePice());
-    switch1.trigger().onFalse(intakeSub.stopIntake());
+    robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
+    robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
 
     oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
     oporator.OuttakePice().onFalse(intakeSub.stopIntake());
@@ -51,8 +59,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    Logger.processInputs("Limit Switch", switch1);
   }
 
   @Override
