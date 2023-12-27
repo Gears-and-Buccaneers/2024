@@ -5,13 +5,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class LimitSwitch implements ProximitySwitch {
   private DigitalInput limitSwitch;
-  private int DIOChannel;
+  // private int DIOChannel;
 
   /**
    * @param DIOChannel the DIO channel for the digital input 0-9 are on-board
    */
   public LimitSwitch(int DIOChannel) {
-    this.DIOChannel = DIOChannel;
+    // this.DIOChannel = DIOChannel;
     limitSwitch = new DigitalInput(DIOChannel);
     System.out.println("[init] Limit switch on port " + DIOChannel);
   }

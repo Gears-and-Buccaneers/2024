@@ -19,6 +19,13 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public void periodic() {
     intakeIO.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
+
+    intakeIO.loadPreferences();
+  }
+
+  @Override
+  public void simulationPeriodic() {
+
   }
 
   public IntakeIOInputsAutoLogged getInputs() {
@@ -27,8 +34,8 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
 
   public Command intakePice() {
     return run(() -> {
-          intakeIO.setIntakeVoltage();
-        })
+      intakeIO.setIntakeVoltage();
+    })
         .handleInterrupt(
             () -> {
               intakeIO.off();
@@ -36,13 +43,14 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   }
 
   /**
-   * @return A command that sets the voltage of the Intake to 6 when executed, and sets it to 0 when
-   *     interrupted.
+   * @return A command that sets the voltage of the Intake to 6 when executed, and
+   *         sets it to 0 when
+   *         interrupted.
    */
   public Command ejectPice() {
     return run(() -> {
-          intakeIO.setOutakeVoltage();
-        })
+      intakeIO.setOutakeVoltage();
+    })
         .handleInterrupt(
             () -> {
               intakeIO.off();

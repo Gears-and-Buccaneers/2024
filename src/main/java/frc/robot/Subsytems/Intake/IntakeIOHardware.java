@@ -3,7 +3,7 @@ package frc.robot.Subsytems.Intake;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Preferences;
-import frc.lib.hardware.motorController.*;
+// import frc.lib.hardware.motorController.*;
 
 public class IntakeIOHardware implements IntakeRequirments {
   private final TalonSRX motor;
@@ -13,7 +13,7 @@ public class IntakeIOHardware implements IntakeRequirments {
   public IntakeIOHardware() {
     motor = new TalonSRX(10);
 
-    // initPrefrences();
+    initPrefrences();
   }
 
   @Override
@@ -44,11 +44,11 @@ public class IntakeIOHardware implements IntakeRequirments {
     System.out.println("cant close");
   }
 
-  // private void initPrefrences() {
-  // Preferences.initDouble("maxVolts", setVolts);
-  // }
+  private void initPrefrences() {
+    Preferences.initDouble("maxVolts", setVolts);
+  }
 
-  // public void loadPreferences() {
-  // setVolts = Preferences.getDouble("maxVolts", setVolts);
-  // }
+  public void loadPreferences() {
+    setVolts = Preferences.getDouble("maxVolts", setVolts);
+  }
 }
