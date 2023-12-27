@@ -1,15 +1,18 @@
 package frc.robot.Subsytems.Intake;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.motorController.*;
 
 public class IntakeIOHardware implements IntakeRequirments {
-  private final Motor motor;
+  private final TalonSRX motor;
 
   private double setVolts = 6;
 
   public IntakeIOHardware() {
-    motor = new TalonFXGB(10);
+    motor = new TalonSRX(0);
 
     initPrefrences();
   }
@@ -23,23 +26,23 @@ public class IntakeIOHardware implements IntakeRequirments {
   }
 
   public void setIntakeVoltage() {
-    motor.setVoltageOut(setVolts);
+    motor.set(ControlMode.PercentOutput, setVolts);
   }
 
   public void setOutakeVoltage() {
-    motor.setVoltageOut(-setVolts);
+    motor.set(ControlMode.PercentOutput, -setVolts);
   }
 
   @Override
   public void off() {
-    motor.setVoltageOut(0);
+    motor.set(ControlMode.Disabled, 0);
   }
 
   // required things-------------------------------------------------
 
   @Override
   public void close() throws Exception {
-    motor.close();
+    System.out.println("cant close");
   }
 
   private void initPrefrences() {
