@@ -11,9 +11,10 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   private final IntakeRequirments intakeIO;
 
   public IntakeSub(IntakeRequirments intakeIO) {
-    System.out.println("[Init] Creating " + simpleName + " w/ " + intakeIO.getClass().getSimpleName());
-
     this.intakeIO = intakeIO;
+
+    System.out.println("[Init] Creating " + simpleName + " with:");
+    System.out.println("\t" + intakeIO.getClass().getSimpleName());
 
     intakeIO.setBrakeMode(false);
   }

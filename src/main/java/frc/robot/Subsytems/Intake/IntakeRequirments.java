@@ -14,8 +14,4 @@ public interface IntakeRequirments extends SubsytemRequirments {
   boolean isOpen();
 
   boolean isClosed();
-
-  /** Enable or disable brake mode on the intake. */
-  default void setBrakeMode(boolean enable) {
-  }
 }
