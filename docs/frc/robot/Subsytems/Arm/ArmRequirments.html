@@ -90,18 +90,27 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#fromLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">fromLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#elevatorAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)" class="member-name-link">elevatorAngleSetpoint</a><wbr>(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#elevatorLengthSetpoint(double)" class="member-name-link">elevatorLengthSetpoint</a><wbr>(double&nbsp;ft)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateMech()" class="member-name-link">updateMech</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#wristAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)" class="member-name-link">wristAngleSetpoint</a><wbr>(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -110,7 +119,7 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.robot.Subsytems.SubsytemRequirments">Methods inherited from interface&nbsp;frc.robot.Subsytems.<a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></h3>
-<code><a href="../SubsytemRequirments.html#loadPreferences()">loadPreferences</a>, <a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a></code></div>
+<code><a href="../SubsytemRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a>, <a href="../SubsytemRequirments.html#loadPreferences()">loadPreferences</a>, <a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a>, <a href="../SubsytemRequirments.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a></code></div>
 </section>
 </li>
 </ul>
@@ -123,23 +132,33 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="toLog(org.littletonrobotics.junction.LogTable)">
-<h3>toLog</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>toLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
-</dl>
+<section class="detail" id="wristAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)">
+<h3>wristAngleSetpoint</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">wristAngleSetpoint</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="fromLog(org.littletonrobotics.junction.LogTable)">
-<h3>fromLog</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">fromLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>fromLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
-</dl>
+<section class="detail" id="elevatorAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)">
+<h3>elevatorAngleSetpoint</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">elevatorAngleSetpoint</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="elevatorLengthSetpoint(double)">
+<h3>elevatorLengthSetpoint</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">elevatorLengthSetpoint</span><wbr><span class="parameters">(double&nbsp;ft)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="updateMech()">
+<h3>updateMech</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">updateMech</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="stop()">
+<h3>stop</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">stop</span>()</div>
 </section>
 </li>
 </ul>
