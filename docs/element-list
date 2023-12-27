@@ -1,6 +1,5 @@
 frc.lib.hardware.joystick
 frc.lib.hardware.motorController
-frc.lib.hardware.motorController.Sim
 frc.lib.hardware.sensor
 frc.lib.hardware.sensor.distanceSensors
 frc.lib.hardware.sensor.encoders
