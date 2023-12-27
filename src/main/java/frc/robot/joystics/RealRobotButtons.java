@@ -9,7 +9,7 @@ public class RealRobotButtons implements RobotButtons {
     private ProximitySwitch button2;
 
     public RealRobotButtons() {
-        button1 = new LimitSwitch(3);
+        // button1 = new LimitSwitch(3);
         button2 = new LimitSwitch(2);
     }
 

@@ -14,7 +14,7 @@ class IntakeUTest {
   void setup() {
     assert HAL.initialize(500, 0); // initialize the HAL, crash if failed
     intakeIO = new IntakeIOSim();
-    intake = new IntakeSub(intakeIO);
+    intake = new IntakeSub(intakeIO, null);
   }
 
   @SuppressWarnings("PMD.SignatureDeclareThrowsException")

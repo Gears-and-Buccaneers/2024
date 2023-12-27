@@ -50,7 +50,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
         .onlyIf(sensor::isOpen)
         .handleInterrupt(() -> {
           intakeIO.off();
-        });
+        }).until(sensor::isClosed);
   }
 
   public Command ejectPice() {
@@ -61,7 +61,8 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
         .onlyIf(sensor::isClosed)
         .handleInterrupt(() -> {
           intakeIO.off();
-        });
+        })
+        .until(sensor::isOpen);
   }
 
   public Command stopIntake() {
