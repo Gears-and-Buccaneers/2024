@@ -1,9 +1,6 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
-import org.littletonrobotics.junction.LogTable;
-
 import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class LimitSwitch implements ProximitySwitch {
@@ -16,6 +13,7 @@ public class LimitSwitch implements ProximitySwitch {
   public LimitSwitch(int DIOChannel) {
     this.DIOChannel = DIOChannel;
     limitSwitch = new DigitalInput(DIOChannel);
+    System.out.println("[init] Limit switch on port " + DIOChannel);
   }
 
   @Override

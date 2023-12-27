@@ -1,33 +1,36 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.hardware.sensor.proximitySwitch.LimitSwitch;
+import frc.lib.hardware.sensor.proximitySwitch.ProximitySwitch;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 // https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/subsystems/gripper/GripperIO.java
 // https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
 // started to implment advantage kit
 // Just testing something
 public class Robot extends LoggedRobot {
-  private Oporator oporator = new SamKeyboard(0);
+  // private Oporator oporator = new SamKeyboard(0);
 
   private IntakeSub intakeSub;
   private IntakeRequirments IntakeIOHardware;
 
+  public ProximitySwitch switch1;
+
   @Override
   public void robotInit() {
-    if (RobotBase.isSimulation()) {
-      System.out.println("Simulated Yay");
-    }
-    if (RobotBase.isReal()) {
-      System.out.println("real robot Yay");
-    }
-    // Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+
+    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
     // // if (isReal()) {
-    // // Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
-    // // Logger.addDataReceiver(new NT4Publisher()); // Publish data to
+    // Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+    Logger.addDataReceiver(new NT4Publisher()); // Publish data to
     // NetworkTables
     // // powerDistribution = new PowerDistribution(0, ModuleType.kCTRE); // Enables
     // // power
@@ -42,66 +45,77 @@ public class Robot extends LoggedRobot {
     // // "_sim"))); //
     // // Save outputs to a new log
     // // }
-    // // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps"
-    // in
-    // // the "Understanding Data Flow" page
-    // Logger.start(); // Start logging! No more data receivers, replay sources, or
-    // metadata values may
-    // // be added.
+    Logger.disableDeterministicTimestamps(); // See "Deterministic Timestamps in the "Understanding Data Flow" page
+    Logger.start(); // Start logging! No more data receivers, replay sources, or
+
     IntakeIOHardware = new IntakeIOHardware();
     intakeSub = new IntakeSub(IntakeIOHardware);
 
+    switch1 = new LimitSwitch(2);
     configerButtonBindings();
   }
 
   public void configerButtonBindings() {
-    oporator.intakePice().whileTrue(intakeSub.intakePice());
-    oporator.intakePice().onFalse(intakeSub.stopIntake());
+    switch1.trigger().whileTrue(intakeSub.intakePice());
+    switch1.trigger().onFalse(intakeSub.stopIntake());
 
-    oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
-    oporator.OuttakePice().onFalse(intakeSub.stopIntake());
+    // oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
+    // oporator.OuttakePice().onFalse(intakeSub.stopIntake());
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    Logger.processInputs("Limit Switch", switch1);
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+  }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
   public void teleopInit() {
-    IntakeIOHardware.loadPreferences();
+    // IntakeIOHardware.loadPreferences();
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 }
