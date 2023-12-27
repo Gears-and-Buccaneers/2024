@@ -5,17 +5,19 @@ import org.littletonrobotics.junction.LogTable;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 // import frc.lib.hardware.motorController.*;
+import frc.lib.hardware.sensor.proximitySwitch.*;
 
 public class IntakeHardware implements IntakeRequirments {
   private final TalonSRX motor;
+  private final ProximitySwitch switch1;
 
   private double setVolts = .1;
 
   public IntakeHardware() {
     motor = new TalonSRX(10);
+    switch1 = new Huchoo(3);
 
     initPrefrences();
   }
@@ -33,11 +35,15 @@ public class IntakeHardware implements IntakeRequirments {
     motor.set(ControlMode.Disabled, 0);
   }
 
+  public ProximitySwitch getSwitch() {
+    return switch1;
+  }
+
   // required things-------------------------------------------------
 
   @Override
   public void close() throws Exception {
-    DriverStation.reportWarning("Canot close this type of motor", true); //TODO fix this
+    switch1.close();
   }
 
   private void initPrefrences() {
@@ -51,6 +57,7 @@ public class IntakeHardware implements IntakeRequirments {
   @Override
   public void toLog(LogTable table) {
     table.put("SupplyCurrent", motor.getSupplyCurrent());
+    table.put("thing", new LimitSwitch(1));
   }
 
   @Override

@@ -1,17 +1,22 @@
 package frc.robot.Subsytems.Intake;
 
+import frc.lib.hardware.sensor.proximitySwitch.ProximitySwitch;
 import frc.robot.Subsytems.SubsytemRequirments;
 
 public interface IntakeRequirments extends SubsytemRequirments {
 
   // Controling the hardware
-  public void setOutakeVoltage();
+  void setOutakeVoltage();
 
-  public void setIntakeVoltage();
+  void setIntakeVoltage();
 
-  public void off();
+  void off();
+
+  boolean isOpen();
+
+  boolean isClosed();
 
   /** Enable or disable brake mode on the intake. */
-  public default void setBrakeMode(boolean enable) {
+  default void setBrakeMode(boolean enable) {
   }
 }
