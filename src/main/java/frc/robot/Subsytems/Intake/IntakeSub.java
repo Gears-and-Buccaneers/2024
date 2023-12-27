@@ -3,8 +3,6 @@ package frc.robot.Subsytems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.littletonrobotics.junction.Logger;
-
 public class IntakeSub extends SubsystemBase implements AutoCloseable {
   private final String simpleName = this.getClass().getSimpleName();
 
@@ -21,7 +19,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
 
   @Override
   public void periodic() {
-    Logger.processInputs(simpleName, intakeIO);
+    // Logger.processInputs(simpleName, intakeIO);
 
     intakeIO.loadPreferences();
   }

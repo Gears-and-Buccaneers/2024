@@ -7,6 +7,9 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import frc.robot.Subsytems.Arm.ArmHardware;
+import frc.robot.Subsytems.Arm.ArmRequirments;
+import frc.robot.Subsytems.Arm.ArmSub;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 
@@ -18,6 +21,9 @@ public class Robot extends LoggedRobot {
   // subsytems
   private IntakeSub intakeSub;
   private IntakeRequirments intakeIOHardware;
+
+  private ArmSub armSub;
+  private ArmRequirments armHardware;
 
   @Override
   public void robotInit() {
@@ -33,6 +39,9 @@ public class Robot extends LoggedRobot {
     intakeIOHardware = new IntakeHardware();
     intakeSub = new IntakeSub(intakeIOHardware);
 
+    armHardware = new ArmHardware();
+    armSub = new ArmSub(armHardware);
+
     // Controlers
     robotButtons = new RealRobotButtons();
     oporator = new SamKeyboard(0);
@@ -46,8 +55,8 @@ public class Robot extends LoggedRobot {
     robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
     robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
 
-    oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
-    oporator.OuttakePice().onFalse(intakeSub.stopIntake());
+    oporator.intakePice().onTrue(armSub.IntakePosition());
+    oporator.OuttakePice().onFalse(armSub.OutakePositon());
   }
 
   @Override

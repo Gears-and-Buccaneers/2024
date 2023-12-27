@@ -2,55 +2,99 @@ package frc.robot.Subsytems.Arm;
 
 import org.littletonrobotics.junction.LogTable;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.motorController.*;
 
 public class ArmHardware implements ArmRequirments {
-    private final Motor motor1;
-    private final Motor motor2;
-    private final Motor motor3;
-    private final Motor motor4;
+    private final Motor motorElvatorPivot;
+    private final Motor motorElvatorExstend;
+    private final Motor motorWristPivot;
+
+    private Mechanism2d mechSetpoint;
+    private MechanismLigament2d elevatorSetpoint;
+    private MechanismLigament2d wristSetpoint;
 
     public ArmHardware() {
-        motor1 = new Falcon500(1);
-        motor2 = new Falcon500(2);
-        motor3 = new Falcon500(3);
-        motor4 = new Falcon500(4);
+        motorElvatorPivot = new Falcon500(1);
+        motorElvatorExstend = new Falcon500(2);
+        motorWristPivot = new Falcon500(3);
 
-        configMotor(motor1);
-        configMotor(motor2);
-        configMotor(motor3);
-        configMotor(motor4);
+        configMotor(motorElvatorPivot);
+        configMotor(motorElvatorExstend);
+        configMotor(motorWristPivot);
+
+        configMech();
     }
 
+    @Override
+    public void elevatorAngleSetpoint(Rotation2d angle) {
+        elevatorSetpoint.setAngle(angle);
+    }
+
+    @Override
+    public void wristAngleSetpoint(Rotation2d angle) {
+        wristSetpoint.setAngle(angle);
+    }
+
+    @Override
+    public void elevatorLengthSetpoint(double ft) {
+        elevatorSetpoint.setLength(ft);
+    }
+
+    public void updateMech() {
+        ;
+    }
+
+    public void stop() {
+
+    }
+
+    // -----------------------------
     @Override
     public void loadPreferences() {
 
     }
 
     public void setBrakeMode(boolean enable) {
-        motor1.brakeMode(enable);
-        motor2.brakeMode(enable);
-        motor3.brakeMode(enable);
-        motor4.brakeMode(enable);
+        motorElvatorPivot.brakeMode(enable);
+        motorElvatorExstend.brakeMode(enable);
+        motorWristPivot.brakeMode(enable);
     }
 
     @Override
     public void toLog(LogTable table) {
-        table.put("Motor1", motor1);
-        table.put("Motor2", motor2);
-        table.put("Motor3", motor3);
-        table.put("Motor4", motor4);
+        // table.put("Motor1", motor1);
+        // table.put("Motor2", motor2);
+        // table.put("Motor3", motor3);
+        // table.put("Motor4", motor4);
     }
 
     @Override
     public void close() throws Exception {
-        motor1.close();
-        motor2.close();
-        motor3.close();
-        motor4.close();
+        motorElvatorPivot.close();
+        motorElvatorExstend.close();
+        motorWristPivot.close();
     }
 
     private void configMotor(Motor motor) {
         motor.inverted(true);
+    }
+
+    private void configMech() {
+        // units are in inches
+        mechSetpoint = new Mechanism2d(122, 126);
+        // the mechanism root node
+        MechanismRoot2d root = mechSetpoint.getRoot("arm", 50, 12);
+        elevatorSetpoint = root.append(
+                new MechanismLigament2d("elevator", 40, 90));
+        wristSetpoint = elevatorSetpoint.append(
+                new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kPurple)));
+        SmartDashboard.putData("Mech2d Setpoint", mechSetpoint);
     }
 }

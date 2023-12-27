@@ -60,7 +60,7 @@ public class IntakeHardware implements IntakeRequirments {
   @Override
   public void toLog(LogTable table) {
     table.put("SupplyCurrent", motor.getSupplyCurrent());
-    table.put("thing", new LimitSwitch(1));
+    table.put("thing", switch1);
   }
 
   @Override
