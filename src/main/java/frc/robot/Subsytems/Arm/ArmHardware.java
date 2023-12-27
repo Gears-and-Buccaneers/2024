@@ -1,31 +1,25 @@
 package frc.robot.Subsytems.Arm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.littletonrobotics.junction.LogTable;
 
 import frc.lib.hardware.motorController.*;
 
 public class ArmHardware implements ArmRequirments {
-    private final List<Motor> basePivotMotor;
+    private final Motor motor1;
+    private final Motor motor2;
+    private final Motor motor3;
+    private final Motor motor4;
 
     public ArmHardware() {
-        basePivotMotor = new ArrayList<Motor>();
+        motor1 = new Falcon500(1);
+        motor2 = new Falcon500(2);
+        motor3 = new Falcon500(3);
+        motor4 = new Falcon500(4);
 
-        basePivotMotor.set(0, new Falcon500(1));
-        basePivotMotor.set(1, new Falcon500(2));
-        basePivotMotor.set(2, new Falcon500(3));
-        basePivotMotor.set(3, new Falcon500(4));
-
-        basePivotMotor.forEach((motor) -> {
-            configMotor(motor);
-        });
-
-        basePivotMotor.get(0).inverted(false);
-        basePivotMotor.get(1).inverted(false);
-        basePivotMotor.get(2).inverted(true);
-        basePivotMotor.get(3).inverted(true);
+        configMotor(motor1);
+        configMotor(motor2);
+        configMotor(motor3);
+        configMotor(motor4);
     }
 
     @Override
@@ -34,24 +28,26 @@ public class ArmHardware implements ArmRequirments {
     }
 
     public void setBrakeMode(boolean enable) {
-        basePivotMotor.forEach((motor) -> {
-            motor.brakeMode(enable);
-        });
+        motor1.brakeMode(enable);
+        motor2.brakeMode(enable);
+        motor3.brakeMode(enable);
+        motor4.brakeMode(enable);
     }
 
     @Override
     public void toLog(LogTable table) {
-        basePivotMotor.forEach((motor) -> {
-            table.put("Motor" + motor.getCanID(), motor);
-        });
+        table.put("Motor1", motor1);
+        table.put("Motor2", motor2);
+        table.put("Motor3", motor3);
+        table.put("Motor4", motor4);
     }
 
     @Override
     public void close() throws Exception {
-        basePivotMotor.get(0).close();
-        basePivotMotor.get(1).close();
-        basePivotMotor.get(2).close();
-        basePivotMotor.get(3).close();
+        motor1.close();
+        motor2.close();
+        motor3.close();
+        motor4.close();
     }
 
     private void configMotor(Motor motor) {
