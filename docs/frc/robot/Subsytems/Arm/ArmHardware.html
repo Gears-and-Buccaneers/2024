@@ -122,10 +122,16 @@ implements <a href="ArmRequirments.html" title="interface in frc.robot.Subsytems
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadPreferences()" class="member-name-link">loadPreferences</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#perodic()" class="member-name-link">perodic</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Enable or disable brake mode on the intake.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLogName(java.lang.String)" class="member-name-link">setLogName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;logName)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -133,11 +139,8 @@ implements <a href="ArmRequirments.html" title="interface in frc.robot.Subsytems
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateMech()" class="member-name-link">updateMech</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wristAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)" class="member-name-link">wristAngleSetpoint</a><wbr>(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wristAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)" class="member-name-link">wristAngleSetpoint</a><wbr>(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -173,6 +176,16 @@ implements <a href="ArmRequirments.html" title="interface in frc.robot.Subsytems
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="setLogName(java.lang.String)">
+<h3>setLogName</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setLogName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;logName)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../SubsytemRequirments.html#setLogName(java.lang.String)">setLogName</a></code>&nbsp;in interface&nbsp;<code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="elevatorAngleSetpoint(edu.wpi.first.math.geometry.Rotation2d)">
 <h3>elevatorAngleSetpoint</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">elevatorAngleSetpoint</span><wbr><span class="parameters">(edu.wpi.first.math.geometry.Rotation2d&nbsp;angle)</span></div>
@@ -203,12 +216,12 @@ implements <a href="ArmRequirments.html" title="interface in frc.robot.Subsytems
 </section>
 </li>
 <li>
-<section class="detail" id="updateMech()">
-<h3>updateMech</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateMech</span>()</div>
+<section class="detail" id="perodic()">
+<h3>perodic</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">perodic</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="ArmRequirments.html#updateMech()">updateMech</a></code>&nbsp;in interface&nbsp;<code><a href="ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code></dd>
+<dd><code><a href="ArmRequirments.html#perodic()">perodic</a></code>&nbsp;in interface&nbsp;<code><a href="ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code></dd>
 </dl>
 </section>
 </li>
