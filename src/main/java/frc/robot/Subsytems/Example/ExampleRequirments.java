@@ -1,5 +1,7 @@
 package frc.robot.Subsytems.Example;
 
-public class ExampleRequirments {
+import frc.robot.Subsytems.SubsytemRequirments;
+
+public interface ExampleRequirments extends SubsytemRequirments{
     
 }
