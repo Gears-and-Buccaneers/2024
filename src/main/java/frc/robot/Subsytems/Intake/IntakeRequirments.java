@@ -1,6 +1,5 @@
 package frc.robot.Subsytems.Intake;
 
-import frc.lib.hardware.sensor.proximitySwitch.ProximitySwitch;
 import frc.robot.Subsytems.SubsytemRequirments;
 
 public interface IntakeRequirments extends SubsytemRequirments {

@@ -35,10 +35,10 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
         () -> {
           intakeIO.setIntakeVoltage();
         })
-        .onlyIf(intakeIO.getSwitch()::isOpen)
+        .onlyIf(intakeIO::isOpen)
         .handleInterrupt(() -> {
           intakeIO.off();
-        }).until(intakeIO.getSwitch()::isClosed);
+        }).until(intakeIO::isClosed);
   }
 
   public Command ejectPice() {
@@ -46,11 +46,11 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
         () -> {
           intakeIO.setOutakeVoltage();
         })
-        .onlyIf(intakeIO.getSwitch()::isClosed)
+        .onlyIf(intakeIO::isClosed)
         .handleInterrupt(() -> {
           intakeIO.off();
         })
-        .until(intakeIO.getSwitch()::isOpen);
+        .until(intakeIO::isOpen);
   }
 
   public Command stopIntake() {

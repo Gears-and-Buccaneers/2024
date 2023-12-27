@@ -30,13 +30,16 @@ public class IntakeHardware implements IntakeRequirments {
     motor.set(ControlMode.PercentOutput, -setVolts);
   }
 
-  @Override
   public void off() {
     motor.set(ControlMode.Disabled, 0);
   }
 
-  public ProximitySwitch getSwitch() {
-    return switch1;
+  public boolean isOpen() {
+    return switch1.isOpen();
+  }
+
+  public boolean isClosed() {
+    return switch1.isClosed();
   }
 
   // required things-------------------------------------------------

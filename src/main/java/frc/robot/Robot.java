@@ -2,18 +2,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.hardware.sensor.proximitySwitch.Huchoo;
-import frc.lib.hardware.sensor.proximitySwitch.ProximitySwitch;
-import frc.robot.Subsytems.Intake.*;
-import frc.robot.joystics.*;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-// https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/subsystems/gripper/GripperIO.java
-// https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
-// started to implment advantage kit
-// Just testing something
+import frc.robot.Subsytems.Intake.*;
+import frc.robot.joystics.*;
+
 public class Robot extends LoggedRobot {
   // Controlers
   private Oporator oporator;
@@ -22,7 +18,6 @@ public class Robot extends LoggedRobot {
   // subsytems
   private IntakeSub intakeSub;
   private IntakeRequirments intakeIOHardware;
-  private ProximitySwitch intakeProximitySwitch;
 
   @Override
   public void robotInit() {
@@ -36,8 +31,7 @@ public class Robot extends LoggedRobot {
 
     // Subsytems
     intakeIOHardware = new IntakeHardware();
-    intakeProximitySwitch = new Huchoo(3);
-    intakeSub = new IntakeSub(intakeIOHardware, intakeProximitySwitch);
+    intakeSub = new IntakeSub(intakeIOHardware);
 
     // Controlers
     robotButtons = new RealRobotButtons();
@@ -47,7 +41,7 @@ public class Robot extends LoggedRobot {
     configerButtonBindings();
   }
 
-  //this part should be the state machin
+  // this part should be the state machin
   public void configerButtonBindings() {
     robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
     robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
