@@ -1,27 +1,23 @@
 package frc.robot.Subsytems.Intake;
 
+import org.littletonrobotics.junction.LogTable;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 // import frc.lib.hardware.motorController.*;
 
-public class IntakeIOHardware implements IntakeRequirments {
+public class IntakeHardware implements IntakeRequirments {
   private final TalonSRX motor;
 
   private double setVolts = .1;
 
-  public IntakeIOHardware() {
+  public IntakeHardware() {
     motor = new TalonSRX(10);
 
     initPrefrences();
-  }
-
-  @Override
-  public void updateInputs(IntakeIOInputs inputs) {
-    inputs.motorAppliedVolts = motor.getSupplyCurrent() * motor.getBusVoltage();
-    inputs.motorCurrentAmps = new double[] { motor.getSupplyCurrent() };
-    // inputs.motorTempCelcius = new double[] {motor.getMotorTemperature()};
-    // inputs.MotorVoltsOutput = motor.getVolts();
   }
 
   public void setIntakeVoltage() {
@@ -41,7 +37,7 @@ public class IntakeIOHardware implements IntakeRequirments {
 
   @Override
   public void close() throws Exception {
-    System.out.println("cant close");
+    DriverStation.reportWarning("Canot close this type of motor", true); //TODO fix this
   }
 
   private void initPrefrences() {
@@ -50,5 +46,15 @@ public class IntakeIOHardware implements IntakeRequirments {
 
   public void loadPreferences() {
     setVolts = Preferences.getDouble("maxVolts", setVolts);
+  }
+
+  @Override
+  public void toLog(LogTable table) {
+    table.put("SupplyCurrent", motor.getSupplyCurrent());
+  }
+
+  @Override
+  public void fromLog(LogTable table) {
+
   }
 }

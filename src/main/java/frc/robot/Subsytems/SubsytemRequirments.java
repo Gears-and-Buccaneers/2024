@@ -1,5 +1,7 @@
 package frc.robot.Subsytems;
 
-public interface SubsytemRequirments extends AutoCloseable {
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
+public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
   void loadPreferences();
 }

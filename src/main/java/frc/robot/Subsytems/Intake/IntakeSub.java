@@ -8,27 +8,24 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeSub extends SubsystemBase implements AutoCloseable {
   private final IntakeRequirments intakeIO;
-  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-
-  private final ProximitySwitch sensor;
+  private final ProximitySwitch proximitySwitch;
+  
+  private final String simpleName = this.getClass().getSimpleName();
 
   public IntakeSub(IntakeRequirments intakeIO, ProximitySwitch proximitySwitch) {
-    System.out.println("[Init] Creating " +
-        this.getClass().getSimpleName() + " w/ " +
-        intakeIO.getClass().getSimpleName());
+    System.out.println("[Init] Creating " + simpleName + " w/ " + intakeIO.getClass().getSimpleName());
 
     this.intakeIO = intakeIO;
 
-    sensor = proximitySwitch;
+    this.proximitySwitch = proximitySwitch;
 
     intakeIO.setBrakeMode(false);
   }
 
   @Override
   public void periodic() {
-    intakeIO.updateInputs(inputs);
-    Logger.processInputs(this.getClass().getSimpleName(), inputs);
-    Logger.processInputs(this.getClass().getSimpleName() + "/proximitySwitch", sensor);
+    Logger.processInputs(simpleName, intakeIO);
+    Logger.processInputs(simpleName + "/proximitySwitch", proximitySwitch);
 
     intakeIO.loadPreferences();
   }
@@ -38,19 +35,15 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
 
   }
 
-  public IntakeIOInputsAutoLogged getInputs() {
-    return inputs;
-  }
-
   public Command intakePice() {
     return run(
         () -> {
           intakeIO.setIntakeVoltage();
         })
-        .onlyIf(sensor::isOpen)
+        .onlyIf(proximitySwitch::isOpen)
         .handleInterrupt(() -> {
           intakeIO.off();
-        }).until(sensor::isClosed);
+        }).until(proximitySwitch::isClosed);
   }
 
   public Command ejectPice() {
@@ -58,11 +51,11 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
         () -> {
           intakeIO.setOutakeVoltage();
         })
-        .onlyIf(sensor::isClosed)
+        .onlyIf(proximitySwitch::isClosed)
         .handleInterrupt(() -> {
           intakeIO.off();
         })
-        .until(sensor::isOpen);
+        .until(proximitySwitch::isOpen);
   }
 
   public Command stopIntake() {
@@ -75,6 +68,6 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   @Override
   public void close() throws Exception {
     intakeIO.close();
-    sensor.close();
+    proximitySwitch.close();
   }
 }

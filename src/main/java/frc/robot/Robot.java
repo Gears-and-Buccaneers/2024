@@ -35,7 +35,7 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // Subsytems
-    intakeIOHardware = new IntakeIOHardware();
+    intakeIOHardware = new IntakeHardware();
     intakeProximitySwitch = new Huchoo(3);
     intakeSub = new IntakeSub(intakeIOHardware, intakeProximitySwitch);
 
