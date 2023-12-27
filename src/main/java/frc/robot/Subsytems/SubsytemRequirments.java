@@ -1,10 +1,22 @@
 package frc.robot.Subsytems;
 
+import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
-  void loadPreferences();
+
+  default void loadPreferences() {
+  }
 
   /** Enable or disable brake mode on the intake. */
-  default void setBrakeMode(boolean enable) {}
+  default void setBrakeMode(boolean enable) {
+  }
+
+  @Override
+  default void toLog(LogTable table) {
+  }
+
+  @Override
+  default void fromLog(LogTable table) {
+  }
 }

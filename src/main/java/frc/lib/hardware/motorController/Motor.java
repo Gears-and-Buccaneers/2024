@@ -2,6 +2,9 @@ package frc.lib.hardware.motorController;
 
 public interface Motor extends AutoCloseable {
   void runPercentOut(int num);
+  void brakeMode(boolean enable);
+  void inverted(boolean enable);
+  int getCanID();
   /**
    * Inverted
    * Coast or break
