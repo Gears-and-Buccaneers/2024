@@ -7,9 +7,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-import frc.robot.Subsytems.Arm.ArmHardware;
-import frc.robot.Subsytems.Arm.ArmRequirments;
-import frc.robot.Subsytems.Arm.ArmSub;
+import frc.robot.Subsytems.Arm.*;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 
@@ -29,9 +27,7 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     // Logging
     Logger.recordMetadata("ProjectName", "MyProject");
-    if (RobotBase.isReal()) {
-      Logger.addDataReceiver(new NT4Publisher());
-    }
+
     Logger.addDataReceiver(new NT4Publisher());
     Logger.disableDeterministicTimestamps();
     Logger.start();
