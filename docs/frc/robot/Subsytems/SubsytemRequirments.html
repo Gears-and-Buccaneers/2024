@@ -77,11 +77,11 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="Arm/ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code>, <code><a href="Drivetrain/DrivetrainRequirments.html" title="interface in frc.robot.Subsytems.Drivetrain">DrivetrainRequirments</a></code>, <code><a href="Example/ExampleRequirments.html" title="interface in frc.robot.Subsytems.Example">ExampleRequirments</a></code>, <code><a href="Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
+<dd><code><a href="Arm/ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code>, <code><a href="Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="Arm/ArmHardware.html" title="class in frc.robot.Subsytems.Arm">ArmHardware</a></code>, <code><a href="Drivetrain/DrivetrainHardware.html" title="class in frc.robot.Subsytems.Drivetrain">DrivetrainHardware</a></code>, <code><a href="Example/ExampleHardware.html" title="class in frc.robot.Subsytems.Example">ExampleHardware</a></code>, <code><a href="Intake/IntakeHardware.html" title="class in frc.robot.Subsytems.Intake">IntakeHardware</a></code></dd>
+<dd><code><a href="Arm/ArmHardware.html" title="class in frc.robot.Subsytems.Arm">ArmHardware</a></code>, <code><a href="Intake/IntakeHardware.html" title="class in frc.robot.Subsytems.Intake">IntakeHardware</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">SubsytemRequirments</span><span class="extends-implements">
@@ -100,19 +100,23 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#fromLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">fromLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#disable()" class="member-name-link">disable</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#loadPreferences()" class="member-name-link">loadPreferences</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#fromLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">fromLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Enable or disable brake mode on the intake.</div>
-</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#loadPreferences()" class="member-name-link">loadPreferences</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setLogName(java.lang.String)" class="member-name-link">setLogName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;logName)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setSimpleName(java.lang.String)" class="member-name-link">setSimpleName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;SimpleName)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
@@ -135,19 +139,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="loadPreferences()">
-<h3>loadPreferences</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadPreferences</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setBrakeMode(boolean)">
-<h3>setBrakeMode</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBrakeMode</span><wbr><span class="parameters">(boolean&nbsp;enable)</span></div>
-<div class="block">Enable or disable brake mode on the intake.</div>
-</section>
-</li>
-<li>
 <section class="detail" id="toLog(org.littletonrobotics.junction.LogTable)">
 <h3>toLog</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">toLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
@@ -158,6 +149,36 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 </section>
 </li>
 <li>
+<section class="detail" id="setSimpleName(java.lang.String)">
+<h3>setSimpleName</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setSimpleName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;SimpleName)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="periodic()">
+<h3>periodic</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="disable()">
+<h3>disable</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">disable</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="loadPreferences()">
+<h3>loadPreferences</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadPreferences</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setBrakeMode(boolean)">
+<h3>setBrakeMode</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBrakeMode</span><wbr><span class="parameters">(boolean&nbsp;enable)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="fromLog(org.littletonrobotics.junction.LogTable)">
 <h3>fromLog</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">fromLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
@@ -165,12 +186,6 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <dt>Specified by:</dt>
 <dd><code>fromLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setLogName(java.lang.String)">
-<h3>setLogName</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setLogName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;logName)</span></div>
 </section>
 </li>
 </ul>

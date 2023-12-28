@@ -103,16 +103,10 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isOpen()" class="member-name-link">isOpen</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#off()" class="member-name-link">off</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setIntakeSpeed()" class="member-name-link">setIntakeSpeed</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setIntakeVoltage()" class="member-name-link">setIntakeVoltage</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setOutakeVoltage()" class="member-name-link">setOutakeVoltage</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setOutakeSpeed()" class="member-name-link">setOutakeSpeed</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
@@ -122,7 +116,7 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.robot.Subsytems.SubsytemRequirments">Methods inherited from interface&nbsp;frc.robot.Subsytems.<a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></h3>
-<code><a href="../SubsytemRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a>, <a href="../SubsytemRequirments.html#loadPreferences()">loadPreferences</a>, <a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a>, <a href="../SubsytemRequirments.html#setLogName(java.lang.String)">setLogName</a>, <a href="../SubsytemRequirments.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a></code></div>
+<code><a href="../SubsytemRequirments.html#disable()">disable</a>, <a href="../SubsytemRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a>, <a href="../SubsytemRequirments.html#loadPreferences()">loadPreferences</a>, <a href="../SubsytemRequirments.html#periodic()">periodic</a>, <a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a>, <a href="../SubsytemRequirments.html#setSimpleName(java.lang.String)">setSimpleName</a>, <a href="../SubsytemRequirments.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a></code></div>
 </section>
 </li>
 </ul>
@@ -135,21 +129,15 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="setOutakeVoltage()">
-<h3>setOutakeVoltage</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setOutakeVoltage</span>()</div>
+<section class="detail" id="setOutakeSpeed()">
+<h3>setOutakeSpeed</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setOutakeSpeed</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="setIntakeVoltage()">
-<h3>setIntakeVoltage</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setIntakeVoltage</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="off()">
-<h3>off</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">off</span>()</div>
+<section class="detail" id="setIntakeSpeed()">
+<h3>setIntakeSpeed</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setIntakeSpeed</span>()</div>
 </section>
 </li>
 <li>
@@ -162,12 +150,6 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <section class="detail" id="isClosed()">
 <h3>isClosed</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isClosed</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="periodic()">
-<h3>periodic</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
 </section>
 </li>
 </ul>
