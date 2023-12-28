@@ -12,6 +12,4 @@ public interface IntakeRequirments extends SubsytemRequirments {
   boolean isOpen();
 
   boolean isClosed();
-
-  void periodic();
 }

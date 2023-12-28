@@ -6,7 +6,7 @@ import frc.lib.hardware.HardwareRequirments;
 
 public interface Motor extends HardwareRequirments {
 
-  void runPercentOut(int num);
+  void runPercentOut(double num);
 
   void brakeMode(boolean enable);
 
@@ -15,8 +15,4 @@ public interface Motor extends HardwareRequirments {
   int getCanID();
 
   void disable();
-
-  default void logInputs(String subsytemName) {
-    Logger.processInputs(subsytemName + "/motor" + getCanID(), this);
-  }
 }

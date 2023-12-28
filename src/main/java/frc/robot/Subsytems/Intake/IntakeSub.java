@@ -33,6 +33,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
 
   }
 
+  // Commands ------------------------------
   public Command intakePice() {
     return run(
         () -> {
@@ -64,6 +65,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
         });
   }
 
+  // Closing ------------------------------
   @Override
   public void close() throws Exception {
     intakeIO.close();

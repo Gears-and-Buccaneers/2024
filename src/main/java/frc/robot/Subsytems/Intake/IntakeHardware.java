@@ -1,6 +1,7 @@
 package frc.robot.Subsytems.Intake;
 
 import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Preferences;
 
@@ -11,7 +12,7 @@ public class IntakeHardware implements IntakeRequirments {
   private final Motor motor;
   private final ProximitySwitch switch1;
 
-  private double setVolts = .1;
+  private double setPercentOut = .1;
 
   private String SimpleName;
 
@@ -23,11 +24,11 @@ public class IntakeHardware implements IntakeRequirments {
   }
 
   public void setIntakeSpeed() {
-
+    motor.runPercentOut(setPercentOut);
   }
 
   public void setOutakeSpeed() {
-
+    motor.runPercentOut(-setPercentOut);
   }
 
   public boolean isOpen() {
@@ -47,18 +48,12 @@ public class IntakeHardware implements IntakeRequirments {
     motor.disable();
   }
 
-  // prefrances ------------------
-  private void initPrefrences() {
-    Preferences.initDouble(SimpleName + "/maxVolts", setVolts);
-  }
-
-  public void loadPreferences() {
-    setVolts = Preferences.getDouble(SimpleName + "/maxVolts", setVolts);
-  }
-
   // Loging ------------------------------------
   @Override
   public void toLog(LogTable table) {
+    table.put("setPercentOut", setPercentOut);
+    Logger.processInputs(SimpleName + "/Motor" + motor.getCanID(), motor);
+    Logger.processInputs(SimpleName + "/ProximitySwitch" + switch1.getDIOChannel(), switch1);
   }
 
   public void setSimpleName(String SimpleName) {
@@ -69,5 +64,14 @@ public class IntakeHardware implements IntakeRequirments {
   @Override
   public void close() throws Exception {
     switch1.close();
+  }
+
+  // prefrances ------------------
+  private void initPrefrences() {
+    Preferences.initDouble(SimpleName + "/maxVolts", setPercentOut);
+  }
+
+  public void loadPreferences() {
+    setPercentOut = Preferences.getDouble(SimpleName + "/maxVolts", setPercentOut);
   }
 }

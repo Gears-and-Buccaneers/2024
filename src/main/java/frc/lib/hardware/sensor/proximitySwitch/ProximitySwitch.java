@@ -9,6 +9,8 @@ public interface ProximitySwitch extends HardwareRequirments {
    */
   boolean get();
 
+  int getDIOChannel();
+
   /**
    * @return true if closed false if open
    */
