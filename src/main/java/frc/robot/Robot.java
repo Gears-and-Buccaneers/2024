@@ -1,55 +1,59 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.hardware.sensor.imu.*;
-import frc.robot.Subsytems.Intake.*;
-import frc.robot.joystics.*;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-// https://github.com/Mechanical-Advantage/RobotCode2023/blob/main/src/main/java/org/littletonrobotics/frc2023/subsystems/gripper/GripperIO.java
-// https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
-// started to implment advantage kit
+import frc.robot.Subsytems.Arm.*;
+import frc.robot.Subsytems.Intake.*;
+import frc.robot.joystics.*;
+
 public class Robot extends LoggedRobot {
-  private Oporator oporator = new SamLogitech(1);
+  // Controlers
+  private Oporator oporator;
+  private RobotButtons robotButtons;
 
+  // subsytems
   private IntakeSub intakeSub;
-  private PowerDistribution powerDistribution;
+  private IntakeRequirments intakeIOHardware;
+
+  // private ArmSub armSub;
+  // private ArmRequirments armHardware;
 
   @Override
   public void robotInit() {
-    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    // Logging
+    Logger.recordMetadata("ProjectName", "MyProject");
 
-    // if (isReal()) {
-    //   Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
-    //   Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    //   powerDistribution = new PowerDistribution(0, ModuleType.kCTRE); // Enables power
-    // distribution logging
-    // } else {
-    //   setUseTiming(false); // Run as fast as possible
-    //   String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope
-    // (or prompt the user)
-    //   Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-    //   Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); //
-    // Save outputs to a new log
-    // }
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.disableDeterministicTimestamps();
+    Logger.start();
 
-    // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in
-    // the "Understanding Data Flow" page
-    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
-    // be added.
+    // Subsytems
+    intakeIOHardware = new IntakeHardware();
+    intakeSub = new IntakeSub(intakeIOHardware);
+
+    // armHardware = new ArmHardware();
+    // armSub = new ArmSub(armHardware);
+
+    // Controlers
+    robotButtons = new RealRobotButtons();
+    oporator = new SamKeyboard(0);
+
+    // Button Bindings
     configerButtonBindings();
-
-    intakeSub = new IntakeSub(new IntakeIOHardware());
   }
 
+  // this part should be the state machin
   public void configerButtonBindings() {
-    oporator.intakePice().whileTrue(intakeSub.intakePice());
-    oporator.intakePice().onFalse(intakeSub.stopIntake());
+    robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
+    robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
 
-    oporator.OuttakePice().whileTrue(intakeSub.ejectPice());
-    oporator.intakePice().onFalse(intakeSub.stopIntake());
+    // oporator.intakePice().onTrue(armSub.IntakePosition());
+    // oporator.OuttakePice().onFalse(armSub.OutakePositon());
   }
 
   @Override
@@ -59,39 +63,59 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    powerDistribution.close();
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+  }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
+
+  @Override
+  public void simulationInit() {
+
+  }
+
+  @Override
+  public void simulationPeriodic() {
+
+  }
 }

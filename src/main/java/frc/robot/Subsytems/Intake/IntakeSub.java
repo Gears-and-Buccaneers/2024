@@ -1,61 +1,71 @@
 package frc.robot.Subsytems.Intake;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 public class IntakeSub extends SubsystemBase implements AutoCloseable {
+  private final String simpleName = this.getClass().getSimpleName();
+
   private final IntakeRequirments intakeIO;
-  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   public IntakeSub(IntakeRequirments intakeIO) {
-    System.out.println("[Init] Creating Intake w/ " + intakeIO.getClass().getSimpleName());
     this.intakeIO = intakeIO;
+
+    System.out.println("[Init] Creating " + simpleName + " with:");
+    System.out.println("\t" + intakeIO.getClass().getSimpleName());
+
+    this.intakeIO.setSimpleName(simpleName);
 
     intakeIO.setBrakeMode(false);
   }
 
   @Override
   public void periodic() {
-    intakeIO.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
+    Logger.processInputs(simpleName, intakeIO);
+
+    intakeIO.periodic();
   }
 
-  public IntakeIOInputsAutoLogged getInputs() {
-    return inputs;
+  @Override
+  public void simulationPeriodic() {
+
   }
 
+  // Commands ------------------------------
   public Command intakePice() {
-    return run(() -> {
-          intakeIO.setVoltage(6);
+    return run(
+        () -> {
+          intakeIO.setIntakeSpeed();
         })
-        .handleInterrupt(
-            () -> {
-              intakeIO.setVoltage(0);
-            });
+        // .onlyIf(intakeIO::isOpen)
+        .handleInterrupt(() -> {
+          intakeIO.disable();
+        });
+    // .until(intakeIO::isClosed);
   }
 
-  /**
-   * @return A command that sets the voltage of the Intake to 6 when executed, and sets it to 0 when
-   *     interrupted.
-   */
   public Command ejectPice() {
-    return run(() -> {
-          intakeIO.setVoltage(6);
+    return run(
+        () -> {
+          intakeIO.setOutakeSpeed();
         })
-        .handleInterrupt(
-            () -> {
-              intakeIO.setVoltage(0);
-            });
+        // .onlyIf(intakeIO::isClosed)
+        .handleInterrupt(() -> {
+          intakeIO.disable();
+        });
+    // .until(intakeIO::isOpen);
   }
 
   public Command stopIntake() {
     return run(
         () -> {
-          intakeIO.setVoltage(0);
+          intakeIO.disable();
         });
   }
 
+  // Closing ------------------------------
   @Override
   public void close() throws Exception {
     intakeIO.close();

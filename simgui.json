@@ -1,0 +1,57 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX (v6)[10]": {
+        "header": {
+          "open": true
+        }
+      }
+    },
+    "PowerDistributions": {
+      "0": {
+        "PowerDistribution[0]": {
+          "open": true
+        }
+      },
+      "window": {
+        "visible": true
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/AdvantageKit/RealOutputs/ArmHardware/MechAcual": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/ArmHardware/MechSetpoint": "Mechanism2d",
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX (v6) [10]": "Motor Controller",
+      "/SmartDashboard/Mech2d": "Mechanism2d",
+      "/SmartDashboard/Mech2d Setpoint": "Mechanism2d"
+    }
+  },
+  "NetworkTables": {
+    "persistent": {
+      "Preferences": {
+        "open": true
+      }
+    }
+  },
+  "Plot": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 320
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    }
+  }
+}
