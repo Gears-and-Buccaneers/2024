@@ -10,8 +10,9 @@ public class MotorGroup implements Motor {
 
     private String logName;
 
-    public MotorGroup(Motor... motors) {
+    public MotorGroup(String logName, Motor... motors) {
         this.motors = motors;
+        this.logName = logName;
     }
 
     @Override

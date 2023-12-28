@@ -130,4 +130,10 @@ public class ArmHardware implements ArmRequirments {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'disable'");
     }
+
+    @Override
+    public void setSimpleName(String SimpleName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setSimpleName'");
+    }
 }
