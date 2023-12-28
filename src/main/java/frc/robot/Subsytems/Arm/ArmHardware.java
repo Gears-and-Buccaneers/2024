@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.motorController.*;
 
 public class ArmHardware implements ArmRequirments {
-    private final SmartMotor motorElvatorPivot;
-    private final SmartMotor motorElvatorExstend;
-    private final SmartMotor motorWristPivot;
+    // private final SmartMotor motorElvatorPivot;
+    // private final SmartMotor motorElvatorExstend;
+    // private final SmartMotor motorWristPivot;
 
     @AutoLogOutput
     private Mechanism2d mechSetpoint;
@@ -30,13 +30,13 @@ public class ArmHardware implements ArmRequirments {
     private String logName;
 
     public ArmHardware() {
-        motorElvatorPivot = new Falcon500(1);
-        motorElvatorExstend = new Falcon500(2);
-        motorWristPivot = new Falcon500(3);
+        // motorElvatorPivot = new VP775(1);
+        // motorElvatorExstend = new VP775(2);
+        // motorWristPivot = new VP775(3);
 
-        configMotor(motorElvatorPivot);
-        configMotor(motorElvatorExstend);
-        configMotor(motorWristPivot);
+        // configMotor(motorElvatorPivot);
+        // configMotor(motorElvatorExstend);
+        // configMotor(motorWristPivot);
 
         configMech();
     }
@@ -61,9 +61,9 @@ public class ArmHardware implements ArmRequirments {
     }
 
     public void perodic() {
-        elevatorAcual.setAngle(motorElvatorPivot.getRotation());
-        elevatorAcual.setLength(motorElvatorExstend.getRotation());
-        wristAcual.setAngle(motorWristPivot.getRotation());
+        // elevatorAcual.setAngle(motorElvatorPivot.getRotation());
+        // elevatorAcual.setLength(motorElvatorExstend.getRotation());
+        // wristAcual.setAngle(motorWristPivot.getRotation());
     }
 
     public void stop() {
@@ -77,26 +77,26 @@ public class ArmHardware implements ArmRequirments {
     }
 
     public void setBrakeMode(boolean enable) {
-        motorElvatorPivot.brakeMode(enable);
-        motorElvatorExstend.brakeMode(enable);
-        motorWristPivot.brakeMode(enable);
+        // motorElvatorPivot.brakeMode(enable);
+        // motorElvatorExstend.brakeMode(enable);
+        // motorWristPivot.brakeMode(enable);
     }
 
     @Override
     public void toLog(LogTable table) {
-        Logger.processInputs(logName + "/elvator Motor", motorElvatorExstend);
+        // Logger.processInputs(logName + "/elvator Motor", motorElvatorExstend);
         table.put("234", 123);
     }
 
     @Override
     public void close() throws Exception {
-        motorElvatorPivot.close();
-        motorElvatorExstend.close();
-        motorWristPivot.close();
+        // motorElvatorPivot.close();
+        // motorElvatorExstend.close();
+        // motorWristPivot.close();
     }
 
     private void configMotor(Motor motor) {
-        motor.inverted(true);
+        // motor.inverted(true);
     }
 
     private void configMech() {

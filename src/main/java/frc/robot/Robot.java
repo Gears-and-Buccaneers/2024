@@ -22,8 +22,8 @@ public class Robot extends LoggedRobot {
   private IntakeSub intakeSub;
   private IntakeRequirments intakeIOHardware;
 
-  private ArmSub armSub;
-  private ArmRequirments armHardware;
+  // private ArmSub armSub;
+  // private ArmRequirments armHardware;
 
   @Override
   public void robotInit() {
@@ -40,8 +40,8 @@ public class Robot extends LoggedRobot {
     intakeIOHardware = new IntakeHardware();
     intakeSub = new IntakeSub(intakeIOHardware);
 
-    armHardware = new ArmHardware();
-    armSub = new ArmSub(armHardware);
+    // armHardware = new ArmHardware();
+    // armSub = new ArmSub(armHardware);
 
     // Controlers
     robotButtons = new RealRobotButtons();
@@ -56,8 +56,8 @@ public class Robot extends LoggedRobot {
     robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
     robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
 
-    oporator.intakePice().onTrue(armSub.IntakePosition());
-    oporator.OuttakePice().onFalse(armSub.OutakePositon());
+    // oporator.intakePice().onTrue(armSub.IntakePosition());
+    // oporator.OuttakePice().onFalse(armSub.OutakePositon());
   }
 
   @Override

@@ -1,37 +1,44 @@
 package frc.robot.Subsytems.Intake;
 
 import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Preferences;
 // import frc.lib.hardware.motorController.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
 
 public class IntakeHardware implements IntakeRequirments {
-  private final TalonSRX motor;
+  private final CANSparkMax motor;
   private final ProximitySwitch switch1;
 
   private double setVolts = .1;
 
+  private String logName;
+
   public IntakeHardware() {
-    motor = new TalonSRX(10);
+    motor = new CANSparkMax(15, MotorType.kBrushed);
     switch1 = new Huchoo(3);
 
     initPrefrences();
   }
 
   public void setIntakeVoltage() {
-    motor.set(ControlMode.PercentOutput, setVolts);
+    System.out.println("stufffff");
+    motor.set(setVolts);
+    // motor.set(ControlMode.PercentOutput, setVolts);
   }
 
   public void setOutakeVoltage() {
-    motor.set(ControlMode.PercentOutput, -setVolts);
+    motor.set(-setVolts);
+    // motor.set(ControlMode.PercentOutput, -setVolts);
   }
 
   public void off() {
-    motor.set(ControlMode.Disabled, 0);
+    motor.stopMotor();
+    // motor.set(ControlMode.Disabled, 0);
   }
 
   public boolean isOpen() {
@@ -59,12 +66,16 @@ public class IntakeHardware implements IntakeRequirments {
 
   @Override
   public void toLog(LogTable table) {
-    table.put("SupplyCurrent", motor.getSupplyCurrent());
-    table.put("thing", switch1);
+    table.put("SupplyCurrent", 5);
+    Logger.processInputs(logName + "/switch1", switch1);
   }
 
   @Override
   public void fromLog(LogTable table) {
 
+  }
+
+  public void setLogName(String logName) {
+    this.logName = logName;
   }
 }

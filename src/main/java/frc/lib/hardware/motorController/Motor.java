@@ -3,19 +3,27 @@ package frc.lib.hardware.motorController;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-public interface Motor extends AutoCloseable, LoggableInputs {
-  void runPercentOut(int num);
+public abstract class Motor implements AutoCloseable, LoggableInputs {
+  protected int canID;
 
-  void brakeMode(boolean enable);
-
-  void inverted(boolean enable);
-
-  int getCanID();
-
-  default void toLog(LogTable table) {
+  public Motor(int canID) {
+    this.canID = canID;
   }
 
-  default void fromLog(LogTable table) {
+  abstract void runPercentOut(int num);
+
+  abstract void brakeMode(boolean enable);
+
+  abstract void inverted(boolean enable);
+
+  public int getCanID() {
+    return canID;
+  }
+
+  public void toLog(LogTable table) {
+  }
+
+  public void fromLog(LogTable table) {
   }
   /**
    * Inverted
