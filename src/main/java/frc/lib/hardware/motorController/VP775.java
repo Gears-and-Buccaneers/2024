@@ -18,7 +18,7 @@ public class VP775 implements Motor {
     }
 
     @Override
-    public void runPercentOut(int num) {
+    public void runPercentOut(double num) {
         motor.set(ControlMode.PercentOutput, num);
     }
 

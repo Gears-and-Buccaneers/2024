@@ -39,6 +39,10 @@ public class IntakeHardware implements IntakeRequirments {
     return switch1.isClosed();
   }
 
+  public void setBrakeMode(boolean enable) {
+    motor.brakeMode(enable);
+  }
+
   // required things-------------------------------------------------
   public void periodic() {
     loadPreferences();

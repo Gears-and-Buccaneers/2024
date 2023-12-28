@@ -1,7 +1,5 @@
 package frc.lib.hardware.motorController;
 
-import org.littletonrobotics.junction.Logger;
-
 import frc.lib.hardware.HardwareRequirments;
 
 public interface Motor extends HardwareRequirments {
