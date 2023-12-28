@@ -6,9 +6,11 @@ frc.lib.hardware.sensor.encoders
 frc.lib.hardware.sensor.imu
 frc.lib.hardware.sensor.proximitySwitch
 frc.lib.hardware.sim
+frc.lib.PID
 frc.robot
 frc.robot.joystics
 frc.robot.Subsytems
 frc.robot.Subsytems.Arm
+frc.robot.Subsytems.Drivetrain
 frc.robot.Subsytems.Example
 frc.robot.Subsytems.Intake

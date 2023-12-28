@@ -44,13 +44,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -85,6 +85,21 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>com.revrobotics.RelativeEncoder</code></div>
+<div class="col-second even-row-color"><code><a href="#encoder" class="member-name-link">encoder</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -128,7 +143,13 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#off()" class="member-name-link">off</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIntakeVoltage()" class="member-name-link">setIntakeVoltage</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIntakeVoltage()" class="member-name-link">setIntakeVoltage</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLogName(java.lang.String)" class="member-name-link">setLogName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;logName)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOutakeVoltage()" class="member-name-link">setOutakeVoltage</a>()</code></div>
@@ -144,13 +165,27 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.robot.Subsytems.SubsytemRequirments">Methods inherited from interface&nbsp;frc.robot.Subsytems.<a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></h3>
-<code><a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a>, <a href="../SubsytemRequirments.html#setLogName(java.lang.String)">setLogName</a></code></div>
+<code><a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a></code></div>
 </section>
 </li>
 </ul>
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="encoder">
+<h3>encoder</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.revrobotics.RelativeEncoder</span>&nbsp;<span class="element-name">encoder</span></div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -197,6 +232,16 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="IntakeRequirments.html#off()">off</a></code>&nbsp;in interface&nbsp;<code><a href="IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="periodic()">
+<h3>periodic</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="IntakeRequirments.html#periodic()">periodic</a></code>&nbsp;in interface&nbsp;<code><a href="IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
 </dl>
 </section>
 </li>
@@ -264,6 +309,16 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 <dd><code>fromLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 <dt>Specified by:</dt>
 <dd><code><a href="../SubsytemRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a></code>&nbsp;in interface&nbsp;<code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setLogName(java.lang.String)">
+<h3>setLogName</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setLogName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;logName)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../SubsytemRequirments.html#setLogName(java.lang.String)">setLogName</a></code>&nbsp;in interface&nbsp;<code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
 </dl>
 </section>
 </li>
