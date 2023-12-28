@@ -16,7 +16,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
     System.out.println("[Init] Creating " + simpleName + " with:");
     System.out.println("\t" + intakeIO.getClass().getSimpleName());
 
-    this.intakeIO.setLogName(simpleName);
+    this.intakeIO.setSimpleName(simpleName);
 
     intakeIO.setBrakeMode(false);
   }
@@ -25,7 +25,6 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public void periodic() {
     Logger.processInputs(simpleName, intakeIO);
 
-    intakeIO.loadPreferences();
     intakeIO.periodic();
   }
 
@@ -37,11 +36,11 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public Command intakePice() {
     return run(
         () -> {
-          intakeIO.setIntakeVoltage();
+          intakeIO.setIntakeSpeed();
         })
         // .onlyIf(intakeIO::isOpen)
         .handleInterrupt(() -> {
-          intakeIO.off();
+          intakeIO.disable();
         });
     // .until(intakeIO::isClosed);
   }
@@ -49,11 +48,11 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public Command ejectPice() {
     return run(
         () -> {
-          intakeIO.setOutakeVoltage();
+          intakeIO.setOutakeSpeed();
         })
         // .onlyIf(intakeIO::isClosed)
         .handleInterrupt(() -> {
-          intakeIO.off();
+          intakeIO.disable();
         });
     // .until(intakeIO::isOpen);
   }
@@ -61,7 +60,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public Command stopIntake() {
     return run(
         () -> {
-          intakeIO.off();
+          intakeIO.disable();
         });
   }
 

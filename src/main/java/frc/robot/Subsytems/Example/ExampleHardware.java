@@ -5,6 +5,18 @@ import org.littletonrobotics.junction.LogTable;
 public class ExampleHardware implements ExampleRequirments {
 
     @Override
+    public void periodic() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'periodic'");
+    }
+
+    @Override
+    public void disable() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'disable'");
+    }
+
+    @Override
     public void close() throws Exception {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'close'");

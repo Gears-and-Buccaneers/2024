@@ -5,11 +5,9 @@ import frc.robot.Subsytems.SubsytemRequirments;
 public interface IntakeRequirments extends SubsytemRequirments {
 
   // Controling the hardware
-  void setOutakeVoltage();
+  void setOutakeSpeed();
 
-  void setIntakeVoltage();
-
-  void off();
+  void setIntakeSpeed();
 
   boolean isOpen();
 

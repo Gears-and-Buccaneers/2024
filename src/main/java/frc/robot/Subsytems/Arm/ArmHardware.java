@@ -118,4 +118,16 @@ public class ArmHardware implements ArmRequirments {
         wristAcual = elevatorAcual.append(
                 new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
     }
+
+    @Override
+    public void periodic() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'periodic'");
+    }
+
+    @Override
+    public void disable() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'disable'");
+    }
 }

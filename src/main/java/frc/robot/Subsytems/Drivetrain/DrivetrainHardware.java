@@ -21,5 +21,17 @@ public class DrivetrainHardware implements DrivetrainRequirments{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setLogName'");
     }
+
+    @Override
+    public void periodic() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'periodic'");
+    }
+
+    @Override
+    public void disable() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'disable'");
+    }
     
 }
