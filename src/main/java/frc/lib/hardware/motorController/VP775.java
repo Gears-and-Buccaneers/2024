@@ -40,12 +40,12 @@ public class VP775 implements Motor {
         motor.set(ControlMode.Disabled, 0);
     }
 
+    // ----------------------------------------------------------
     @Override
     public int getCanID() {
         return canID;
     }
 
-    // ----------------------------------------------------------
     @Override
     public void toLog(LogTable table) {
         table.put("Open", 1);
