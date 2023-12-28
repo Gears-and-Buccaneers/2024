@@ -15,7 +15,11 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
-<script type="text/javascript">var pathtoroot = "../../../../../";
+<script type="text/javascript">var evenRowColor = "even-row-color";
+var oddRowColor = "odd-row-color";
+var tableTab = "table-tab";
+var activeTableTab = "active-table-tab";
+var pathtoroot = "../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -42,13 +46,13 @@ loadScripts(document, 'script');</script>
 <li>Nested&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method-detail">Method</a></li>
 </ul>
 </div>
 <div class="nav-list-search"><label for="search-input">SEARCH:</label>
@@ -67,8 +71,85 @@ loadScripts(document, 'script');</script>
 <h1 title="Interface Encoder" class="title">Interface Encoder</h1>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>All Superinterfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="../../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
+</dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="REVBoreEncoder.html" title="class in frc.lib.hardware.sensor.encoders">REVBoreEncoder</a></code></dd>
+</dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Encoder</span></div>
+<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Encoder</span><span class="extends-implements">
+extends <a href="../../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></span></div>
+</section>
+<section class="summary">
+<ul class="summary-list">
+<!-- ========== METHOD SUMMARY =========== -->
+<li>
+<section class="method-summary" id="method-summary">
+<h2>Method Summary</h2>
+<div id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel">
+<div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPositoin()" class="member-name-link">getPositoin</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getVelocity()" class="member-name-link">getVelocity</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setGearRatio(double)" class="member-name-link">setGearRatio</a><wbr>(double&nbsp;gearRatio)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+</div>
+</div>
+</div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.lang.AutoCloseable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-frc.lib.hardware.HardwareRequirments">Methods inherited from interface&nbsp;frc.lib.hardware.<a href="../../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></h3>
+<code><a href="../../HardwareRequirments.html#connected()">connected</a>, <a href="../../HardwareRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-org.littletonrobotics.junction.inputs.LoggableInputs">Methods inherited from interface&nbsp;org.littletonrobotics.junction.inputs.LoggableInputs</h3>
+<code>toLog</code></div>
+</section>
+</li>
+</ul>
+</section>
+<section class="details">
+<ul class="details-list">
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method-detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="getPositoin()">
+<h3>getPositoin</h3>
+<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getPositoin</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getVelocity()">
+<h3>getVelocity</h3>
+<div class="member-signature"><span class="return-type">double</span>&nbsp;<span class="element-name">getVelocity</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setGearRatio(double)">
+<h3>setGearRatio</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setGearRatio</span><wbr><span class="parameters">(double&nbsp;gearRatio)</span></div>
+</section>
+</li>
+</ul>
+</section>
+</li>
+</ul>
 </section>
 <!-- ========= END OF CLASS DATA ========= -->
 </main>

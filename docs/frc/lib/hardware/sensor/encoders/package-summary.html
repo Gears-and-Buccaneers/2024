@@ -15,7 +15,11 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="package-declaration-page">
-<script type="text/javascript">var pathtoroot = "../../../../../";
+<script type="text/javascript">var evenRowColor = "even-row-color";
+var oddRowColor = "odd-row-color";
+var tableTab = "table-tab";
+var activeTableTab = "active-table-tab";
+var pathtoroot = "../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -40,7 +44,7 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Package:&nbsp;</li>
 <li>Description&nbsp;|&nbsp;</li>
-<li><a href="#related-package-summary">Related Packages</a>&nbsp;|&nbsp;</li>
+<li>Related Packages&nbsp;|&nbsp;</li>
 <li><a href="#class-summary">Classes and Interfaces</a></li>
 </ul>
 </div>
@@ -62,30 +66,17 @@ loadScripts(document, 'script');</script>
 <section class="summary">
 <ul class="summary-list">
 <li>
-<div id="related-package-summary">
-<div class="caption"><span>Related Packages</span></div>
-<div class="summary-table two-column-summary">
-<div class="table-header col-first">Package</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="../package-summary.html">frc.lib.hardware.sensor</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="../distanceSensors/package-summary.html">frc.lib.hardware.sensor.distanceSensors</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="../imu/package-summary.html">frc.lib.hardware.sensor.imu</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="../proximitySwitch/package-summary.html">frc.lib.hardware.sensor.proximitySwitch</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-</div>
-</div>
-</li>
-<li>
 <div id="class-summary">
-<div class="caption"><span>Interfaces</span></div>
-<div class="summary-table two-column-summary">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="class-summary-tab0" role="tab" aria-selected="true" aria-controls="class-summary.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary', 2)" class="active-table-tab">All Classes and Interfaces</button><button id="class-summary-tab1" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab1', 2)" class="table-tab">Interfaces</button><button id="class-summary-tab2" role="tab" aria-selected="false" aria-controls="class-summary.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('class-summary', 'class-summary-tab2', 2)" class="table-tab">Classes</button></div>
+<div id="class-summary.tabpanel" role="tabpanel">
+<div class="summary-table two-column-summary" aria-labelledby="class-summary-tab0">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab1"><a href="Encoder.html" title="interface in frc.lib.hardware.sensor.encoders">Encoder</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab1">&nbsp;</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="REVBoreEncoder.html" title="class in frc.lib.hardware.sensor.encoders">REVBoreEncoder</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
+</div>
 </div>
 </div>
 </li>

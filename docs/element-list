@@ -1,12 +1,9 @@
+frc.lib.hardware
 frc.lib.hardware.joystick
 frc.lib.hardware.motorController
-frc.lib.hardware.sensor
-frc.lib.hardware.sensor.distanceSensors
 frc.lib.hardware.sensor.encoders
 frc.lib.hardware.sensor.imu
 frc.lib.hardware.sensor.proximitySwitch
-frc.lib.hardware.sim
-frc.lib.PID
 frc.robot
 frc.robot.joystics
 frc.robot.Subsytems
