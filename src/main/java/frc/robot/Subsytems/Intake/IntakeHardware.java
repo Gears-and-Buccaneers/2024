@@ -4,8 +4,16 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.EncoderType;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Preferences;
 // import frc.lib.hardware.motorController.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
@@ -18,27 +26,55 @@ public class IntakeHardware implements IntakeRequirments {
 
   private String logName;
 
+  private static double kDt = 0.02;
+  private static double kMaxVelocity = 1.75;
+  private static double kMaxAcceleration = 0.75;
+  private static double kP = 1.3;
+  private static double kI = 0.0;
+  private static double kD = 0.0;
+  private static double kS = 1.1;
+  private static double kG = 1.2;
+  private static double kV = 1.3;
+
+  private final TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(kMaxVelocity,
+      kMaxAcceleration);
+  private final ProfiledPIDController m_controller = new ProfiledPIDController(kP, kI, kD, m_constraints, kDt);
+  private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kG, kV);
+  public RelativeEncoder encoder;
+
   public IntakeHardware() {
     motor = new CANSparkMax(15, MotorType.kBrushed);
-    switch1 = new Huchoo(3);
+    motor.restoreFactoryDefaults();
 
+    encoder = motor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature, 2048);
+
+    switch1 = new Huchoo(3);
+    m_controller.setTolerance(10);
     initPrefrences();
+
+    m_controller.setGoal(100);
   }
 
   public void setIntakeVoltage() {
-    System.out.println("stufffff");
-    motor.set(setVolts);
+    m_controller.setGoal(2);
     // motor.set(ControlMode.PercentOutput, setVolts);
   }
 
   public void setOutakeVoltage() {
-    motor.set(-setVolts);
+    m_controller.setGoal(1);
     // motor.set(ControlMode.PercentOutput, -setVolts);
   }
 
   public void off() {
     motor.stopMotor();
     // motor.set(ControlMode.Disabled, 0);
+  }
+
+  public void periodic() {
+    motor.setVoltage(
+        m_controller.calculate(encoder.getPosition()));
+    // System.out.println(encoder.getPosition());
+    // + m_feedforward.calculate(m_controller.getSetpoint().velocity));
   }
 
   public boolean isOpen() {
@@ -64,9 +100,16 @@ public class IntakeHardware implements IntakeRequirments {
     setVolts = Preferences.getDouble("maxVolts", setVolts);
   }
 
+  private double encoderPos = 0;
+
   @Override
   public void toLog(LogTable table) {
-    table.put("SupplyCurrent", 5);
+    encoderPos += encoder.getVelocity() * .02;
+    table.put("SupplyCurrent", motor.getAppliedOutput());
+    table.put("encoder Pos", (encoder.getPosition() / 4));
+    table.put("encoder PositionConversionFactor", encoder.getPositionConversionFactor());
+    table.put("encoder Velocity", encoder.getVelocity());
+    table.put("encoder caculated pose", encoderPos);
     Logger.processInputs(logName + "/switch1", switch1);
   }
 

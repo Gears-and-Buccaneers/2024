@@ -26,6 +26,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
     Logger.processInputs(simpleName, intakeIO);
 
     intakeIO.loadPreferences();
+    intakeIO.periodic();
   }
 
   @Override
