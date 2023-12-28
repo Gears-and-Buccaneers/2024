@@ -1,6 +1,7 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
-import com.ctre.phoenix6.Utils;
+import org.littletonrobotics.junction.LogTable;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class LimitSwitch implements ProximitySwitch {
@@ -23,6 +24,11 @@ public class LimitSwitch implements ProximitySwitch {
 
   // ----------------------------------------------------------
   @Override
+  public void toLog(LogTable table) {
+    table.put("Open", get());
+  }
+
+  @Override
   public boolean connected() {
     return true; // TODO probaly Should FIx
   }
@@ -31,29 +37,5 @@ public class LimitSwitch implements ProximitySwitch {
   @Override
   public void close() throws Exception {
     limitSwitch.close();
-  }
-
-  // Simulating
-  @Override
-  public void run() {
-    // TODO work on this
-    limitSwitch.setSimDevice(null);
-  }
-
-  private double _lastTime;
-  private boolean _running = false;
-
-  @Override
-  public double getPeriod() {
-    if (!_running) {
-      _lastTime = Utils.getCurrentTimeSeconds();
-      _running = true;
-    }
-
-    double now = Utils.getCurrentTimeSeconds();
-    final double period = now - _lastTime;
-    _lastTime = now;
-
-    return period;
   }
 }

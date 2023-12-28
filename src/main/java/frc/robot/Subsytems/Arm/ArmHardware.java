@@ -84,7 +84,7 @@ public class ArmHardware implements ArmRequirments {
 
     @Override
     public void toLog(LogTable table) {
-        // Logger.processInputs(logName + "/elvator Motor", motorElvatorExstend);
+        //Logger.processInputs(logName + "/elvator Motor", motorElvatorExstend);
         table.put("234", 123);
     }
 

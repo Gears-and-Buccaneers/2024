@@ -1,30 +1,19 @@
 package frc.lib.hardware.motorController;
 
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
+import frc.lib.hardware.HardwareRequirments;
 
-public abstract class Motor implements AutoCloseable, LoggableInputs {
-  protected int canID;
+public interface Motor extends HardwareRequirments {
 
-  public Motor(int canID) {
-    this.canID = canID;
-  }
+  void runPercentOut(int num);
 
-  abstract void runPercentOut(int num);
+  void brakeMode(boolean enable);
 
-  abstract void brakeMode(boolean enable);
+  void setInverted(boolean enable);
 
-  abstract void inverted(boolean enable);
+  int getCanID();
 
-  public int getCanID() {
-    return canID;
-  }
+  void disable();
 
-  public void toLog(LogTable table) {
-  }
-
-  public void fromLog(LogTable table) {
-  }
   /**
    * Inverted
    * Coast or break

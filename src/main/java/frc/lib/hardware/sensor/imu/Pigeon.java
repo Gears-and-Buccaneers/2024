@@ -3,7 +3,6 @@ package frc.lib.hardware.sensor.imu;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -100,34 +99,5 @@ public class Pigeon implements IMU {
   @Override
   public void close() throws Exception {
     pigeon2.close();
-  }
-
-  // Simulating
-  @Override
-  public void run() {
-    // TODO TEST THIS!!!!
-    pigeon2.getSimState().setSupplyVoltage(12);
-    pigeon2.getSimState().setPitch(0);
-    pigeon2.getSimState().setRawYaw(0);
-    pigeon2.getSimState().setRoll(0);
-
-    throw new UnsupportedOperationException("Unimplemented method 'run'");
-  }
-
-  private double _lastTime;
-  private boolean _running = false;
-
-  @Override
-  public double getPeriod() {
-    if (!_running) {
-      _lastTime = Utils.getCurrentTimeSeconds();
-      _running = true;
-    }
-
-    double now = Utils.getCurrentTimeSeconds();
-    final double period = now - _lastTime;
-    _lastTime = now;
-
-    return period;
   }
 }

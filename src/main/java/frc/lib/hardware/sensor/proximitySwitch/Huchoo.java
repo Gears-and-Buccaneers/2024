@@ -1,5 +1,7 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
+import org.littletonrobotics.junction.LogTable;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Huchoo implements ProximitySwitch {
@@ -20,25 +22,20 @@ public class Huchoo implements ProximitySwitch {
         return huchoo.get();
     }
 
+    // ----------------------------------------------------------
     @Override
-    public boolean connected() {
-        return true;
+    public void toLog(LogTable table) {
+        table.put("Open", get());
     }
 
+    @Override
+    public boolean connected() {
+        return true; // TODO probaly Should FIx
+    }
+
+    // Unit Testing
     @Override
     public void close() throws Exception {
         huchoo.close();
-    }
-
-    @Override
-    public void run() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
-    }
-
-    @Override
-    public double getPeriod() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPeriod'");
     }
 }
