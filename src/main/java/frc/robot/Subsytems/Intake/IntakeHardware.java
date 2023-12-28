@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -29,7 +30,7 @@ public class IntakeHardware implements IntakeRequirments {
   private static double kDt = 0.02;
   private static double kMaxVelocity = 1.75;
   private static double kMaxAcceleration = 0.75;
-  private static double kP = 1.3;
+  private static double kP = 0.3;
   private static double kI = 0.0;
   private static double kD = 0.0;
   private static double kS = 1.1;
@@ -42,17 +43,22 @@ public class IntakeHardware implements IntakeRequirments {
   private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kG, kV);
   public RelativeEncoder encoder;
 
+  private double encoderPos = 0;
+
   public IntakeHardware() {
     motor = new CANSparkMax(15, MotorType.kBrushed);
     motor.restoreFactoryDefaults();
 
     encoder = motor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature, 2048);
-
     switch1 = new Huchoo(3);
     m_controller.setTolerance(10);
-    initPrefrences();
+    // m_controller.
 
-    m_controller.setGoal(100);
+    initPrefrences();
+    m_controller.enableContinuousInput(0, 1098);
+
+    m_controller.setGoal(10);
+    MathUtil.clamp(0, 0, 0);
   }
 
   public void setIntakeVoltage() {
@@ -71,10 +77,9 @@ public class IntakeHardware implements IntakeRequirments {
   }
 
   public void periodic() {
+    encoderPos = encoder.getVelocity() / 4;
     motor.setVoltage(
-        m_controller.calculate(encoder.getPosition()));
-    // System.out.println(encoder.getPosition());
-    // + m_feedforward.calculate(m_controller.getSetpoint().velocity));
+        m_controller.calculate(encoderPos));
   }
 
   public boolean isOpen() {
@@ -100,17 +105,14 @@ public class IntakeHardware implements IntakeRequirments {
     setVolts = Preferences.getDouble("maxVolts", setVolts);
   }
 
-  private double encoderPos = 0;
-
   @Override
   public void toLog(LogTable table) {
-    encoderPos += encoder.getVelocity() * .02;
     table.put("SupplyCurrent", motor.getAppliedOutput());
-    table.put("encoder Pos", (encoder.getPosition() / 4));
+    table.put("encoder Pos", encoderPos);
     table.put("encoder PositionConversionFactor", encoder.getPositionConversionFactor());
     table.put("encoder Velocity", encoder.getVelocity());
-    table.put("encoder caculated pose", encoderPos);
-    Logger.processInputs(logName + "/switch1", switch1);
+    // Logger.processInputs(logName + "/switch1", switch1);
+
   }
 
   @Override

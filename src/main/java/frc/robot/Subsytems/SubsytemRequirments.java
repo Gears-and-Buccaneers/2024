@@ -12,14 +12,11 @@ public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
   default void setBrakeMode(boolean enable) {
   }
 
-  @Override
-  default void toLog(LogTable table) {
-  }
+  void toLog(LogTable table);
 
   @Override
   default void fromLog(LogTable table) {
   }
 
-  default void setLogName(String logName) {
-  }
+  void setLogName(String logName);
 }
