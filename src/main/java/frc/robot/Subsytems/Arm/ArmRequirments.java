@@ -5,9 +5,9 @@ import frc.robot.Subsytems.SubsytemRequirments;
 
 public interface ArmRequirments extends SubsytemRequirments {
 
-    void wristAngleSetpoint(Rotation2d angle);
+  void wristAngleSetpoint(Rotation2d angle);
 
-    void elevatorAngleSetpoint(Rotation2d angle);
+  void elevatorAngleSetpoint(Rotation2d angle);
 
-    void elevatorLengthSetpoint(double ft);
+  void elevatorLengthSetpoint(double ft);
 }

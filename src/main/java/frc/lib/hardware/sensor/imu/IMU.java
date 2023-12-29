@@ -3,7 +3,6 @@ package frc.lib.hardware.sensor.imu;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import frc.lib.hardware.HardwareRequirments;
-
 import org.littletonrobotics.junction.LogTable;
 
 public interface IMU extends HardwareRequirments {

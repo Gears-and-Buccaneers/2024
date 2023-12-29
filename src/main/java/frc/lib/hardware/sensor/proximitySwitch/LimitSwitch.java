@@ -1,8 +1,7 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
-import org.littletonrobotics.junction.LogTable;
-
 import edu.wpi.first.wpilibj.DigitalInput;
+import org.littletonrobotics.junction.LogTable;
 
 public class LimitSwitch implements ProximitySwitch {
   private DigitalInput limitSwitch;
