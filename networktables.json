@@ -1,10 +1,1 @@
-[
-  {
-    "name": "/Preferences/maxVolts",
-    "type": "double",
-    "value": 7.0,
-    "properties": {
-      "persistent": true
-    }
-  }
-]
+[]

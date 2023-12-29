@@ -11,6 +11,7 @@ import frc.robot.Subsytems.Arm.*;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 
+//do some copy and past from this https://github.com/FRCTeam2910/2023CompetitionRobot-Public/tree/main
 public class Robot extends LoggedRobot {
   // Controlers
   private Oporator oporator;

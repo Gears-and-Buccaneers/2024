@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.lib.hardware.motorController.*;
+import frc.lib.hardware.Motors.*;
+import frc.lib.hardware.Motors.MotorControlers.MotorController;
 
 public class ArmHardware implements ArmRequirments {
     // private final SmartMotor motorElvatorPivot;
@@ -95,7 +96,7 @@ public class ArmHardware implements ArmRequirments {
         // motorWristPivot.close();
     }
 
-    private void configMotor(Motor motor) {
+    private void configMotor(MotorController motor) {
         // motor.inverted(true);
     }
 

@@ -11,6 +11,9 @@ public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
 
   void periodic();
 
+  default void simulationPeriodic() {
+  }
+
   void disable();
 
   default void loadPreferences() {
