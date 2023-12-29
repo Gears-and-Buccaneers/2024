@@ -75,12 +75,13 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
-<dt>Direct Known Subclasses:</dt>
-<dd><code><a href="SmartMotor.html" title="class in frc.lib.hardware.Motors">SmartMotor</a></code></dd>
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Motor</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+implements <a href="../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -94,8 +95,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="Motor.MotorType.html" class="type-name-link" title="enum class in frc.lib.hardware.Motors">Motor.MotorType</a></code></div>
+<div class="col-second even-row-color"><code><a href="Motor.ControllerType.html" class="type-name-link" title="enum class in frc.lib.hardware.Motors">Motor.ControllerType</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="Motor.Type.html" class="type-name-link" title="enum class in frc.lib.hardware.Motors">Motor.Type</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -107,8 +111,9 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(frc.lib.hardware.Motors.MotorControlers.MotorController,frc.lib.hardware.Motors.Motor.MotorType)" class="member-name-link">Motor</a><wbr>(<a href="MotorControlers/MotorController.html" title="interface in frc.lib.hardware.Motors.MotorControlers">MotorController</a>&nbsp;motorController,
- <a href="Motor.MotorType.html" title="enum class in frc.lib.hardware.Motors">Motor.MotorType</a>&nbsp;motor)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(frc.lib.hardware.Motors.Motor.ControllerType,int,frc.lib.hardware.Motors.Motor.Type)" class="member-name-link">Motor</a><wbr>(<a href="Motor.ControllerType.html" title="enum class in frc.lib.hardware.Motors">Motor.ControllerType</a>&nbsp;motorControllerType,
+ int&nbsp;canID,
+ <a href="Motor.Type.html" title="enum class in frc.lib.hardware.Motors">Motor.Type</a>&nbsp;motor)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -125,7 +130,37 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#inverted(boolean)" class="member-name-link">inverted</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addEncoder(frc.lib.hardware.sensor.encoders.Encoder)" class="member-name-link">addEncoder</a><wbr>(<a href="../sensor/encoders/Encoder.html" title="interface in frc.lib.hardware.sensor.encoders">Encoder</a>&nbsp;encoder)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#brakeMode(boolean)" class="member-name-link">brakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connected()" class="member-name-link">connected</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disable()" class="member-name-link">disable</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#EncoderConfigs(frc.lib.hardware.Motors.PID.EncoderConfigs)" class="member-name-link">EncoderConfigs</a><wbr>(<a href="PID/EncoderConfigs.html" title="class in frc.lib.hardware.Motors.PID">EncoderConfigs</a>&nbsp;encoderConfigs)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCanID()" class="member-name-link">getCanID</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#inverted(boolean)" class="member-name-link">inverted</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pidConfigs(frc.lib.hardware.Motors.PID.PIDConfigs)" class="member-name-link">pidConfigs</a><wbr>(<a href="PID/PIDConfigs.html" title="class in frc.lib.hardware.Motors.PID">PIDConfigs</a>&nbsp;PIDConfigs)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPercentOut(double)" class="member-name-link">setPercentOut</a><wbr>(double&nbsp;percentOut)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -133,6 +168,9 @@ loadScripts(document, 'script');</script>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-frc.lib.hardware.HardwareRequirments">Methods inherited from interface&nbsp;frc.lib.hardware.<a href="../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></h3>
+<code><a href="../HardwareRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a></code></div>
 </section>
 </li>
 </ul>
@@ -145,10 +183,11 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(frc.lib.hardware.Motors.MotorControlers.MotorController,frc.lib.hardware.Motors.Motor.MotorType)">
+<section class="detail" id="&lt;init&gt;(frc.lib.hardware.Motors.Motor.ControllerType,int,frc.lib.hardware.Motors.Motor.Type)">
 <h3>Motor</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Motor</span><wbr><span class="parameters">(<a href="MotorControlers/MotorController.html" title="interface in frc.lib.hardware.Motors.MotorControlers">MotorController</a>&nbsp;motorController,
- <a href="Motor.MotorType.html" title="enum class in frc.lib.hardware.Motors">Motor.MotorType</a>&nbsp;motor)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Motor</span><wbr><span class="parameters">(<a href="Motor.ControllerType.html" title="enum class in frc.lib.hardware.Motors">Motor.ControllerType</a>&nbsp;motorControllerType,
+ int&nbsp;canID,
+ <a href="Motor.Type.html" title="enum class in frc.lib.hardware.Motors">Motor.Type</a>&nbsp;motor)</span></div>
 </section>
 </li>
 </ul>
@@ -160,9 +199,84 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="addEncoder(frc.lib.hardware.sensor.encoders.Encoder)">
+<h3>addEncoder</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></span>&nbsp;<span class="element-name">addEncoder</span><wbr><span class="parameters">(<a href="../sensor/encoders/Encoder.html" title="interface in frc.lib.hardware.sensor.encoders">Encoder</a>&nbsp;encoder)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="inverted(boolean)">
 <h3>inverted</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></span>&nbsp;<span class="element-name">inverted</span><wbr><span class="parameters">(boolean&nbsp;enable)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="brakeMode(boolean)">
+<h3>brakeMode</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></span>&nbsp;<span class="element-name">brakeMode</span><wbr><span class="parameters">(boolean&nbsp;enable)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="pidConfigs(frc.lib.hardware.Motors.PID.PIDConfigs)">
+<h3>pidConfigs</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></span>&nbsp;<span class="element-name">pidConfigs</span><wbr><span class="parameters">(<a href="PID/PIDConfigs.html" title="class in frc.lib.hardware.Motors.PID">PIDConfigs</a>&nbsp;PIDConfigs)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="EncoderConfigs(frc.lib.hardware.Motors.PID.EncoderConfigs)">
+<h3>EncoderConfigs</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></span>&nbsp;<span class="element-name">EncoderConfigs</span><wbr><span class="parameters">(<a href="PID/EncoderConfigs.html" title="class in frc.lib.hardware.Motors.PID">EncoderConfigs</a>&nbsp;encoderConfigs)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="setPercentOut(double)">
+<h3>setPercentOut</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPercentOut</span><wbr><span class="parameters">(double&nbsp;percentOut)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="disable()">
+<h3>disable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">disable</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getCanID()">
+<h3>getCanID</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getCanID</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html" title="class or interface in java.lang" class="external-link">Exception</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="toLog(org.littletonrobotics.junction.LogTable)">
+<h3>toLog</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>toLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="connected()">
+<h3>connected</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">connected</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../HardwareRequirments.html#connected()">connected</a></code>&nbsp;in interface&nbsp;<code><a href="../HardwareRequirments.html" title="interface in frc.lib.hardware">HardwareRequirments</a></code></dd>
+</dl>
 </section>
 </li>
 </ul>
