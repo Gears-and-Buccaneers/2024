@@ -1,8 +1,10 @@
 name: Deploy Javadoc
 
 on:
-  schedule:
-  - cron: "0 2 * * 1-5"
+  push:
+    branches:
+    - main
+  
 
 jobs:
   publish:
