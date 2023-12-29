@@ -4,7 +4,6 @@ import frc.lib.hardware.HardwareRequirments;
 
 public interface MotorController extends HardwareRequirments {
 
-  //kMotor(Tallon_SRX, CIM, id).invert().pid(new PIDConfig(asdlhjasdfhas)).encoder(new kEncoder(encodertyoe, id))
   void runPercentOut(double num);
 
   void brakeMode(boolean enable);
