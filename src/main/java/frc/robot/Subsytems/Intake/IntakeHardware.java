@@ -1,11 +1,10 @@
 package frc.robot.Subsytems.Intake;
 
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeHardware implements IntakeRequirments {
   private final Motor motor;

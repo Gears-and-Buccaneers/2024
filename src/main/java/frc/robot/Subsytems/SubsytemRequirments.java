@@ -11,16 +11,12 @@ public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
 
   void disable();
 
-  default void simulationPeriodic() {
-  }
+  default void simulationPeriodic() {}
 
-  default void loadPreferences() {
-  }
+  default void loadPreferences() {}
 
-  default void setBrakeMode(boolean enable) {
-  }
+  default void setBrakeMode(boolean enable) {}
 
   @Override
-  default void fromLog(LogTable table) {
-  }
+  default void fromLog(LogTable table) {}
 }

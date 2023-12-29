@@ -1,17 +1,15 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import frc.robot.Subsytems.Arm.*;
+import frc.robot.Subsytems.Intake.*;
+import frc.robot.joystics.*;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-import frc.robot.Subsytems.Arm.*;
-import frc.robot.Subsytems.Intake.*;
-import frc.robot.joystics.*;
-
-//do some copy and past from this https://github.com/FRCTeam2910/2023CompetitionRobot-Public/tree/main
+// do some copy and past from this
+// https://github.com/FRCTeam2910/2023CompetitionRobot-Public/tree/main
 public class Robot extends LoggedRobot {
   // Controlers
   private Oporator oporator;
@@ -21,8 +19,8 @@ public class Robot extends LoggedRobot {
   private IntakeSub intakeSub;
   private IntakeRequirments intakeIOHardware;
 
-  // private ArmSub armSub;
-  // private ArmRequirments armHardware;
+  private ArmSub armSub;
+  private ArmRequirments armHardware;
 
   @Override
   public void robotInit() {
@@ -37,8 +35,8 @@ public class Robot extends LoggedRobot {
     intakeIOHardware = new IntakeHardware();
     intakeSub = new IntakeSub(intakeIOHardware);
 
-    // armHardware = new ArmHardware();
-    // armSub = new ArmSub(armHardware);
+    armHardware = new ArmHardware();
+    armSub = new ArmSub(armHardware);
 
     // Controlers
     robotButtons = new RealRobotButtons();
@@ -53,8 +51,8 @@ public class Robot extends LoggedRobot {
     robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
     robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
 
-    // oporator.intakePice().onTrue(armSub.IntakePosition());
-    // oporator.OuttakePice().onFalse(armSub.OutakePositon());
+    oporator.intakePice().onTrue(armSub.IntakePosition());
+    oporator.OuttakePice().onFalse(armSub.OutakePositon());
   }
 
   @Override
@@ -63,60 +61,44 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {
-  }
+  public void disabledExit() {}
 
   @Override
-  public void autonomousInit() {
-  }
+  public void autonomousInit() {}
 
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-  }
+  public void autonomousExit() {}
 
   @Override
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {
-  }
+  public void teleopExit() {}
 
   @Override
-  public void testInit() {
-  }
+  public void testInit() {}
 
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   @Override
-  public void testExit() {
-  }
+  public void testExit() {}
 
   @Override
-  public void simulationInit() {
-
-  }
+  public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {
-
-  }
+  public void simulationPeriodic() {}
 }
