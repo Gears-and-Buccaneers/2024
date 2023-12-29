@@ -14,8 +14,8 @@ public class exampleUsage {
         motor = new Motor(new Talon_SRX(1), MotorType.VP775);
         motor.inverted(true);
 
-        motor2 = new SmartMotor(new Talon_SRX(0), MotorType.Falcon500, new REVBoreEncoder());
-        motor2.inverted(false).pidConfigs(new PIDConfigs()).EncoderConfigs(new EncoderConfigs());
+        motor2 = new SmartMotor(new Talon_SRX(0), MotorType.Falcon500, new REVBoreEncoder()).inverted(false)
+                .pidConfigs(new PIDConfigs()).EncoderConfigs(new EncoderConfigs());
     }
 
     public void setMotorAngle() {

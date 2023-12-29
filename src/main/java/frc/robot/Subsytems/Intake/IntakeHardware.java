@@ -5,8 +5,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.Motors.*;
-import frc.lib.hardware.Motors.MotorControlers.MotorController;
-import frc.lib.hardware.Motors.MotorControlers.Talon_SRX;
+import frc.lib.hardware.Motors.MotorControlers.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
 
 public class IntakeHardware implements IntakeRequirments {
