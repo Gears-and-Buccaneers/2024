@@ -1,27 +1,25 @@
 package frc.lib.hardware.Motors;
 
-import frc.lib.hardware.Motors.Motor.MotorType;
-import frc.lib.hardware.Motors.MotorControlers.*;
-import frc.lib.hardware.Motors.PID.EncoderConfigs;
-import frc.lib.hardware.Motors.PID.PIDConfigs;
+import frc.lib.hardware.Motors.PID.*;
 import frc.lib.hardware.sensor.encoders.REVBoreEncoder;
 
 public class exampleUsage {
-    private Motor motor;
-    private SmartMotor motor2;
+    private Motor motor1;
+
+    private Motor motor2;
 
     public exampleUsage() {
-        motor = new Motor(new Talon_SRX(1), MotorType.VP775);
-        motor.inverted(true);
+        motor1 = new Motor(Motor.ControllerType.TallonSRX, 10, Motor.Type.VP775);
 
-        motor2 = new SmartMotor(new Talon_SRX(0), MotorType.Falcon500, new REVBoreEncoder()).inverted(false)
-                .pidConfigs(new PIDConfigs()).EncoderConfigs(new EncoderConfigs());
+        motor2 = new Motor(Motor.ControllerType.TallonSRX, 11, Motor.Type.VP775);
+        motor2.addEncoder(new REVBoreEncoder()).pidConfigs(new PIDConfigs()).EncoderConfigs(new EncoderConfigs());
+
+        motor1.inverted(true);
+        motor2.inverted(false);
+
     }
 
     public void setMotorAngle() {
 
     }
-
-    // kMotor(Tallon_SRX, CIM, id).invert().pid(new
-    // PIDConfig(asdlhjasdfhas)).encoder(new kEncoder(encodertyoe, id))
 }

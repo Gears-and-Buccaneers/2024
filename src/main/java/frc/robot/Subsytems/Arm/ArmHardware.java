@@ -96,10 +96,6 @@ public class ArmHardware implements ArmRequirments {
         // motorWristPivot.close();
     }
 
-    private void configMotor(MotorController motor) {
-        // motor.inverted(true);
-    }
-
     private void configMech() {
         // units are in inches
         mechSetpoint = new Mechanism2d(122, 126);

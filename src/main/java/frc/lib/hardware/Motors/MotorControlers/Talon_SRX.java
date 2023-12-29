@@ -7,14 +7,17 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Talon_SRX implements MotorController {
-    private final int canID;
+    private int canID;
 
     private TalonSRX motor;
 
-    public Talon_SRX(int canID) {
+  
+    public MotorController config(int canID) {
         this.canID = canID;
 
         motor = new TalonSRX(canID);
+
+        return this;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class Talon_SRX implements MotorController {
 
     @Override
     public void toLog(LogTable table) {
-        table.put("Open", 1);
+        table.put("MotorController/Open", 1);
     }
 
     @Override

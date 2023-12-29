@@ -37,4 +37,10 @@ public class REVBoreEncoder implements Encoder {
     public void close() throws Exception {
 
     }
+
+    @Override
+    public Encoder config() {
+
+        return this;
+    }
 }

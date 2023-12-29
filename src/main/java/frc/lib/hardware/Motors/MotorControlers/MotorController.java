@@ -4,6 +4,8 @@ import frc.lib.hardware.HardwareRequirments;
 
 public interface MotorController extends HardwareRequirments {
 
+  MotorController config(int canID);
+
   void runPercentOut(double num);
 
   void brakeMode(boolean enable);
