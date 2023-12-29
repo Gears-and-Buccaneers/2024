@@ -11,7 +11,6 @@ public class Talon_SRX implements MotorController {
 
     private TalonSRX motor;
 
-  
     public MotorController config(int canID) {
         this.canID = canID;
 
@@ -50,8 +49,8 @@ public class Talon_SRX implements MotorController {
     }
 
     @Override
-    public void toLog(LogTable table) {
-        table.put("MotorController/Open", 1);
+    public void toLog(LogTable table, String path) {
+        table.put(path + "/MotorController/Open", 1);
     }
 
     @Override

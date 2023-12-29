@@ -13,7 +13,6 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
 
     public ArmSub(ArmRequirments armIO) {
         this.armIO = armIO;
-        armIO.setSimpleName(simpleName);
 
         System.out.println("[Init] Creating " + simpleName + " with:");
         System.out.println("\t" + armIO.getClass().getSimpleName());
@@ -26,7 +25,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
         Logger.processInputs(simpleName, armIO);
 
         armIO.loadPreferences();
-        armIO.perodic();
+        armIO.periodic();
     }
 
     @Override
@@ -41,7 +40,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
             armIO.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
             armIO.elevatorLengthSetpoint(50);
         }).handleInterrupt(() -> {
-            armIO.stop();
+            armIO.disable();
         });
     }
 
@@ -51,7 +50,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
             armIO.elevatorAngleSetpoint(Rotation2d.fromDegrees(130));
             armIO.elevatorLengthSetpoint(70);
         }).handleInterrupt(() -> {
-            armIO.stop();
+            armIO.disable();
         });
     }
 
