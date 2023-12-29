@@ -4,8 +4,7 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Preferences;
-
-import frc.lib.hardware.motorController.*;
+import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
 
 public class IntakeHardware implements IntakeRequirments {
@@ -17,18 +16,18 @@ public class IntakeHardware implements IntakeRequirments {
   private String SimpleName;
 
   public IntakeHardware() {
-    motor = new VP775(10);
+    motor = new Motor(Motor.ControllerType.TallonSRX, 10, Motor.Type.VP775);
     switch1 = new Huchoo(3);
 
     initPrefrences();
   }
 
   public void setIntakeSpeed() {
-    motor.runPercentOut(setPercentOut);
+    motor.setPercentOut(setPercentOut);
   }
 
   public void setOutakeSpeed() {
-    motor.runPercentOut(-setPercentOut);
+    motor.setPercentOut(-setPercentOut);
   }
 
   public boolean isOpen() {
@@ -39,11 +38,11 @@ public class IntakeHardware implements IntakeRequirments {
     return switch1.isClosed();
   }
 
+  // required things -------------------------------------------------
   public void setBrakeMode(boolean enable) {
     motor.brakeMode(enable);
   }
 
-  // required things-------------------------------------------------
   public void periodic() {
     loadPreferences();
   }

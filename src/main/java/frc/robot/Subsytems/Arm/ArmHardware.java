@@ -2,7 +2,6 @@ package frc.robot.Subsytems.Arm;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -10,12 +9,15 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.lib.hardware.motorController.*;
+import frc.lib.hardware.Motors.*;
+import frc.lib.hardware.Motors.PID.EncoderConfigs;
+import frc.lib.hardware.Motors.PID.PIDConfigs;
+import frc.lib.hardware.sensor.encoders.REVBoreEncoder;
 
 public class ArmHardware implements ArmRequirments {
-    // private final SmartMotor motorElvatorPivot;
-    // private final SmartMotor motorElvatorExstend;
-    // private final SmartMotor motorWristPivot;
+    private final Motor mElvatorPivot;
+    private final Motor mElvatorExstend;
+    private final Motor mWristPivot;
 
     @AutoLogOutput
     private Mechanism2d mechSetpoint;
@@ -27,22 +29,33 @@ public class ArmHardware implements ArmRequirments {
     private MechanismLigament2d elevatorAcual;
     private MechanismLigament2d wristAcual;
 
-    private String logName;
-
     public ArmHardware() {
-        // motorElvatorPivot = new VP775(1);
-        // motorElvatorExstend = new VP775(2);
-        // motorWristPivot = new VP775(3);
+        mElvatorPivot = new Motor(Motor.ControllerType.TallonSRX, 1, Motor.Type.Falcon500);
+        mElvatorExstend = new Motor(Motor.ControllerType.TallonSRX, 1, Motor.Type.Falcon500);
+        mWristPivot = new Motor(Motor.ControllerType.TallonSRX, 1, Motor.Type.Falcon500);
 
-        // configMotor(motorElvatorPivot);
-        // configMotor(motorElvatorExstend);
-        // configMotor(motorWristPivot);
+        mElvatorPivot
+                .addEncoder(new REVBoreEncoder())
+                .inverted(true)
+                .pidConfigs(new PIDConfigs())
+                .EncoderConfigs(new EncoderConfigs())
+                .setName("mElvatorPivot");
+
+        mElvatorExstend
+                .addEncoder(new REVBoreEncoder())
+                .inverted(true)
+                .pidConfigs(new PIDConfigs())
+                .EncoderConfigs(new EncoderConfigs())
+                .setName("mElvatorExstend");
+
+        mWristPivot
+                .addEncoder(new REVBoreEncoder())
+                .inverted(true)
+                .pidConfigs(new PIDConfigs())
+                .EncoderConfigs(new EncoderConfigs())
+                .setName("mWristPivot");
 
         configMech();
-    }
-
-    public void setLogName(String logName) {
-        this.logName = logName;
     }
 
     @Override
@@ -60,14 +73,28 @@ public class ArmHardware implements ArmRequirments {
         elevatorSetpoint.setLength(ft);
     }
 
-    public void perodic() {
-        // elevatorAcual.setAngle(motorElvatorPivot.getRotation());
-        // elevatorAcual.setLength(motorElvatorExstend.getRotation());
-        // wristAcual.setAngle(motorWristPivot.getRotation());
+    @Override
+    public void periodic() {
+        mElvatorPivot.setPositoin(elevatorSetpoint.getAngle());
+        mElvatorExstend.setPositoin(elevatorSetpoint.getLength());
+        mWristPivot.setPositoin(wristSetpoint.getAngle());
+
+        elevatorAcual.setAngle(mElvatorPivot.getPositoin());
+        elevatorAcual.setLength(mElvatorExstend.getPositoin());
+        wristAcual.setAngle(mWristPivot.getPositoin());
     }
 
-    public void stop() {
+    public void setBrakeMode(boolean enable) {
+        mElvatorPivot.brakeMode(enable);
+        mElvatorExstend.brakeMode(enable);
+        mWristPivot.brakeMode(enable);
+    }
 
+    @Override
+    public void disable() {
+        mElvatorPivot.disable();
+        mElvatorExstend.disable();
+        mWristPivot.disable();
     }
 
     // -----------------------------
@@ -76,27 +103,19 @@ public class ArmHardware implements ArmRequirments {
 
     }
 
-    public void setBrakeMode(boolean enable) {
-        // motorElvatorPivot.brakeMode(enable);
-        // motorElvatorExstend.brakeMode(enable);
-        // motorWristPivot.brakeMode(enable);
-    }
-
     @Override
     public void toLog(LogTable table) {
-        //Logger.processInputs(logName + "/elvator Motor", motorElvatorExstend);
+        mElvatorPivot.toLog(table);
+        mElvatorExstend.toLog(table);
+        mWristPivot.toLog(table);
         table.put("234", 123);
     }
 
     @Override
     public void close() throws Exception {
-        // motorElvatorPivot.close();
-        // motorElvatorExstend.close();
-        // motorWristPivot.close();
-    }
-
-    private void configMotor(Motor motor) {
-        // motor.inverted(true);
+        mElvatorPivot.close();
+        mElvatorExstend.close();
+        mWristPivot.close();
     }
 
     private void configMech() {
@@ -117,23 +136,5 @@ public class ArmHardware implements ArmRequirments {
                 new MechanismLigament2d("elevator", 40, 90, 8, new Color8Bit(Color.kCyan)));
         wristAcual = elevatorAcual.append(
                 new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
-    }
-
-    @Override
-    public void periodic() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'periodic'");
-    }
-
-    @Override
-    public void disable() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'disable'");
-    }
-
-    @Override
-    public void setSimpleName(String SimpleName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setSimpleName'");
     }
 }

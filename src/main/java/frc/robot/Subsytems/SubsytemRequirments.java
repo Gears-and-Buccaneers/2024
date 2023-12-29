@@ -7,11 +7,12 @@ public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
 
   void toLog(LogTable table);
 
-  void setSimpleName(String SimpleName);
-
   void periodic();
 
   void disable();
+
+  default void simulationPeriodic() {
+  }
 
   default void loadPreferences() {
   }

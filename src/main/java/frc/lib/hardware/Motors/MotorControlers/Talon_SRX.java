@@ -1,4 +1,4 @@
-package frc.lib.hardware.motorController;
+package frc.lib.hardware.Motors.MotorControlers;
 
 import org.littletonrobotics.junction.LogTable;
 
@@ -6,15 +6,17 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-public class VP775 implements Motor {
-    private final int canID;
+public class Talon_SRX implements MotorController {
+    private int canID;
 
     private TalonSRX motor;
 
-    public VP775(int canID) {
+    public MotorController config(int canID) {
         this.canID = canID;
 
         motor = new TalonSRX(canID);
+
+        return this;
     }
 
     @Override
@@ -47,8 +49,8 @@ public class VP775 implements Motor {
     }
 
     @Override
-    public void toLog(LogTable table) {
-        table.put("Open", 1);
+    public void toLog(LogTable table, String path) {
+        table.put(path + "/MotorController/Open", 1);
     }
 
     @Override

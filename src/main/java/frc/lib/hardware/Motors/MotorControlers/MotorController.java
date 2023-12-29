@@ -1,8 +1,10 @@
-package frc.lib.hardware.motorController;
+package frc.lib.hardware.Motors.MotorControlers;
 
 import frc.lib.hardware.HardwareRequirments;
 
-public interface Motor extends HardwareRequirments {
+public interface MotorController extends HardwareRequirments {
+
+  MotorController config(int canID);
 
   void runPercentOut(double num);
 
