@@ -1,16 +1,14 @@
-package frc.robot.Subsytems.DrivetrainOLD;
-
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.Logger;
+package frc.robot.Subsytems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import frc.lib.hardware.Motors.Motor;
 import frc.lib.hardware.Motors.PID.*;
 import frc.lib.hardware.sensor.encoders.REVBoreEncoder;
 import frc.robot.Subsytems.SubsytemRequirments;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule implements SubsytemRequirments {
   private final Motor mDrive;
@@ -50,12 +48,13 @@ public class SwerveModule implements SubsytemRequirments {
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(mDrive.getPositoin(), Rotation2d.fromDegrees(mSteer.getPositoin()));
+    return new SwerveModulePosition(
+        mDrive.getPositoin(), Rotation2d.fromDegrees(mSteer.getPositoin()));
   }
 
   private void setTargetSteerPosition(Rotation2d targetSteerPosition) {
     mSteer.setPositoin(targetSteerPosition.getDegrees());
-    
+
     Logger.recordOutput("SetTargetVelocity", targetSteerPosition.getDegrees());
   }
 
@@ -71,8 +70,7 @@ public class SwerveModule implements SubsytemRequirments {
 
   // -----------------------------
   @Override
-  public void loadPreferences() {
-  }
+  public void loadPreferences() {}
 
   @Override
   public void toLog(LogTable table) {

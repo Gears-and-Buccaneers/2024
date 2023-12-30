@@ -2,9 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsytems.Arm.*;
-import frc.robot.Subsytems.DrivetrainOLD.DrivetrainRequirments;
-import frc.robot.Subsytems.DrivetrainOLD.DrivetrainSub;
-import frc.robot.Subsytems.DrivetrainOLD.DrivetrainSwerve;
+import frc.robot.Subsytems.Drivetrain.DrivetrainRequirments;
+import frc.robot.Subsytems.Drivetrain.DrivetrainSub;
+import frc.robot.Subsytems.Drivetrain.DrivetrainSwerve;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -65,58 +65,44 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {
-  }
+  public void disabledExit() {}
 
   @Override
-  public void autonomousInit() {
-  }
+  public void autonomousInit() {}
 
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-  }
+  public void autonomousExit() {}
 
   @Override
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {
-  }
+  public void teleopExit() {}
 
   @Override
-  public void testInit() {
-  }
+  public void testInit() {}
 
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   @Override
-  public void testExit() {
-  }
+  public void testExit() {}
 
   @Override
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

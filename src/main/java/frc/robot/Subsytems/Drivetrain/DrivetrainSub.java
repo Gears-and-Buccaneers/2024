@@ -1,11 +1,10 @@
-package frc.robot.Subsytems.DrivetrainOLD;
-
-import org.littletonrobotics.junction.Logger;
+package frc.robot.Subsytems.Drivetrain;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.joystics.Driver;
+import org.littletonrobotics.junction.Logger;
 
 public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   public final DrivetrainRequirments drivetrain;
@@ -30,20 +29,19 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 
   // Commands ---------------------------------------------------------
   public Command drive(Driver controler) {
-    return run(() -> {
-      drivetrain
-          .setChassisSpeeds(
+    return run(
+        () -> {
+          drivetrain.setChassisSpeeds(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   controler.getDrivtrainTranslationX() * 4,
                   controler.getDrivtrainTranslationY() * 4,
                   controler.getDrivtrainRotation() * 2,
                   drivetrain.getAngle()));
-    });
+        });
   }
 
   // ---------------------------------------------------------

@@ -174,10 +174,8 @@ public class Motor implements HardwareRequirments {
     if (RobotBase.isReal()) {
       return mEncoder.getPositoin();
     } else {
-      if (simVelocity)
-        return mSimPositionMeters;
-      else
-        return mSimPositionDeg;
+      if (simVelocity) return mSimPositionMeters;
+      else return mSimPositionDeg;
     }
   }
 
@@ -201,8 +199,7 @@ public class Motor implements HardwareRequirments {
     if (hasEncoder) {
       table.put(name + "/Position (degrees)", getPositoin());
       table.put(name + "/Velocity (degreesPerSecond)", getVelocity());
-      table.put(name + "/Velocity (MetersPerSecond)", getVelocity() *
-      Units.inchesToMeters(2));
+      table.put(name + "/Velocity (MetersPerSecond)", getVelocity() * Units.inchesToMeters(2));
       // table.put(name + "/AppliedVolts (Volts)", mAppliedVolts);
       // table.put(name + "/CurrentDraw (Amps)", Math.abs(mSim.getCurrentDrawAmps()));
       if (isSimulated) {
@@ -226,8 +223,10 @@ public class Motor implements HardwareRequirments {
 
     mSim.update(Robot.defaultPeriodSecs);
 
-    mSimPositionDeg = mSimPositionDeg + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
-    mSimPositionMeters += (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
+    mSimPositionDeg =
+        mSimPositionDeg + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
+    mSimPositionMeters +=
+        (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
     mSimVelocityDeg = mSim.getAngularVelocityRadPerSec();
     mSimVelocityMeters = mSim.getAngularVelocityRadPerSec() * Units.inchesToMeters(2);
     // --------------------------------------------------------
@@ -246,10 +245,8 @@ public class Motor implements HardwareRequirments {
 
   @Override
   public boolean connected() {
-    if (!mController.connected())
-      return false;
-    if (hasEncoder)
-      return mEncoder.connected();
+    if (!mController.connected()) return false;
+    if (hasEncoder) return mEncoder.connected();
     return true;
   }
 }
