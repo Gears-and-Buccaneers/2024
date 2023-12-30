@@ -1,5 +1,11 @@
 package frc.lib.hardware.Motors;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.lib.hardware.HardwareRequirments;
 import frc.lib.hardware.Motors.MotorControlers.MotorController;
 import frc.lib.hardware.Motors.MotorControlers.Talon_SRX;
@@ -8,15 +14,7 @@ import frc.lib.hardware.Motors.PID.PIDConfigs;
 import frc.lib.hardware.Motors.PID.SimConfig;
 import frc.lib.hardware.sensor.encoders.Encoder;
 import frc.robot.Robot;
-
 import org.littletonrobotics.junction.LogTable;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class Motor implements HardwareRequirments {
   // Enums --------------
@@ -151,7 +149,6 @@ public class Motor implements HardwareRequirments {
     mAppliedVolts = MathUtil.clamp(mAppliedVolts, -12.0, 12.0);
 
     setVolts(mAppliedVolts);
-
   }
 
   public void disable() {
@@ -224,8 +221,10 @@ public class Motor implements HardwareRequirments {
 
     mSim.update(Robot.defaultPeriodSecs);
 
-    mSimPositionDeg = mSimPositionDeg + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
-    mSimPositionMeters += (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
+    mSimPositionDeg =
+        mSimPositionDeg + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
+    mSimPositionMeters +=
+        (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
     mSimVelocityDeg = mSim.getAngularVelocityRadPerSec();
     mSimPositionMeters = mSim.getAngularVelocityRadPerSec() * Units.inchesToMeters(2);
     // --------------------------------------------------------
@@ -240,15 +239,12 @@ public class Motor implements HardwareRequirments {
     } else {
       table.put(name + "/SimPos/Targot Position (degrees)", mSimFeedback.getSetpoint());
     }
-
   }
 
   @Override
   public boolean connected() {
-    if (!mController.connected())
-      return false;
-    if (hasEncoder)
-      return mEncoder.connected();
+    if (!mController.connected()) return false;
+    if (hasEncoder) return mEncoder.connected();
     return true;
   }
 }
