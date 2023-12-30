@@ -6,8 +6,7 @@ public class REVBoreEncoder implements Encoder {
 
   @Override
   public double getPositoin() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getPositoin'");
+    return 20;
   }
 
   @Override

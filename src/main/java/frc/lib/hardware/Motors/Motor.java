@@ -8,6 +8,13 @@ import frc.lib.hardware.Motors.PID.PIDConfigs;
 import frc.lib.hardware.sensor.encoders.Encoder;
 import org.littletonrobotics.junction.LogTable;
 
+import com.ctre.phoenix6.sim.TalonFXSimState;
+
+import edu.wpi.first.hal.SimDevice;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
+
 public class Motor implements HardwareRequirments {
   public enum Type {
     CIM,
@@ -38,7 +45,7 @@ public class Motor implements HardwareRequirments {
   public Motor(ControllerType motorControllerType, int canID, Type motor) {
     this.mController = motorControllerType.config(canID);
     this.motorType = motor;
-    this.name = "Motor" + canID;
+    this.name = "Motor" + canID;    
   }
 
   // ----------------- COnfigs ---------------------
@@ -113,7 +120,7 @@ public class Motor implements HardwareRequirments {
   @Override
   public void toLog(LogTable table) {
     mController.toLog(table, name);
-    table.put(name + "/things like sim", 10);
+    table.put(name + "/Motor Type", motorType.toString());
   }
 
   @Override
