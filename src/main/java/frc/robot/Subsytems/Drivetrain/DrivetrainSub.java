@@ -1,5 +1,6 @@
 package frc.robot.Subsytems.Drivetrain;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -7,35 +8,37 @@ import frc.robot.joystics.Driver;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   public final DrivetrainReq drivetrain;
+  public final PoseEstimatorReq poseEstimator;
 
   private final String simpleName = this.getClass().getSimpleName();
 
-  public DrivetrainSub(DrivetrainReq drivetrain) {
+  public DrivetrainSub(DrivetrainReq drivetrain, PoseEstimatorReq poseEstimator) {
     this.drivetrain = drivetrain;
+    this.poseEstimator = poseEstimator;
+
     AutoBuilder.configureHolonomic(
-                this::getPose2d, // Robot pose supplier
-                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-                drivetrain::getChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                drivetrain::setChassisSpeed, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-                                                 // Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        maxSpeed, // Max module speed, in m/s
-                        drivetrainRadius, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                this // Reference to this subsystem to set requirements
-        );
+        this.poseEstimator::getPose2d,
+        this.poseEstimator::resetEstimator,
+        this.drivetrain::getChassisSpeed,
+        this.drivetrain::setChassisSpeed,
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(5.0, 0.0, 0.0),
+            new PIDConstants(5.0, 0.0, 0.0),
+            this.drivetrain.getMaxModuleSpeed(),
+            this.drivetrain.getRadius(),
+            new ReplanningConfig()),
+        this);
 
     System.out.println("[Init] Creating " + simpleName + " with:");
     System.out.println("\t" + this.drivetrain.getClass().getSimpleName());
+    System.out.println("\t" + this.poseEstimator.getClass().getSimpleName());
 
     this.drivetrain.setBrakeMode(true);
   }
@@ -43,24 +46,40 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   @Override
   public void periodic() {
     Logger.processInputs(simpleName, drivetrain);
+    Logger.processInputs(simpleName + "/poseEstimator", poseEstimator);
 
     drivetrain.periodic();
+    poseEstimator.periodic();
   }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 
   // Commands ---------------------------------------------------------
   public Command drive(Driver controler) {
     return run(
         () -> {
-          drivetrain.setChassisSpeeds(
+          drivetrain.setChassisSpeed(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  controler.getDrivtrainTranslationX() * 4,
-                  controler.getDrivtrainTranslationY() * -4,
-                  controler.getDrivtrainRotation() * 6 * 4,
+                  controler.getDrivtrainTranslationX() * drivetrain.getMaxModuleSpeed(),
+                  controler.getDrivtrainTranslationY() * -drivetrain.getMaxModuleSpeed(),
+                  controler.getDrivtrainRotation() * drivetrain.getMaxAngularVelocity(),
                   drivetrain.getAngle()));
         });
+  }
+
+  public Command goToPose(Pose2d pose) {
+    return run(() -> {
+      AutoBuilder.pathfindToPose(
+          pose,
+          new PathConstraints(
+              drivetrain.getMaxModuleSpeed(),
+              drivetrain.getMaxModuleAccl(),
+              drivetrain.getMaxAngularVelocity(),
+              drivetrain.getMaxAngularAccl()),
+          0);
+    });
   }
 
   // ---------------------------------------------------------
