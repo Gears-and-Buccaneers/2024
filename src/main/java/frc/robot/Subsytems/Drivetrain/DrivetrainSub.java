@@ -38,8 +38,8 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
           drivetrain.setChassisSpeeds(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   controler.getDrivtrainTranslationX() * 4,
-                  controler.getDrivtrainTranslationY() * 4,
-                  controler.getDrivtrainRotation() * 2,
+                  controler.getDrivtrainTranslationY() * -4,
+                  controler.getDrivtrainRotation() * 6 * 4,
                   drivetrain.getAngle()));
         });
   }

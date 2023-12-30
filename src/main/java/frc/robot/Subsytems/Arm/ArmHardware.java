@@ -1,6 +1,7 @@
 package frc.robot.Subsytems.Arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -19,11 +20,13 @@ public class ArmHardware implements ArmRequirments {
   private final Motor mElvatorExstend;
   private final Motor mWristPivot;
 
-  @AutoLogOutput private Mechanism2d mechSetpoint;
+  @AutoLogOutput
+  private Mechanism2d mechSetpoint;
   private MechanismLigament2d elevatorSetpoint;
   private MechanismLigament2d wristSetpoint;
 
-  @AutoLogOutput private Mechanism2d mechAcual;
+  @AutoLogOutput
+  private Mechanism2d mechAcual;
   private MechanismLigament2d elevatorAcual;
   private MechanismLigament2d wristAcual;
 
@@ -37,7 +40,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(false, 111.8))
+        .SimConfig(new SimConfig(false, 111.8, 1))
         .setName("mElvatorPivot");
 
     mElvatorExstend
@@ -45,7 +48,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(false, 4.2))
+        .SimConfig(new SimConfig(false, 4.2, 1))
         .setName("mElvatorExstend");
 
     mWristPivot
@@ -53,7 +56,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(false, 39.5))
+        .SimConfig(new SimConfig(false, 39.5, 1))
         .setName("mWristPivot");
 
     configMech();
@@ -100,7 +103,8 @@ public class ArmHardware implements ArmRequirments {
 
   // -----------------------------
   @Override
-  public void loadPreferences() {}
+  public void loadPreferences() {
+  }
 
   @Override
   public void toLog(LogTable table) {
@@ -119,23 +123,21 @@ public class ArmHardware implements ArmRequirments {
 
   private void configMech() {
     // units are in inches
-    mechSetpoint = new Mechanism2d(122, 126);
+
+    mechSetpoint = new Mechanism2d(Units.inchesToMeters(122), Units.inchesToMeters(126));
     // the mechanism root node
-    MechanismRoot2d rootS = mechSetpoint.getRoot("arm", 50, 12);
-    elevatorSetpoint =
-        rootS.append(new MechanismLigament2d("elevator", 40, 90, 7, new Color8Bit(Color.kPurple)));
-    wristSetpoint =
-        elevatorSetpoint.append(
-            new MechanismLigament2d("wrist", 15, 0, 5, new Color8Bit(Color.kPurple)));
+    MechanismRoot2d rootS = mechSetpoint.getRoot("arm", Units.inchesToMeters(50), Units.inchesToMeters(12));
+    elevatorSetpoint = rootS
+        .append(new MechanismLigament2d("elevator", Units.inchesToMeters(40), 90, 7, new Color8Bit(Color.kPurple)));
+    wristSetpoint = elevatorSetpoint.append(
+        new MechanismLigament2d("wrist", Units.inchesToMeters(15), 0, 5, new Color8Bit(Color.kPurple)));
 
     // units are in inches
-    mechAcual = new Mechanism2d(122, 126);
+    mechAcual = new Mechanism2d(Units.inchesToMeters(122), Units.inchesToMeters(126));
     // the mechanism root node
-    MechanismRoot2d rootA = mechAcual.getRoot("arm", 50, 12);
-    elevatorAcual =
-        rootA.append(new MechanismLigament2d("elevator", 40, 90, 8, new Color8Bit(Color.kCyan)));
-    wristAcual =
-        elevatorAcual.append(
-            new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
+    MechanismRoot2d rootA = mechAcual.getRoot("arm",  Units.inchesToMeters(50), Units.inchesToMeters(12));
+    elevatorAcual = rootA.append(new MechanismLigament2d("elevator", Units.inchesToMeters(40), 90, 8, new Color8Bit(Color.kCyan)));
+    wristAcual = elevatorAcual.append(
+        new MechanismLigament2d("wrist", Units.inchesToMeters(15), 0, 6, new Color8Bit(Color.kCyan)));
   }
 }

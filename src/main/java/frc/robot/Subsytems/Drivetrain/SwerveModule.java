@@ -25,14 +25,14 @@ public class SwerveModule implements SubsytemRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(true, 111.8))
+        .SimConfig(new SimConfig(true, 111.8, 10))
         .setName("mDrive" + name);
     mSteer
         .addEncoder(new REVBoreEncoder())
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(false, 111.8))
+        .SimConfig(new SimConfig(false, 111.8, 10))
         .setName("mSteer" + name);
 
     this.name = name;
@@ -49,13 +49,13 @@ public class SwerveModule implements SubsytemRequirments {
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        mDrive.getPositoin(), Rotation2d.fromDegrees(mSteer.getPositoin()));
+        mDrive.getPositoin(), Rotation2d.fromRadians(mSteer.getPositoin()));
   }
 
   private void setTargetSteerPosition(Rotation2d targetSteerPosition) {
-    mSteer.setPositoin(targetSteerPosition.getDegrees());
+    mSteer.setPositoin(targetSteerPosition.getRadians());
 
-    Logger.recordOutput("SetTargetVelocity", targetSteerPosition.getDegrees());
+    Logger.recordOutput("SetTargetVelocity", targetSteerPosition.getRadians());
   }
 
   private void setTargetDriveVelocity(double targetDriveVelocity) {
@@ -70,7 +70,8 @@ public class SwerveModule implements SubsytemRequirments {
 
   // -----------------------------
   @Override
-  public void loadPreferences() {}
+  public void loadPreferences() {
+  }
 
   @Override
   public void toLog(LogTable table) {

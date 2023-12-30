@@ -98,7 +98,7 @@ public class Motor implements HardwareRequirments {
 
   private PIDController mSimFeedback;
   private FlywheelSim mSim;
-  private double mSimPositionDeg;
+  private double mSimPositionRad;
   private double mSimPositionMeters;
   private double mSimVelocityDeg;
   private double mSimVelocityMeters;
@@ -109,7 +109,7 @@ public class Motor implements HardwareRequirments {
   public Motor SimConfig(SimConfig simConfig) {
     isSimulated = true;
     mSim = new FlywheelSim(mType.config(), 6.75, 0.025);
-    mSimFeedback = new PIDController(10, 0, 0);
+    mSimFeedback = new PIDController(simConfig.getP(), 0, 0);
 
     simVelocity = simConfig.simVelocity();
     return this;
@@ -174,8 +174,10 @@ public class Motor implements HardwareRequirments {
     if (RobotBase.isReal()) {
       return mEncoder.getPositoin();
     } else {
-      if (simVelocity) return mSimPositionMeters;
-      else return mSimPositionDeg;
+      if (simVelocity)
+        return mSimPositionMeters;
+      else
+        return mSimPositionRad;
     }
   }
 
@@ -213,7 +215,7 @@ public class Motor implements HardwareRequirments {
     if (simVelocity) {
       AppliedVolts = mSimFeedback.calculate(mSimVelocityMeters);
     } else {
-      AppliedVolts = mSimFeedback.calculate(mSimPositionDeg);
+      AppliedVolts = mSimFeedback.calculate(mSimPositionRad);
     }
     // mSimFeedback.
 
@@ -223,14 +225,12 @@ public class Motor implements HardwareRequirments {
 
     mSim.update(Robot.defaultPeriodSecs);
 
-    mSimPositionDeg =
-        mSimPositionDeg + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
-    mSimPositionMeters +=
-        (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
+    mSimPositionRad = mSimPositionRad + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
+    mSimPositionMeters += (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
     mSimVelocityDeg = mSim.getAngularVelocityRadPerSec();
     mSimVelocityMeters = mSim.getAngularVelocityRadPerSec() * Units.inchesToMeters(2);
     // --------------------------------------------------------
-    table.put(name + "/SimPos/Position (degrees)", mSimPositionDeg);
+    table.put(name + "/SimPos/Position (Rad)", mSimPositionRad);
     table.put(name + "/SimPos/Position (Meters)", mSimPositionMeters);
     table.put(name + "/SimPos/Velocity (degreesPERSecond)", mSimVelocityDeg);
     table.put(name + "/SimPos/Velocity (MetersPERSecond)", mSimVelocityMeters);
@@ -239,14 +239,16 @@ public class Motor implements HardwareRequirments {
     if (simVelocity) {
       table.put(name + "/SimPos/Targot Velocity (degrees)", mSimFeedback.getSetpoint());
     } else {
-      table.put(name + "/SimPos/Targot Position (degrees)", mSimFeedback.getSetpoint());
+      table.put(name + "/SimPos/Targot Position (RAD)", mSimFeedback.getSetpoint());
     }
   }
 
   @Override
   public boolean connected() {
-    if (!mController.connected()) return false;
-    if (hasEncoder) return mEncoder.connected();
+    if (!mController.connected())
+      return false;
+    if (hasEncoder)
+      return mEncoder.connected();
     return true;
   }
 }

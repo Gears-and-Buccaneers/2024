@@ -2,6 +2,7 @@ package frc.robot.Subsytems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -10,6 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,27 +38,24 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
     maxVelocityMetersPerSec = 4.3;
     maxAngularVelocityRadPerSec = maxVelocityMetersPerSec / Math.hypot(wheelbase / 2, track / 2);
 
-    swerveModules =
-        new SwerveModule[] {
-          new SwerveModule(1, 2, "FrontLeft"),
-          new SwerveModule(3, 4, "FrontRight"),
-          new SwerveModule(5, 6, "BackLeft"),
-          new SwerveModule(7, 8, "BackRight")
-        };
-    swerveModulePositions =
-        new SwerveModulePosition[] {
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition()
-        };
+    swerveModules = new SwerveModule[] {
+        new SwerveModule(1, 2, "FrontLeft"),
+        new SwerveModule(3, 4, "FrontRight"),
+        new SwerveModule(5, 6, "BackLeft"),
+        new SwerveModule(7, 8, "BackRight")
+    };
+    swerveModulePositions = new SwerveModulePosition[] {
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition()
+    };
     Translation2d frontLeftLocation = new Translation2d(wheelbase / 2, track / 2);
     Translation2d frontRightLocation = new Translation2d(wheelbase / 2, -track / 2);
     Translation2d backLeftLocation = new Translation2d(-wheelbase / 2, track / 2);
     Translation2d backRightLocation = new Translation2d(-wheelbase / 2, -track / 2);
-    kinematics =
-        new SwerveDriveKinematics(
-            frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
+    kinematics = new SwerveDriveKinematics(
+        frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
     odometry = new SwerveDriveOdometry(kinematics, getAngle(), swerveModulePositions);
   }
@@ -66,7 +66,9 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
   }
 
   private Pose2d simOdometry = new Pose2d();
-  double[] lastModulePositionsRad = {0, 0, 0, 0};
+  double[] lastModulePositionsRad = { 0, 0, 0, 0 };
+  private Field2d field;
+  double angle;
 
   public void periodic() {
 
@@ -80,36 +82,46 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
 
     synchronized (swerveModules) {
       for (int i = 0; i < optimizedSwerveModuleStates.length; i++) {
-        optimizedSwerveModuleStates[i] =
-            SwerveModuleState.optimize(swerveModuleStates[i], swerveModules[i].getPosition().angle);
+        optimizedSwerveModuleStates[i] = SwerveModuleState.optimize(swerveModuleStates[i],
+            swerveModules[i].getPosition().angle);
         swerveModules[i].setTargetState(optimizedSwerveModuleStates[i]);
       }
     }
     odometry.update(getAngle(), getSwerveModulePositions());
-
-    Logger.recordOutput("Drive/Angle", getAngle().getDegrees());
+    Logger.recordOutput("Drive/Angle", (getAngle().getRadians() - angle) * 50);
+    angle = getAngle().getRadians();
+    Logger.recordOutput("Drive/AnglePS", getAngle().getRadians());
     Logger.recordOutput("Drive/ModuleStates", swerveModuleStates);
     Logger.recordOutput(
         "Drive/TargetChassisVelocity",
         new double[] {
-          targetVelocity.vxMetersPerSecond,
-          targetVelocity.vyMetersPerSecond,
-          targetVelocity.omegaRadiansPerSecond
+            targetVelocity.vxMetersPerSecond,
+            targetVelocity.vyMetersPerSecond,
+            targetVelocity.omegaRadiansPerSecond
         });
     Logger.recordOutput("Drive/ModuleStatesString", test());
     Logger.recordOutput("Drive/OptimizedModuleStates", optimizedSwerveModuleStates);
-    Logger.recordOutput("Drive/Odomaty", simOdometry);
-    Logger.recordOutput("Drive/Odomaty", odometry);
+    Logger.recordOutput("Drive/Odomaty", new double[] { odometry.getPoseMeters().getX(),
+        odometry.getPoseMeters().getY(), getAngle().getRadians() });
+    Logger.recordOutput("Drive/Odomaty2", new double[] {
+        odometry.getPoseMeters().getX(),
+        odometry.getPoseMeters().getY(),
+        0,
+        new Rotation3d(0, 0, angle).getQuaternion().getW(),
+        new Rotation3d(0, 0, angle).getQuaternion().getX(),
+        new Rotation3d(0, 0, angle).getQuaternion().getY(),
+        new Rotation3d(0, 0, angle).getQuaternion().getZ() });
+    Logger.recordOutput("Drive/Odomaty2String", odometry.getPoseMeters().toString());
+
   }
 
   public double[] test() {
-    double[] testing =
-        new double[] {
-          swerveModuleStates[0].angle.getRadians(), swerveModuleStates[0].speedMetersPerSecond,
-          swerveModuleStates[1].angle.getRadians(), swerveModuleStates[1].speedMetersPerSecond,
-          swerveModuleStates[2].angle.getRadians(), swerveModuleStates[2].speedMetersPerSecond,
-          swerveModuleStates[3].angle.getRadians(), swerveModuleStates[3].speedMetersPerSecond
-        };
+    double[] testing = new double[] {
+        swerveModuleStates[0].angle.getRadians(), swerveModuleStates[0].speedMetersPerSecond,
+        swerveModuleStates[1].angle.getRadians(), swerveModuleStates[1].speedMetersPerSecond,
+        swerveModuleStates[2].angle.getRadians(), swerveModuleStates[2].speedMetersPerSecond,
+        swerveModuleStates[3].angle.getRadians(), swerveModuleStates[3].speedMetersPerSecond
+    };
     return testing;
   }
 
@@ -121,10 +133,10 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
 
   public SwerveModulePosition[] getSwerveModulePositions() {
     return new SwerveModulePosition[] {
-      swerveModules[0].getPosition(),
-      swerveModules[1].getPosition(),
-      swerveModules[2].getPosition(),
-      swerveModules[3].getPosition(),
+        swerveModules[0].getPosition(),
+        swerveModules[1].getPosition(),
+        swerveModules[2].getPosition(),
+        swerveModules[3].getPosition(),
     };
   }
 
@@ -153,20 +165,20 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
 
     SwerveModuleState[] measuredStatesDiff = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++) {
-      measuredStatesDiff[i] =
-          new SwerveModuleState(
-              (getSwerveModules()[i].getPosition().distanceMeters - lastModulePositionsRad[i])
-                  * Units.inchesToMeters(2),
-              turnPositions[i]);
+      measuredStatesDiff[i] = new SwerveModuleState(
+          (getSwerveModules()[i].getPosition().distanceMeters - lastModulePositionsRad[i])
+              * Units.inchesToMeters(2),
+          turnPositions[i]);
       lastModulePositionsRad[i] = getSwerveModules()[i].getPosition().distanceMeters;
     }
 
-    simOdometry =
-        simOdometry.exp(
-            new Twist2d(
-                getKinematics().toChassisSpeeds(measuredStatesDiff).vxMetersPerSecond,
-                getKinematics().toChassisSpeeds(measuredStatesDiff).vyMetersPerSecond,
-                getKinematics().toChassisSpeeds(measuredStatesDiff).omegaRadiansPerSecond));
+    simOdometry = simOdometry.exp(
+        new Twist2d(
+            getKinematics().toChassisSpeeds(measuredStatesDiff).vxMetersPerSecond,
+            getKinematics().toChassisSpeeds(measuredStatesDiff).vyMetersPerSecond,
+            getKinematics().toChassisSpeeds(measuredStatesDiff).omegaRadiansPerSecond * 10));
+    Logger.recordOutput("rotationPerSec",
+        getKinematics().toChassisSpeeds(measuredStatesDiff).omegaRadiansPerSecond * 10);
   }
 
   public void setBrakeMode(boolean enable) {
@@ -188,7 +200,8 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
 
   // -----------------------------
   @Override
-  public void loadPreferences() {}
+  public void loadPreferences() {
+  }
 
   @Override
   public void toLog(LogTable table) {

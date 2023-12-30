@@ -1,6 +1,7 @@
 package frc.robot.Subsytems.Arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -35,7 +36,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
     return run(() -> {
           arm.wristAngleSetpoint(Rotation2d.fromDegrees(270));
           arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
-          arm.elevatorLengthSetpoint(20);
+          arm.elevatorLengthSetpoint(Units.inchesToMeters(35));
         })
         .handleInterrupt(
             () -> {
@@ -46,8 +47,8 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
   public Command OutakePositon() {
     return run(() -> {
           arm.wristAngleSetpoint(Rotation2d.fromDegrees(125));
-          arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(130));
-          arm.elevatorLengthSetpoint(70);
+          arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(140));
+          arm.elevatorLengthSetpoint(Units.inchesToMeters(60));
         })
         .handleInterrupt(
             () -> {
