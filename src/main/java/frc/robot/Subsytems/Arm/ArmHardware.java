@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.Motors.PID.EncoderConfigs;
 import frc.lib.hardware.Motors.PID.PIDConfigs;
+import frc.lib.hardware.Motors.PID.SimConfig;
 import frc.lib.hardware.sensor.encoders.REVBoreEncoder;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogTable;
@@ -18,11 +19,13 @@ public class ArmHardware implements ArmRequirments {
   private final Motor mElvatorExstend;
   private final Motor mWristPivot;
 
-  @AutoLogOutput private Mechanism2d mechSetpoint;
+  @AutoLogOutput
+  private Mechanism2d mechSetpoint;
   private MechanismLigament2d elevatorSetpoint;
   private MechanismLigament2d wristSetpoint;
 
-  @AutoLogOutput private Mechanism2d mechAcual;
+  @AutoLogOutput
+  private Mechanism2d mechAcual;
   private MechanismLigament2d elevatorAcual;
   private MechanismLigament2d wristAcual;
 
@@ -36,6 +39,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
+        .SimConfig(new SimConfig(false, 111.8))
         .setName("mElvatorPivot");
 
     mElvatorExstend
@@ -43,6 +47,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
+        .SimConfig(new SimConfig(false, 4.2))
         .setName("mElvatorExstend");
 
     mWristPivot
@@ -50,6 +55,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
+        .SimConfig(new SimConfig(false, 39.5))
         .setName("mWristPivot");
 
     configMech();
@@ -96,7 +102,8 @@ public class ArmHardware implements ArmRequirments {
 
   // -----------------------------
   @Override
-  public void loadPreferences() {}
+  public void loadPreferences() {
+  }
 
   @Override
   public void toLog(LogTable table) {
@@ -118,20 +125,16 @@ public class ArmHardware implements ArmRequirments {
     mechSetpoint = new Mechanism2d(122, 126);
     // the mechanism root node
     MechanismRoot2d rootS = mechSetpoint.getRoot("arm", 50, 12);
-    elevatorSetpoint =
-        rootS.append(new MechanismLigament2d("elevator", 40, 90, 7, new Color8Bit(Color.kPurple)));
-    wristSetpoint =
-        elevatorSetpoint.append(
-            new MechanismLigament2d("wrist", 15, 0, 5, new Color8Bit(Color.kPurple)));
+    elevatorSetpoint = rootS.append(new MechanismLigament2d("elevator", 40, 90, 7, new Color8Bit(Color.kPurple)));
+    wristSetpoint = elevatorSetpoint.append(
+        new MechanismLigament2d("wrist", 15, 0, 5, new Color8Bit(Color.kPurple)));
 
     // units are in inches
     mechAcual = new Mechanism2d(122, 126);
     // the mechanism root node
     MechanismRoot2d rootA = mechAcual.getRoot("arm", 50, 12);
-    elevatorAcual =
-        rootA.append(new MechanismLigament2d("elevator", 40, 90, 8, new Color8Bit(Color.kCyan)));
-    wristAcual =
-        elevatorAcual.append(
-            new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
+    elevatorAcual = rootA.append(new MechanismLigament2d("elevator", 40, 90, 8, new Color8Bit(Color.kCyan)));
+    wristAcual = elevatorAcual.append(
+        new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
   }
 }

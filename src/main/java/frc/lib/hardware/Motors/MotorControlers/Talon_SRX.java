@@ -19,14 +19,16 @@ public class Talon_SRX implements MotorController {
   }
 
   @Override
-  public void runPercentOut(double num) {
+  public void runVolts(double num) {
     motor.set(ControlMode.PercentOutput, num);
   }
 
   @Override
   public void brakeMode(boolean enable) {
-    if (enable) motor.setNeutralMode(NeutralMode.Brake);
-    else motor.setNeutralMode(NeutralMode.Coast);
+    if (enable)
+      motor.setNeutralMode(NeutralMode.Brake);
+    else
+      motor.setNeutralMode(NeutralMode.Coast);
   }
 
   /** true inverts it */
@@ -57,5 +59,6 @@ public class Talon_SRX implements MotorController {
 
   // Unit Testing
   @Override
-  public void close() throws Exception {}
+  public void close() throws Exception {
+  }
 }

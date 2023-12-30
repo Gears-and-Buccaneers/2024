@@ -35,7 +35,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
     return run(() -> {
           arm.wristAngleSetpoint(Rotation2d.fromDegrees(270));
           arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
-          arm.elevatorLengthSetpoint(50);
+          arm.elevatorLengthSetpoint(20);
         })
         .handleInterrupt(
             () -> {

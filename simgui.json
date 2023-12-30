@@ -20,10 +20,22 @@
       "/AdvantageKit/RealOutputs/ArmHardware/MechAcual": "Mechanism2d",
       "/AdvantageKit/RealOutputs/ArmHardware/MechSetpoint": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX (v6) [10]": "Motor Controller",
       "/SmartDashboard/Mech2d": "Mechanism2d",
       "/SmartDashboard/Mech2d Setpoint": "Mechanism2d"
+    },
+    "windows": {
+      "/AdvantageKit/RealOutputs/ArmHardware/MechAcual": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {

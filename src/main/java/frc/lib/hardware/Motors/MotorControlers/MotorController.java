@@ -6,7 +6,7 @@ public interface MotorController extends HardwareRequirments {
 
   MotorController config(int canID);
 
-  void runPercentOut(double num);
+  void runVolts(double num);
 
   void brakeMode(boolean enable);
 

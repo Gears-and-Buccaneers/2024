@@ -22,11 +22,11 @@ public class IntakeHardware implements IntakeRequirments {
   }
 
   public void setIntakeSpeed() {
-    mIntake.setPercentOut(setPercentOut);
+    mIntake.setVolts(setPercentOut);
   }
 
   public void setOutakeSpeed() {
-    mIntake.setPercentOut(-setPercentOut);
+    mIntake.setVolts(-setPercentOut);
   }
 
   public boolean isOpen() {
