@@ -3,7 +3,7 @@ package frc.robot.joystics;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.hardware.joystick.*;
 
-public class SamKeyboard extends Keyboard implements Oporator {
+public class SamKeyboard extends Keyboard implements Oporator, Driver {
   public SamKeyboard(int port) {
     super(port);
   }
@@ -20,12 +20,12 @@ public class SamKeyboard extends Keyboard implements Oporator {
 
   @Override
   public double getDrivtrainTranslationX() {
-    return DandA.get();
+    return WandS.get();
   }
 
   @Override
   public double getDrivtrainTranslationY() {
-    return WandS.get();
+    return DandA.get();
   }
 
   @Override

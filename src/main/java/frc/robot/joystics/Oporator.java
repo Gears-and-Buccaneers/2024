@@ -9,10 +9,4 @@ public interface Oporator {
 
   /** intake moter set to outtake 50% */
   Trigger OuttakePice();
-
-  double getDrivtrainTranslationX();
-
-  double getDrivtrainTranslationY();
-
-  double getDrivtrainRotation();
 }

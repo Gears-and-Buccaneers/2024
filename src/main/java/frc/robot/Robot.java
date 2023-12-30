@@ -2,6 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsytems.Arm.*;
+import frc.robot.Subsytems.DrivetrainOLD.DrivetrainRequirments;
+import frc.robot.Subsytems.DrivetrainOLD.DrivetrainSub;
+import frc.robot.Subsytems.DrivetrainOLD.DrivetrainSwerve;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -12,15 +15,19 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 // https://github.com/FRCTeam2910/2023CompetitionRobot-Public/tree/main
 public class Robot extends LoggedRobot {
   // Controlers
-  private Oporator oporator;
-  private RobotButtons robotButtons;
+  private Driver cDriver;
+  private Oporator cOporator;
+  private RobotButtons cRobotButtons;
 
   // subsytems
-  private IntakeSub intakeSub;
-  private IntakeRequirments intakeIOHardware;
+  private final DrivetrainRequirments drivetrainHardware = new DrivetrainSwerve();
+  private final DrivetrainSub drivetrainSub = new DrivetrainSub(drivetrainHardware);
 
-  private ArmSub armSub;
-  private ArmRequirments armHardware;
+  private final IntakeRequirments intakeIOHardware = new IntakeHardware();
+  private final IntakeSub intakeSub = new IntakeSub(intakeIOHardware);
+
+  private final ArmRequirments armHardware = new ArmHardware();
+  private final ArmSub armSub = new ArmSub(armHardware);
 
   @Override
   public void robotInit() {
@@ -31,16 +38,11 @@ public class Robot extends LoggedRobot {
     Logger.disableDeterministicTimestamps();
     Logger.start();
 
-    // Subsytems
-    intakeIOHardware = new IntakeHardware();
-    intakeSub = new IntakeSub(intakeIOHardware);
-
-    armHardware = new ArmHardware();
-    armSub = new ArmSub(armHardware);
-
     // Controlers
-    robotButtons = new RealRobotButtons();
-    oporator = new SamKeyboard(0);
+    SamKeyboard controler = new SamKeyboard(0);
+    cRobotButtons = new RealRobotButtons();
+    cDriver = controler;
+    cOporator = controler;
 
     // Button Bindings
     configerButtonBindings();
@@ -48,11 +50,13 @@ public class Robot extends LoggedRobot {
 
   // this part should be the state machin
   public void configerButtonBindings() {
-    robotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
-    robotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
+    drivetrainSub.setDefaultCommand(drivetrainSub.drive(cDriver));
 
-    oporator.intakePice().onTrue(armSub.IntakePosition());
-    oporator.OuttakePice().onFalse(armSub.OutakePositon());
+    cRobotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
+    cRobotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
+
+    cOporator.intakePice().onTrue(armSub.IntakePosition());
+    cOporator.OuttakePice().onFalse(armSub.OutakePositon());
   }
 
   @Override
@@ -61,44 +65,58 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+  }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }
