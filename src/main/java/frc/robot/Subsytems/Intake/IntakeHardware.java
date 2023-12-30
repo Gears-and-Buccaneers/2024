@@ -29,11 +29,11 @@ public class IntakeHardware implements IntakeRequirments {
     mIntake.setVolts(-setPercentOut);
   }
 
-  public boolean isOpen() {
+  public boolean canHoldPice() {
     return switch1.isOpen();
   }
 
-  public boolean isClosed() {
+  public boolean hasPice() {
     return switch1.isClosed();
   }
 

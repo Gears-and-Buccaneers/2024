@@ -4,9 +4,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Subsytems.SubsytemRequirments;
 
-public interface DrivetrainRequirments extends SubsytemRequirments {
+public interface DrivetrainReq extends SubsytemRequirments {
 
-  void setChassisSpeeds(ChassisSpeeds targetVelocity);
+  void setChassisSpeed(ChassisSpeeds targetVelocity);
 
   ChassisSpeeds getChassisSpeed();
 

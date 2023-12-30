@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 
-public class DrivetrainSwerve implements DrivetrainRequirments {
+public class DrivetrainSwerve implements DrivetrainReq {
 
   private final SwerveModule[] swerveModules;
   private final SwerveModulePosition[] swerveModulePositions;
@@ -61,7 +61,7 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
   }
 
   @Override
-  public void setChassisSpeeds(ChassisSpeeds targetVelocity) {
+  public void setChassisSpeed(ChassisSpeeds targetVelocity) {
     this.targetVelocity = targetVelocity;
   }
 
@@ -71,7 +71,7 @@ public class DrivetrainSwerve implements DrivetrainRequirments {
   double angle;
 
   public void periodic() {
-
+    loadPreferences();
     calcAngle();
 
     SwerveModuleState[] optimizedSwerveModuleStates = new SwerveModuleState[4];

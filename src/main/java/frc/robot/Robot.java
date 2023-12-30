@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Subsytems.Arm.*;
-import frc.robot.Subsytems.Drivetrain.DrivetrainRequirments;
+import frc.robot.Subsytems.Drivetrain.DrivetrainReq;
 import frc.robot.Subsytems.Drivetrain.DrivetrainSub;
 import frc.robot.Subsytems.Drivetrain.DrivetrainSwerve;
 import frc.robot.Subsytems.Intake.*;
@@ -20,7 +20,7 @@ public class Robot extends LoggedRobot {
   private RobotButtons cRobotButtons;
 
   // subsytems
-  private final DrivetrainRequirments drivetrainHardware = new DrivetrainSwerve();
+  private final DrivetrainReq drivetrainHardware = new DrivetrainSwerve();
   private final DrivetrainSub drivetrainSub = new DrivetrainSub(drivetrainHardware);
 
   private final IntakeRequirments intakeIOHardware = new IntakeHardware();
