@@ -15,4 +15,6 @@ public interface MotorController extends HardwareRequirments {
   int getCanID();
 
   void disable();
+
+  void currentLimit();
 }

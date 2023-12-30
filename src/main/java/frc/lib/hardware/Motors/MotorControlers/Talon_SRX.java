@@ -39,6 +39,8 @@ public class Talon_SRX implements MotorController {
     motor.set(ControlMode.Disabled, 0);
   }
 
+  public void currentLimit() {}
+
   // ----------------------------------------------------------
   @Override
   public int getCanID() {
