@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -11,13 +13,9 @@ import frc.robot.Subsytems.Arm.*;
 import frc.robot.Subsytems.Drivetrain.*;
 import frc.robot.Subsytems.Intake.*;
 import frc.robot.joystics.*;
-
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 // do some copy and past from this
 // https://github.com/FRCTeam2910/2023CompetitionRobot-Public/tree/main
@@ -87,14 +85,22 @@ public class Robot extends LoggedRobot {
     cOporator.OuttakeTopPice().onFalse(arm.SafePositon());
 
     cOporator.setPose().onTrue(drivetrain.goToPose(new Pose2d(5, 5, new Rotation2d(Math.PI))));
-    cOporator.setPose().onFalse(new InstantCommand(() -> {
-      CommandScheduler.getInstance().cancel(drivetrain.getCurrentCommand());
-    }));
+    cOporator
+        .setPose()
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  CommandScheduler.getInstance().cancel(drivetrain.getCurrentCommand());
+                }));
 
     cOporator.intakePice().onTrue(cDriver.rumble());
-    cOporator.intakePice().onFalse(new InstantCommand(() -> {
-      cDriver.rumble().cancel();
-    }));
+    cOporator
+        .intakePice()
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  cDriver.rumble().cancel();
+                }));
   }
 
   @Override
@@ -103,16 +109,13 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {
-  }
+  public void disabledExit() {}
 
   @Override
   public void autonomousInit() {
@@ -120,42 +123,32 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-  }
+  public void autonomousExit() {}
 
   @Override
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {
-  }
+  public void teleopExit() {}
 
   @Override
-  public void testInit() {
-  }
+  public void testInit() {}
 
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   @Override
-  public void testExit() {
-  }
+  public void testExit() {}
 
   @Override
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

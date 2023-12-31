@@ -1,16 +1,15 @@
 package frc.robot.Subsytems.Drivetrain;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.joystics.Driver;
 import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   public final DrivetrainReq drivetrain;
@@ -52,34 +51,33 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 
   // Commands ---------------------------------------------------------
   public Command drive(Driver controler) {
     return run(
         () -> {
-          drivetrain.setChassisSpeed(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  controler.getDrivtrainTranslationX() * drivetrain.getMaxModuleSpeed(),
-                  controler.getDrivtrainTranslationY() * -drivetrain.getMaxModuleSpeed(),
-                  controler.getDrivtrainRotation() * drivetrain.getMaxAngularVelocity(),
-                  drivetrain.getAngle()));
+          drivetrain.drive(
+              controler.getDrivtrainTranslationX(),
+              controler.getDrivtrainTranslationY(),
+              controler.getDrivtrainRotation());
         });
   }
 
   public Command goToPose(Pose2d pose) {
-    return run(() -> {
-      // AutoBuilder.pathfindToPose(
-      //     pose,
-      //     new PathConstraints(
-      //         drivetrain.getMaxModuleSpeed(),
-      //         drivetrain.getMaxModuleAccl(),
-      //         drivetrain.getMaxAngularVelocity(),
-      //         drivetrain.getMaxAngularAccl()),
-      //     0);
-      drivetrain.setChassisSpeed(ChassisSpeeds.fromFieldRelativeSpeeds(2, 0, 0, drivetrain.getAngle()));
-    });
+    return run(
+        () -> {
+          // AutoBuilder.pathfindToPose(
+          // pose,
+          // new PathConstraints(
+          // drivetrain.getMaxModuleSpeed(),
+          // drivetrain.getMaxModuleAccl(),
+          // drivetrain.getMaxAngularVelocity(),
+          // drivetrain.getMaxAngularAccl()),
+          // 0);
+          drivetrain.setChassisSpeed(
+              ChassisSpeeds.fromFieldRelativeSpeeds(2, 0, 0, drivetrain.getAngle()));
+        });
   }
 
   // ---------------------------------------------------------

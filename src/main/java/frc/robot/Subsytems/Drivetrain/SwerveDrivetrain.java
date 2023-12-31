@@ -1,9 +1,6 @@
 package frc.robot.Subsytems.Drivetrain;
 
-import org.littletonrobotics.junction.LogTable;
-
 import com.pathplanner.lib.util.PathPlannerLogging;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -15,11 +12,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.LogTable;
 
-/**
- * Basic simulation of a swerve subsystem with the methods needed by PathPlanner
- */
-public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
+/** Basic simulation of a swerve subsystem with the methods needed by PathPlanner */
+public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq {
   private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
@@ -30,17 +26,16 @@ public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
 
   public SwerveDrivetrain() {
     gyro = new SimGyro();
-    modules = new SimSwerveModule[] {
-        new SimSwerveModule(),
-        new SimSwerveModule(),
-        new SimSwerveModule(),
-        new SimSwerveModule()
-    };
-    kinematics = new SwerveDriveKinematics(
-        new Translation2d(0.4, 0.4),
-        new Translation2d(0.4, -0.4),
-        new Translation2d(-0.4, 0.4),
-        new Translation2d(-0.4, -0.4));
+    modules =
+        new SimSwerveModule[] {
+          new SimSwerveModule(), new SimSwerveModule(), new SimSwerveModule(), new SimSwerveModule()
+        };
+    kinematics =
+        new SwerveDriveKinematics(
+            new Translation2d(0.4, 0.4),
+            new Translation2d(0.4, -0.4),
+            new Translation2d(-0.4, 0.4),
+            new Translation2d(-0.4, -0.4));
 
     odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getPositions());
 
@@ -72,7 +67,8 @@ public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
   }
 
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
-    setChassisSpeed(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose2d().getRotation()));
+    setChassisSpeed(
+        ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose2d().getRotation()));
   }
 
   public void setChassisSpeed(ChassisSpeeds robotRelativeSpeeds) {
@@ -107,8 +103,7 @@ public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
   }
 
   /**
-   * Basic simulation of a swerve module, will just hold its current state and not
-   * use any hardware
+   * Basic simulation of a swerve module, will just hold its current state and not use any hardware
    */
   class SimSwerveModule {
     private SwerveModulePosition currentPosition = new SwerveModulePosition();
@@ -126,15 +121,14 @@ public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
       // Optimize the state
       currentState = SwerveModuleState.optimize(targetState, currentState.angle);
 
-      currentPosition = new SwerveModulePosition(
-          currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02), currentState.angle);
+      currentPosition =
+          new SwerveModulePosition(
+              currentPosition.distanceMeters + (currentState.speedMetersPerSecond * 0.02),
+              currentState.angle);
     }
   }
 
-  /**
-   * Basic simulation of a gyro, will just hold its current state and not use any
-   * hardware
-   */
+  /** Basic simulation of a gyro, will just hold its current state and not use any hardware */
   class SimGyro {
     private Rotation2d currentRotation = new Rotation2d();
 
@@ -150,24 +144,31 @@ public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
   @Override
   public void toLog(LogTable table) {
     table.put("you dumb", 10);
-    table.put("2dOdomaty",
-        new double[] { getPose2d().getX(), getPose2d().getY(), getPose2d().getRotation().getRadians() });
-    table.put("3dOdomaty",
+    table.put(
+        "2dOdomaty",
         new double[] {
-            getPose2d().getX(),
-            getPose2d().getY(),
-            0,
-            new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getW(),
-            new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getX(),
-            new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getY(),
-            new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getZ() });
-          table.put("swerve", new double[] {
-            modules[0].getState().angle.getRadians(), modules[0].getState().speedMetersPerSecond,
-            modules[1].getState().angle.getRadians(), modules[1].getState().speedMetersPerSecond,
-            modules[2].getState().angle.getRadians(), modules[2].getState().speedMetersPerSecond,
-            modules[3].getState().angle.getRadians(), modules[3].getState().speedMetersPerSecond,
-          });
-          table.put("angle", getAngle().getRadians());
+          getPose2d().getX(), getPose2d().getY(), getPose2d().getRotation().getRadians()
+        });
+    table.put(
+        "3dOdomaty",
+        new double[] {
+          getPose2d().getX(),
+          getPose2d().getY(),
+          0,
+          new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getW(),
+          new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getX(),
+          new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getY(),
+          new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getZ()
+        });
+    table.put(
+        "swerve",
+        new double[] {
+          modules[0].getState().angle.getRadians(), modules[0].getState().speedMetersPerSecond,
+          modules[1].getState().angle.getRadians(), modules[1].getState().speedMetersPerSecond,
+          modules[2].getState().angle.getRadians(), modules[2].getState().speedMetersPerSecond,
+          modules[3].getState().angle.getRadians(), modules[3].getState().speedMetersPerSecond,
+        });
+    table.put("angle", getAngle().getRadians());
   }
 
   @Override
@@ -213,8 +214,12 @@ public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
   }
 
   @Override
-  public void drive() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'drive'");
+  public void drive(double xPercent, double yPercent, double omegaPercent) {
+    setChassisSpeed(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            xPercent * getMaxModuleSpeed(),
+            yPercent * getMaxModuleSpeed(),
+            omegaPercent * getMaxAngularVelocity(),
+            getAngle()));
   }
 }

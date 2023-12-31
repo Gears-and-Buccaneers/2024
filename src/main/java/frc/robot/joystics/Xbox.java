@@ -22,9 +22,10 @@ public class Xbox extends LogitechController implements Driver, Oporator {
 
   @Override
   public Trigger OuttakeMidPice() {
-    return new Trigger(() -> {
-      return LT_S.get() >= .2;
-    });
+    return new Trigger(
+        () -> {
+          return LT_S.get() >= .2;
+        });
   }
 
   @Override
@@ -55,5 +56,4 @@ public class Xbox extends LogitechController implements Driver, Oporator {
   public Command rumble() {
     return super.Rumble;
   }
-
 }

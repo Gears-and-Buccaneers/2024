@@ -174,10 +174,8 @@ public class Motor implements HardwareRequirments {
     if (RobotBase.isReal()) {
       return mEncoder.getPositoin();
     } else {
-      if (simVelocity)
-        return mSimPositionMeters;
-      else
-        return mSimPositionRad;
+      if (simVelocity) return mSimPositionMeters;
+      else return mSimPositionRad;
     }
   }
 
@@ -225,8 +223,10 @@ public class Motor implements HardwareRequirments {
 
     mSim.update(Robot.defaultPeriodSecs);
 
-    mSimPositionRad = mSimPositionRad + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
-    mSimPositionMeters += (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
+    mSimPositionRad =
+        mSimPositionRad + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
+    mSimPositionMeters +=
+        (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
     mSimVelocityDeg = mSim.getAngularVelocityRadPerSec();
     mSimVelocityMeters = mSim.getAngularVelocityRadPerSec() * Units.inchesToMeters(2);
     // --------------------------------------------------------
@@ -245,10 +245,8 @@ public class Motor implements HardwareRequirments {
 
   @Override
   public boolean connected() {
-    if (!mController.connected())
-      return false;
-    if (hasEncoder)
-      return mEncoder.connected();
+    if (!mController.connected()) return false;
+    if (hasEncoder) return mEncoder.connected();
     return true;
   }
 }

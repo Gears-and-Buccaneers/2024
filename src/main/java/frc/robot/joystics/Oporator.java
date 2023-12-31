@@ -13,5 +13,4 @@ public interface Oporator {
   Trigger OuttakeMidPice();
 
   Trigger setPose();
-
 }
