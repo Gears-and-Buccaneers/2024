@@ -1,0 +1,114 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2.003001824185467,
+      "y": 4.4
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakePose"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Grab Pice 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "OutakePose"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "PlacePiceH2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakePose"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Grab Pice 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "OutakePose"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "PlacePiceH2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakePose"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GoToBalance"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

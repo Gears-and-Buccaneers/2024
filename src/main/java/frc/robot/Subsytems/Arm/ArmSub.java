@@ -29,15 +29,16 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 
   // Commands ---------------------------------------------------------
   public Command IntakePosition() {
     return run(() -> {
-          arm.wristAngleSetpoint(Rotation2d.fromDegrees(270));
-          arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
-          arm.elevatorLengthSetpoint(Units.inchesToMeters(35));
-        })
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(270));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(35));
+    })
         .handleInterrupt(
             () -> {
               arm.disable();
@@ -46,14 +47,44 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
 
   public Command OutakePositon() {
     return run(() -> {
-          arm.wristAngleSetpoint(Rotation2d.fromDegrees(125));
-          arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(140));
-          arm.elevatorLengthSetpoint(Units.inchesToMeters(60));
-        })
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(125));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(140));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(60));
+    })
         .handleInterrupt(
             () -> {
               arm.disable();
             });
+  }
+
+  public Command IntakePositionAuton() {
+    return run(() -> {
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(270));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(35));
+    })
+        .handleInterrupt(
+            () -> {
+              arm.disable();
+            })
+        .until(() -> {
+          return arm.atSetpoint();
+        });
+  }
+
+  public Command OutakePositonAuton() {
+    return run(() -> {
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(125));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(140));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(60));
+    })
+        .handleInterrupt(
+            () -> {
+              arm.disable();
+            })
+        .until(() -> {
+          return arm.atSetpoint();
+        });
   }
 
   // ---------------------------------------------------------

@@ -101,6 +101,13 @@ public class ArmHardware implements ArmRequirments {
     mWristPivot.disable();
   }
 
+  public boolean atSetpoint() {
+    boolean atElvatorPivot = (elevatorAcual.getAngle() - elevatorSetpoint.getAngle()) < 1;
+    boolean atElvatorExstend = (elevatorAcual.getLength() - elevatorSetpoint.getLength()) < 1;
+    boolean atWristPivot = (wristAcual.getAngle() - wristSetpoint.getAngle()) < 1;
+    return (atElvatorPivot && atElvatorExstend && atWristPivot);
+  }
+
   // -----------------------------
   @Override
   public void loadPreferences() {
@@ -135,8 +142,9 @@ public class ArmHardware implements ArmRequirments {
     // units are in inches
     mechAcual = new Mechanism2d(Units.inchesToMeters(122), Units.inchesToMeters(126));
     // the mechanism root node
-    MechanismRoot2d rootA = mechAcual.getRoot("arm",  Units.inchesToMeters(50), Units.inchesToMeters(12));
-    elevatorAcual = rootA.append(new MechanismLigament2d("elevator", Units.inchesToMeters(40), 90, 8, new Color8Bit(Color.kCyan)));
+    MechanismRoot2d rootA = mechAcual.getRoot("arm", Units.inchesToMeters(50), Units.inchesToMeters(12));
+    elevatorAcual = rootA
+        .append(new MechanismLigament2d("elevator", Units.inchesToMeters(40), 90, 8, new Color8Bit(Color.kCyan)));
     wristAcual = elevatorAcual.append(
         new MechanismLigament2d("wrist", Units.inchesToMeters(15), 0, 6, new Color8Bit(Color.kCyan)));
   }

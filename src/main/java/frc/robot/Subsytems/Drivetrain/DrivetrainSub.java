@@ -24,8 +24,8 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
     this.poseEstimator = poseEstimator;
 
     AutoBuilder.configureHolonomic(
-        this.poseEstimator::getPose2d,
-        this.poseEstimator::resetEstimator,
+        this.drivetrain::getPose2d, // chaing to pose estimaot
+        this.drivetrain::resetEstimator, // chaing to pose estimaot
         this.drivetrain::getChassisSpeed,
         this.drivetrain::setChassisSpeed,
         new HolonomicPathFollowerConfig(
@@ -38,7 +38,7 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
 
     System.out.println("[Init] Creating " + simpleName + " with:");
     System.out.println("\t" + this.drivetrain.getClass().getSimpleName());
-    System.out.println("\t" + this.poseEstimator.getClass().getSimpleName());
+    // System.out.println("\t" + this.poseEstimator.getClass().getSimpleName());
 
     this.drivetrain.setBrakeMode(true);
   }
@@ -46,10 +46,10 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   @Override
   public void periodic() {
     Logger.processInputs(simpleName, drivetrain);
-    Logger.processInputs(simpleName + "/poseEstimator", poseEstimator);
+    // Logger.processInputs(simpleName + "/poseEstimator", poseEstimator);
 
     drivetrain.periodic();
-    poseEstimator.periodic();
+    // poseEstimator.periodic();
   }
 
   @Override
