@@ -1,4 +1,4 @@
-package frc.robot.Subsytems.Arm;
+package frc.robot.Subsystems.Arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -15,7 +15,7 @@ import frc.lib.hardware.sensor.encoders.REVBoreEncoder;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogTable;
 
-public class ArmHardware implements ArmRequirments {
+public class ArmHardware implements ArmRequirements {
   private final Motor mElvatorPivot;
   private final Motor mElvatorExstend;
   private final Motor mWristPivot;
@@ -82,9 +82,9 @@ public class ArmHardware implements ArmRequirments {
     mElvatorExstend.setPositoin(Rotation2d.fromDegrees(elevatorSetpoint.getLength()).getRadians());
     mWristPivot.setPositoin(Rotation2d.fromDegrees(wristSetpoint.getAngle()).getRadians());
 
-    elevatorAcual.setAngle(Rotation2d.fromRadians(mElvatorPivot.getPositoin()).getDegrees());
-    elevatorAcual.setLength(Rotation2d.fromRadians(mElvatorExstend.getPositoin()).getDegrees());
-    wristAcual.setAngle(Rotation2d.fromRadians(mWristPivot.getPositoin()).getDegrees());
+    elevatorAcual.setAngle(Rotation2d.fromRadians(mElvatorPivot.getPosition()).getDegrees());
+    elevatorAcual.setLength(Rotation2d.fromRadians(mElvatorExstend.getPosition()).getDegrees());
+    wristAcual.setAngle(Rotation2d.fromRadians(mWristPivot.getPosition()).getDegrees());
   }
 
   public void setBrakeMode(boolean enable) {

@@ -1,9 +1,9 @@
-package frc.robot.Subsytems;
+package frc.robot.Subsystems;
 
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-public interface SubsytemRequirments extends AutoCloseable, LoggableInputs {
+public interface SubsystemRequirements extends AutoCloseable, LoggableInputs {
 
   void toLog(LogTable table);
 

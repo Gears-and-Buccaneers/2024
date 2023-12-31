@@ -1,16 +1,16 @@
-package frc.robot.joystics;
+package frc.robot.joysticks;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public interface Oporator {
+public interface Operator {
 
   /** intake moter set to intake 50% */
-  Trigger intakePice();
+  Trigger intakePiece();
 
   /** intake moter set to outtake 50% */
-  Trigger OuttakeTopPice();
+  Trigger outtakeTopPiece();
 
-  Trigger OuttakeMidPice();
+  Trigger outtakeMidPiece();
 
   Trigger setPose();
 }

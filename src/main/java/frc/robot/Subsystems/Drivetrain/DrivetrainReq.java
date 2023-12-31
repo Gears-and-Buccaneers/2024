@@ -1,10 +1,10 @@
-package frc.robot.Subsytems.Drivetrain;
+package frc.robot.Subsystems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.Subsytems.SubsytemRequirments;
+import frc.robot.Subsystems.SubsystemRequirements;
 
-public interface DrivetrainReq extends SubsytemRequirments {
+public interface DrivetrainReq extends SubsystemRequirements {
 
   /**
    * @param targetVelocity target VElocity Meters/second ROBOT RELIVIVE

@@ -6,9 +6,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.lib.hardware.HardwareRequirments;
-import frc.lib.hardware.Motors.MotorControlers.MotorController;
-import frc.lib.hardware.Motors.MotorControlers.Talon_SRX;
+import frc.lib.hardware.HardwareRequirements;
+import frc.lib.hardware.Motors.MotorControllers.MotorController;
+import frc.lib.hardware.Motors.MotorControllers.Talon_SRX;
 import frc.lib.hardware.Motors.PID.EncoderConfigs;
 import frc.lib.hardware.Motors.PID.PIDConfigs;
 import frc.lib.hardware.Motors.PID.SimConfig;
@@ -16,7 +16,7 @@ import frc.lib.hardware.sensor.encoders.Encoder;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.LogTable;
 
-public class Motor implements HardwareRequirments {
+public class Motor implements HardwareRequirements {
   // Enums --------------
   public enum Type {
     CIM(DCMotor.getFalcon500(1)),
@@ -133,7 +133,7 @@ public class Motor implements HardwareRequirments {
     mSimFeedback.setSetpoint(Positoin);
     // mFeedback.setSetpoint(Positoin);
 
-    // mAppliedVolts = mFeedback.calculate(getPositoin());
+    // mAppliedVolts = mFeedback.calculate(getPosition());
     // mAppliedVolts = MathUtil.clamp(mAppliedVolts, -12.0, 12.0);
 
     setVolts(mAppliedVolts);
@@ -167,12 +167,12 @@ public class Motor implements HardwareRequirments {
     mEncoder.close();
   }
 
-  public double getPositoin() {
+  public double getPosition() {
     if (!hasEncoder) {
       throw new Error("you dumb. This motor has no encoder");
     }
     if (RobotBase.isReal()) {
-      return mEncoder.getPositoin();
+      return mEncoder.getPosition();
     } else {
       if (simVelocity) return mSimPositionMeters;
       else return mSimPositionRad;
@@ -197,7 +197,7 @@ public class Motor implements HardwareRequirments {
     mController.toLog(table, name);
     table.put(name + "/Motor Type", mType.toString());
     if (hasEncoder) {
-      table.put(name + "/Position (degrees)", getPositoin());
+      table.put(name + "/Position (degrees)", getPosition());
       table.put(name + "/Velocity (degreesPerSecond)", getVelocity());
       table.put(name + "/Velocity (MetersPerSecond)", getVelocity() * Units.inchesToMeters(2));
       // table.put(name + "/AppliedVolts (Volts)", mAppliedVolts);

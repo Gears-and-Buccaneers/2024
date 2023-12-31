@@ -1,8 +1,8 @@
-package frc.lib.hardware.Motors.MotorControlers;
+package frc.lib.hardware.Motors.MotorControllers;
 
-import frc.lib.hardware.HardwareRequirments;
+import frc.lib.hardware.HardwareRequirements;
 
-public interface MotorController extends HardwareRequirments {
+public interface MotorController extends HardwareRequirements {
 
   MotorController config(int canID);
 

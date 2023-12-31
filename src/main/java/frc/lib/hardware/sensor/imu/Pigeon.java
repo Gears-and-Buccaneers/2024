@@ -33,17 +33,17 @@ public class Pigeon implements IMU {
     // config values
     pitch = pigeon2.getPitch();
     pitch.setUpdateFrequency(25.0);
-    pitchVelocity = pigeon2.getAngularVelocityXDevice(); // TODO check if x is corect value
+    pitchVelocity = pigeon2.getAngularVelocityXDevice(); // TODO check if x is correct value
     pitchVelocity.setUpdateFrequency(25.0);
 
     yaw = pigeon2.getYaw();
     yaw.setUpdateFrequency(100.0);
-    yawVelocity = pigeon2.getAngularVelocityYDevice(); // TODO check if y is corect value
+    yawVelocity = pigeon2.getAngularVelocityYDevice(); // TODO check if y is correct value
     yawVelocity.setUpdateFrequency(100.0);
 
     roll = pigeon2.getRoll();
     roll.setUpdateFrequency(25.0);
-    rollVelocity = pigeon2.getAngularVelocityZDevice(); // TODO check if z is corect value
+    rollVelocity = pigeon2.getAngularVelocityZDevice(); // TODO check if z is correct value
     rollVelocity.setUpdateFrequency(25.0);
 
     pigeon2.optimizeBusUtilization();

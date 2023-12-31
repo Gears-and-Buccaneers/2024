@@ -1,4 +1,4 @@
-package frc.robot.Subsytems.Drivetrain;
+package frc.robot.Subsystems.Drivetrain;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.joystics.Driver;
+import frc.robot.joysticks.Driver;
 import org.littletonrobotics.junction.Logger;
 
 public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
@@ -22,8 +22,8 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
     this.poseEstimator = poseEstimator;
 
     AutoBuilder.configureHolonomic(
-        this.poseEstimator::getPose2d, // chaing to pose estimaot
-        this.poseEstimator::resetEstimator, // chaing to pose estimaot
+        this.poseEstimator::getPose2d, // chaing to pose estimate
+        this.poseEstimator::resetEstimator, // chaing to pose estimate
         this.drivetrain::getChassisSpeed,
         this.drivetrain::setChassisSpeed,
         new HolonomicPathFollowerConfig(
@@ -54,13 +54,13 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   public void simulationPeriodic() {}
 
   // Commands ---------------------------------------------------------
-  public Command drive(Driver controler) {
+  public Command drive(Driver controller) {
     return run(
         () -> {
           drivetrain.drive(
-              controler.getDrivtrainTranslationX(),
-              controler.getDrivtrainTranslationY(),
-              controler.getDrivtrainRotation());
+              controller.getDrivetrainTranslationX(),
+              controller.getDrivetrainTranslationY(),
+              controller.getDrivetrainRotation());
         });
   }
 

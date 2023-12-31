@@ -1,9 +1,9 @@
 package frc.lib.hardware.sensor.proximitySwitch;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.hardware.HardwareRequirments;
+import frc.lib.hardware.HardwareRequirements;
 
-public interface ProximitySwitch extends HardwareRequirments {
+public interface ProximitySwitch extends HardwareRequirements {
   /**
    * @return true if open false if closed
    */
