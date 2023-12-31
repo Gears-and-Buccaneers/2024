@@ -73,7 +73,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code>, <code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code>, <code>edu.wpi.first.util.sendable.Sendable</code>, <code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -81,7 +81,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">IntakeRequirments</span><span class="extends-implements">
-extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></span></div>
+extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a>, edu.wpi.first.util.sendable.Sendable</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -96,12 +96,6 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isClosed()" class="member-name-link">isClosed</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isOpen()" class="member-name-link">isOpen</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setIntakeSpeed()" class="member-name-link">setIntakeSpeed</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
@@ -114,6 +108,9 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.AutoCloseable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-edu.wpi.first.util.sendable.Sendable">Methods inherited from interface&nbsp;edu.wpi.first.util.sendable.Sendable</h3>
+<code>initSendable</code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-frc.robot.Subsytems.SubsytemRequirments">Methods inherited from interface&nbsp;frc.robot.Subsytems.<a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></h3>
 <code><a href="../SubsytemRequirments.html#disable()">disable</a>, <a href="../SubsytemRequirments.html#fromLog(org.littletonrobotics.junction.LogTable)">fromLog</a>, <a href="../SubsytemRequirments.html#loadPreferences()">loadPreferences</a>, <a href="../SubsytemRequirments.html#periodic()">periodic</a>, <a href="../SubsytemRequirments.html#setBrakeMode(boolean)">setBrakeMode</a>, <a href="../SubsytemRequirments.html#simulationPeriodic()">simulationPeriodic</a>, <a href="../SubsytemRequirments.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a></code></div>
@@ -138,18 +135,6 @@ extends <a href="../SubsytemRequirments.html" title="interface in frc.robot.Subs
 <section class="detail" id="setIntakeSpeed()">
 <h3>setIntakeSpeed</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">setIntakeSpeed</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="isOpen()">
-<h3>isOpen</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isOpen</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="isClosed()">
-<h3>isClosed</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isClosed</span>()</div>
 </section>
 </li>
 </ul>

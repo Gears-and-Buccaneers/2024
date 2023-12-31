@@ -44,13 +44,13 @@ loadScripts(document, 'script');</script>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -76,7 +76,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code>, <code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
+<dd><code>edu.wpi.first.util.sendable.Sendable</code>, <code><a href="IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code>, <code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">IntakeHardware</span>
@@ -85,6 +85,24 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>final <a href="../../../lib/hardware/Motors/Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></code></div>
+<div class="col-second even-row-color"><code><a href="#mIntake" class="member-name-link">mIntake</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>final <a href="../../../lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#switch1" class="member-name-link">switch1</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -109,39 +127,42 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canHoldPice()" class="member-name-link">canHoldPice</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disable()" class="member-name-link">disable</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isClosed()" class="member-name-link">isClosed</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disable()" class="member-name-link">disable</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isOpen()" class="member-name-link">isOpen</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasPice()" class="member-name-link">hasPice</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadPreferences()" class="member-name-link">loadPreferences</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initSendable(edu.wpi.first.util.sendable.SendableBuilder)" class="member-name-link">initSendable</a><wbr>(edu.wpi.first.util.sendable.SendableBuilder&nbsp;builder)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadPreferences()" class="member-name-link">loadPreferences</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIntakeSpeed()" class="member-name-link">setIntakeSpeed</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOutakeSpeed()" class="member-name-link">setOutakeSpeed</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIntakeSpeed()" class="member-name-link">setIntakeSpeed</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSimpleName(java.lang.String)" class="member-name-link">setSimpleName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;SimpleName)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOutakeSpeed()" class="member-name-link">setOutakeSpeed</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSimpleName(java.lang.String)" class="member-name-link">setSimpleName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;SimpleName)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLog(org.littletonrobotics.junction.LogTable)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -157,6 +178,26 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="mIntake">
+<h3>mIntake</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../../../lib/hardware/Motors/Motor.html" title="class in frc.lib.hardware.Motors">Motor</a></span>&nbsp;<span class="element-name">mIntake</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="switch1">
+<h3>switch1</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../../../lib/hardware/sensor/proximitySwitch/ProximitySwitch.html" title="interface in frc.lib.hardware.sensor.proximitySwitch">ProximitySwitch</a></span>&nbsp;<span class="element-name">switch1</span></div>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li>
 <section class="constructor-details" id="constructor-detail">
@@ -197,23 +238,15 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 </section>
 </li>
 <li>
-<section class="detail" id="isOpen()">
-<h3>isOpen</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isOpen</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="IntakeRequirments.html#isOpen()">isOpen</a></code>&nbsp;in interface&nbsp;<code><a href="IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
-</dl>
+<section class="detail" id="canHoldPice()">
+<h3>canHoldPice</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canHoldPice</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="isClosed()">
-<h3>isClosed</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isClosed</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="IntakeRequirments.html#isClosed()">isClosed</a></code>&nbsp;in interface&nbsp;<code><a href="IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
-</dl>
+<section class="detail" id="hasPice()">
+<h3>hasPice</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasPice</span>()</div>
 </section>
 </li>
 <li>
@@ -247,18 +280,6 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 </section>
 </li>
 <li>
-<section class="detail" id="toLog(org.littletonrobotics.junction.LogTable)">
-<h3>toLog</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>toLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
-<dt>Specified by:</dt>
-<dd><code><a href="../SubsytemRequirments.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a></code>&nbsp;in interface&nbsp;<code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="setSimpleName(java.lang.String)">
 <h3>setSimpleName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSimpleName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;SimpleName)</span></div>
@@ -284,6 +305,28 @@ implements <a href="IntakeRequirments.html" title="interface in frc.robot.Subsyt
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../SubsytemRequirments.html#loadPreferences()">loadPreferences</a></code>&nbsp;in interface&nbsp;<code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="initSendable(edu.wpi.first.util.sendable.SendableBuilder)">
+<h3>initSendable</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">initSendable</span><wbr><span class="parameters">(edu.wpi.first.util.sendable.SendableBuilder&nbsp;builder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>initSendable</code>&nbsp;in interface&nbsp;<code>edu.wpi.first.util.sendable.Sendable</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="toLog(org.littletonrobotics.junction.LogTable)">
+<h3>toLog</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">toLog</span><wbr><span class="parameters">(org.littletonrobotics.junction.LogTable&nbsp;table)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>toLog</code>&nbsp;in interface&nbsp;<code>org.littletonrobotics.junction.inputs.LoggableInputs</code></dd>
+<dt>Specified by:</dt>
+<dd><code><a href="../SubsytemRequirments.html#toLog(org.littletonrobotics.junction.LogTable)">toLog</a></code>&nbsp;in interface&nbsp;<code><a href="../SubsytemRequirments.html" title="interface in frc.robot.Subsytems">SubsytemRequirments</a></code></dd>
 </dl>
 </section>
 </li>

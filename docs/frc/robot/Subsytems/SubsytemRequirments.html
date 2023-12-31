@@ -77,11 +77,11 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="Arm/ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code>, <code><a href="Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code></dd>
+<dd><code><a href="Arm/ArmRequirments.html" title="interface in frc.robot.Subsytems.Arm">ArmRequirments</a></code>, <code><a href="Drivetrain/DrivetrainReq.html" title="interface in frc.robot.Subsytems.Drivetrain">DrivetrainReq</a></code>, <code><a href="Intake/IntakeRequirments.html" title="interface in frc.robot.Subsytems.Intake">IntakeRequirments</a></code>, <code><a href="Drivetrain/PoseEstimatorReq.html" title="interface in frc.robot.Subsytems.Drivetrain">PoseEstimatorReq</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="Arm/ArmHardware.html" title="class in frc.robot.Subsytems.Arm">ArmHardware</a></code>, <code><a href="Intake/IntakeHardware.html" title="class in frc.robot.Subsytems.Intake">IntakeHardware</a></code></dd>
+<dd><code><a href="Arm/ArmHardware.html" title="class in frc.robot.Subsytems.Arm">ArmHardware</a></code>, <code><a href="Intake/IntakeHardware.html" title="class in frc.robot.Subsytems.Intake">IntakeHardware</a></code>, <code><a href="Drivetrain/SwerveDrivetrain.html" title="class in frc.robot.Subsytems.Drivetrain">SwerveDrivetrain</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">SubsytemRequirments</span><span class="extends-implements">
@@ -109,9 +109,9 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#loadPreferences()" class="member-name-link">loadPreferences</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#periodic()" class="member-name-link">periodic</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#setBrakeMode(boolean)" class="member-name-link">setBrakeMode</a><wbr>(boolean&nbsp;enable)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
@@ -151,7 +151,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/ja
 <li>
 <section class="detail" id="periodic()">
 <h3>periodic</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">periodic</span>()</div>
 </section>
 </li>
 <li>

@@ -122,23 +122,26 @@ implements <a href="MotorController.html" title="interface in frc.lib.hardware.M
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#connected()" class="member-name-link">connected</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disable()" class="member-name-link">disable</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCanID()" class="member-name-link">getCanID</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runPercentOut(double)" class="member-name-link">runPercentOut</a><wbr>(double&nbsp;num)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#currentLimit()" class="member-name-link">currentLimit</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInverted(boolean)" class="member-name-link">setInverted</a><wbr>(boolean&nbsp;enable)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#disable()" class="member-name-link">disable</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCanID()" class="member-name-link">getCanID</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runVolts(double)" class="member-name-link">runVolts</a><wbr>(double&nbsp;num)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInverted(boolean)" class="member-name-link">setInverted</a><wbr>(boolean&nbsp;enable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">true inverts it</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLog(org.littletonrobotics.junction.LogTable,java.lang.String)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toLog(org.littletonrobotics.junction.LogTable,java.lang.String)" class="member-name-link">toLog</a><wbr>(org.littletonrobotics.junction.LogTable&nbsp;table,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -184,12 +187,12 @@ implements <a href="MotorController.html" title="interface in frc.lib.hardware.M
 </section>
 </li>
 <li>
-<section class="detail" id="runPercentOut(double)">
-<h3>runPercentOut</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">runPercentOut</span><wbr><span class="parameters">(double&nbsp;num)</span></div>
+<section class="detail" id="runVolts(double)">
+<h3>runVolts</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">runVolts</span><wbr><span class="parameters">(double&nbsp;num)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="MotorController.html#runPercentOut(double)">runPercentOut</a></code>&nbsp;in interface&nbsp;<code><a href="MotorController.html" title="interface in frc.lib.hardware.Motors.MotorControlers">MotorController</a></code></dd>
+<dd><code><a href="MotorController.html#runVolts(double)">runVolts</a></code>&nbsp;in interface&nbsp;<code><a href="MotorController.html" title="interface in frc.lib.hardware.Motors.MotorControlers">MotorController</a></code></dd>
 </dl>
 </section>
 </li>
@@ -221,6 +224,16 @@ implements <a href="MotorController.html" title="interface in frc.lib.hardware.M
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="MotorController.html#disable()">disable</a></code>&nbsp;in interface&nbsp;<code><a href="MotorController.html" title="interface in frc.lib.hardware.Motors.MotorControlers">MotorController</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="currentLimit()">
+<h3>currentLimit</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">currentLimit</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="MotorController.html#currentLimit()">currentLimit</a></code>&nbsp;in interface&nbsp;<code><a href="MotorController.html" title="interface in frc.lib.hardware.Motors.MotorControlers">MotorController</a></code></dd>
 </dl>
 </section>
 </li>
