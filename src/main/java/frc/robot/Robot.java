@@ -63,7 +63,9 @@ public class Robot extends LoggedRobot {
 
   public void nameCommangs() {
     NamedCommands.registerCommand("IntakePose", armSub.IntakePositionAuton());
-    NamedCommands.registerCommand("OutakePose", armSub.OutakePositonAuton());
+    NamedCommands.registerCommand("OutakePose", armSub.OutakeTopPositonAuton());
+    NamedCommands.registerCommand("OutakeMidPose", armSub.OutakeMidPositonAuton());
+    NamedCommands.registerCommand("Safe", armSub.SafePositon());
   }
 
   // this part should be the state machin
@@ -74,7 +76,12 @@ public class Robot extends LoggedRobot {
     cRobotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
 
     cOporator.intakePice().onTrue(armSub.IntakePosition());
-    cOporator.OuttakePice().onFalse(armSub.OutakePositon());
+    cOporator.OuttakeTopPice().onTrue(armSub.OutakeTopPositon());
+    cOporator.OuttakeMidPice().onTrue(armSub.OutakeMidPositon());
+
+    cOporator.intakePice().onFalse(armSub.SafePositon());
+    cOporator.OuttakeMidPice().onFalse(armSub.SafePositon());
+    cOporator.OuttakeTopPice().onFalse(armSub.SafePositon());
   }
 
   @Override

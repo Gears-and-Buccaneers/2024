@@ -8,5 +8,8 @@ public interface Oporator {
   Trigger intakePice();
 
   /** intake moter set to outtake 50% */
-  Trigger OuttakePice();
+  Trigger OuttakeTopPice();
+
+  Trigger OuttakeMidPice();
+
 }

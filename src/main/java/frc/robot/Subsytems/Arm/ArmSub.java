@@ -13,6 +13,9 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
 
   public ArmSub(ArmRequirments arm) {
     this.arm = arm;
+    arm.wristAngleSetpoint(Rotation2d.fromDegrees(240));
+    arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(30));
+    arm.elevatorLengthSetpoint(Units.inchesToMeters(25));
 
     System.out.println("[Init] Creating " + simpleName + " with:");
     System.out.println("\t" + arm.getClass().getSimpleName());
@@ -45,11 +48,35 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
             });
   }
 
-  public Command OutakePositon() {
+  public Command OutakeTopPositon() {
     return run(() -> {
-      arm.wristAngleSetpoint(Rotation2d.fromDegrees(125));
-      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(140));
-      arm.elevatorLengthSetpoint(Units.inchesToMeters(60));
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(90));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(120));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(55));
+    })
+        .handleInterrupt(
+            () -> {
+              arm.disable();
+            });
+  }
+
+  public Command OutakeMidPositon() {
+    return run(() -> {
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(100));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(110));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(35));
+    })
+        .handleInterrupt(
+            () -> {
+              arm.disable();
+            });
+  }
+
+  public Command SafePositon() {
+    return run(() -> {
+      arm.wristAngleSetpoint(Rotation2d.fromDegrees(240));
+      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(30));
+      arm.elevatorLengthSetpoint(Units.inchesToMeters(25));
     })
         .handleInterrupt(
             () -> {
@@ -58,30 +85,21 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
   }
 
   public Command IntakePositionAuton() {
-    return run(() -> {
-      arm.wristAngleSetpoint(Rotation2d.fromDegrees(270));
-      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(15));
-      arm.elevatorLengthSetpoint(Units.inchesToMeters(35));
-    })
-        .handleInterrupt(
-            () -> {
-              arm.disable();
-            })
+    return IntakePosition()
         .until(() -> {
           return arm.atSetpoint();
         });
   }
 
-  public Command OutakePositonAuton() {
-    return run(() -> {
-      arm.wristAngleSetpoint(Rotation2d.fromDegrees(125));
-      arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(140));
-      arm.elevatorLengthSetpoint(Units.inchesToMeters(60));
-    })
-        .handleInterrupt(
-            () -> {
-              arm.disable();
-            })
+  public Command OutakeTopPositonAuton() {
+    return OutakeTopPositon()
+        .until(() -> {
+          return arm.atSetpoint();
+        });
+  }
+
+  public Command OutakeMidPositonAuton() {
+    return OutakeMidPositon()
         .until(() -> {
           return arm.atSetpoint();
         });

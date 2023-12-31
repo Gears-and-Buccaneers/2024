@@ -14,7 +14,12 @@ public class SamKeyboard extends Keyboard implements Oporator, Driver {
   }
 
   @Override
-  public Trigger OuttakePice() {
+  public Trigger OuttakeTopPice() {
+    return THREE;
+  }
+
+  @Override
+  public Trigger OuttakeMidPice() {
     return TWO;
   }
 

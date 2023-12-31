@@ -40,7 +40,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(false, 111.8, 1))
+        .SimConfig(new SimConfig(false, 111.8, .5))
         .setName("mElvatorPivot");
 
     mElvatorExstend
@@ -56,7 +56,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
-        .SimConfig(new SimConfig(false, 39.5, 1))
+        .SimConfig(new SimConfig(false, 39.5, .5))
         .setName("mWristPivot");
 
     configMech();
@@ -79,13 +79,14 @@ public class ArmHardware implements ArmRequirments {
 
   @Override
   public void periodic() {
-    mElvatorPivot.setPositoin(elevatorSetpoint.getAngle());
-    mElvatorExstend.setPositoin(elevatorSetpoint.getLength());
-    mWristPivot.setPositoin(wristSetpoint.getAngle());
 
-    elevatorAcual.setAngle(mElvatorPivot.getPositoin());
-    elevatorAcual.setLength(mElvatorExstend.getPositoin());
-    wristAcual.setAngle(mWristPivot.getPositoin());
+    mElvatorPivot.setPositoin(Rotation2d.fromDegrees(elevatorSetpoint.getAngle()).getRadians());
+    mElvatorExstend.setPositoin(Rotation2d.fromDegrees(elevatorSetpoint.getLength()).getRadians());
+    mWristPivot.setPositoin(Rotation2d.fromDegrees(wristSetpoint.getAngle()).getRadians());
+
+    elevatorAcual.setAngle(Rotation2d.fromRadians(mElvatorPivot.getPositoin()).getDegrees());
+    elevatorAcual.setLength(Rotation2d.fromRadians(mElvatorExstend.getPositoin()).getDegrees());
+    wristAcual.setAngle(Rotation2d.fromRadians(mWristPivot.getPositoin()).getDegrees());
   }
 
   public void setBrakeMode(boolean enable) {

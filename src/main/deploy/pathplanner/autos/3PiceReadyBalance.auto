@@ -75,7 +75,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "OutakePose"
+                  "name": "OutakeMidPose"
                 }
               },
               {
@@ -94,7 +94,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "IntakePose"
+                  "name": "Safe"
                 }
               },
               {
