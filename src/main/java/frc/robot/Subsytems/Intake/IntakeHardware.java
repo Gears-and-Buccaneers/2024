@@ -1,5 +1,6 @@
 package frc.robot.Subsytems.Intake;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
@@ -51,12 +52,6 @@ public class IntakeHardware implements IntakeRequirments {
   }
 
   // Loging ------------------------------------
-  @Override
-  public void toLog(LogTable table) {
-    table.put("setPercentOut", setPercentOut);
-    mIntake.toLog(table);
-    switch1.toLog(table, "ProximitySwitch" + switch1.getDIOChannel());
-  }
 
   public void setSimpleName(String SimpleName) {
     this.SimpleName = SimpleName;
@@ -75,5 +70,18 @@ public class IntakeHardware implements IntakeRequirments {
 
   public void loadPreferences() {
     setPercentOut = Preferences.getDouble(SimpleName + "/maxVolts", setPercentOut);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'initSendable'");
+  }
+
+  @Override
+  public void toLog(LogTable table) {
+    table.put("setPercentOut", setPercentOut);
+    mIntake.toLog(table);
+    switch1.toLog(table, "ProximitySwitch" + switch1.getDIOChannel());
   }
 }
