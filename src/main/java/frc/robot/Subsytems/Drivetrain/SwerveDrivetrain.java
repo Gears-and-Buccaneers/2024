@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Basic simulation of a swerve subsystem with the methods needed by PathPlanner
  */
-public class SwerveDrivetrain implements DrivetrainReq {
+public class SwerveDrivetrain implements DrivetrainReq, PoseEstimatorReq{
   private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
@@ -161,7 +161,13 @@ public class SwerveDrivetrain implements DrivetrainReq {
             new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getX(),
             new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getY(),
             new Rotation3d(0, 0, getPose2d().getRotation().getRadians()).getQuaternion().getZ() });
-
+          table.put("swerve", new double[] {
+            modules[0].getState().angle.getRadians(), modules[0].getState().speedMetersPerSecond,
+            modules[1].getState().angle.getRadians(), modules[1].getState().speedMetersPerSecond,
+            modules[2].getState().angle.getRadians(), modules[2].getState().speedMetersPerSecond,
+            modules[3].getState().angle.getRadians(), modules[3].getState().speedMetersPerSecond,
+          });
+          table.put("angle", getAngle().getRadians());
   }
 
   @Override
@@ -204,5 +210,11 @@ public class SwerveDrivetrain implements DrivetrainReq {
   @Override
   public double getRadius() {
     return .5;
+  }
+
+  @Override
+  public void drive() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'drive'");
   }
 }

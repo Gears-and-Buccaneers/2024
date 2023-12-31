@@ -12,7 +12,7 @@ public interface DrivetrainReq extends SubsytemRequirments {
    * @param targetVelocity target VElocity Meters/second ROBOT RELIVIVE
    */
   void setChassisSpeed(ChassisSpeeds targetVelocity);
-
+  void drive();
   /**
    * 
    * @return ROBOT RELITIVE in meters per second
@@ -42,9 +42,4 @@ public interface DrivetrainReq extends SubsytemRequirments {
    * @return the radius of the drivetrain (for auton)
    */
   double getRadius();
-
-  // DELEAT JUST TESTING
-  Pose2d getPose2d();
-
-  void resetEstimator(Pose2d pose);
 }

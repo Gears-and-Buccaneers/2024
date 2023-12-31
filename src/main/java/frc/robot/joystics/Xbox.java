@@ -1,56 +1,59 @@
 package frc.robot.joystics;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.hardware.joystick.*;
+import frc.lib.hardware.joystick.LogitechController;
 
-public class SamKeyboard extends Keyboard implements Oporator, Driver {
-  public SamKeyboard(int port) {
+public class Xbox extends LogitechController implements Driver, Oporator {
+
+  public Xbox(int port) {
     super(port);
   }
 
   @Override
   public Trigger intakePice() {
-    return ONE;
+    return RB;
   }
 
   @Override
   public Trigger OuttakeTopPice() {
-    return THREE;
+    return LB;
   }
 
   @Override
   public Trigger OuttakeMidPice() {
-    return TWO;
-  }
-
-  @Override
-  public double getDrivtrainTranslationX() {
-    return WandS.get();
-  }
-
-  @Override
-  public double getDrivtrainTranslationY() {
-    return DandA.get();
-  }
-
-  @Override
-  public double getDrivtrainRotation() {
-    return EandQ.get();
-  }
-
-  @Override
-  public Trigger zeroGyro() {
-    return ZERO;
+    return new Trigger(() -> {
+      return LT_S.get() >= .2;
+    });
   }
 
   @Override
   public Trigger setPose() {
-    return NINE;
+    return A;
+  }
+
+  @Override
+  public double getDrivtrainTranslationX() {
+    return -LS_Y.get();
+  }
+
+  @Override
+  public double getDrivtrainTranslationY() {
+    return LS_X.get();
+  }
+
+  @Override
+  public double getDrivtrainRotation() {
+    return -RS_X.get();
+  }
+
+  @Override
+  public Trigger zeroGyro() {
+    return BACK;
   }
 
   public Command rumble() {
-    return null;
+    return super.Rumble;
   }
+
 }

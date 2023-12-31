@@ -8,7 +8,6 @@ import frc.robot.joystics.Driver;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -24,8 +23,8 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
     this.poseEstimator = poseEstimator;
 
     AutoBuilder.configureHolonomic(
-        this.drivetrain::getPose2d, // chaing to pose estimaot
-        this.drivetrain::resetEstimator, // chaing to pose estimaot
+        this.poseEstimator::getPose2d, // chaing to pose estimaot
+        this.poseEstimator::resetEstimator, // chaing to pose estimaot
         this.drivetrain::getChassisSpeed,
         this.drivetrain::setChassisSpeed,
         new HolonomicPathFollowerConfig(

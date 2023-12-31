@@ -8,8 +8,4 @@ public interface IntakeRequirments extends SubsytemRequirments {
   void setOutakeSpeed();
 
   void setIntakeSpeed();
-
-  boolean canHoldPice();
-
-  boolean hasPice();
 }

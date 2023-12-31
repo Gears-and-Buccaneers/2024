@@ -28,14 +28,14 @@ public class Robot extends LoggedRobot {
   private RobotButtons cRobotButtons;
 
   // subsytems
-  private final DrivetrainReq drivetrain = new SwerveDrivetrain();
-  private final DrivetrainSub drivetrainSub = new DrivetrainSub(drivetrain, null);
+  private final SwerveDrivetrain drivetrainIO = new SwerveDrivetrain();
+  private final DrivetrainSub drivetrain = new DrivetrainSub(drivetrainIO, drivetrainIO);
 
-  private final IntakeRequirments intakeIOHardware = new IntakeHardware();
-  private final IntakeSub intakeSub = new IntakeSub(intakeIOHardware);
+  private final IntakeRequirments intakeIO = new IntakeHardware();
+  private final IntakeSub intake = new IntakeSub(intakeIO);
 
-  private final ArmRequirments armHardware = new ArmHardware();
-  private final ArmSub armSub = new ArmSub(armHardware);
+  private final ArmRequirments armIO = new ArmHardware();
+  private final ArmSub arm = new ArmSub(armIO);
 
   private SendableChooser<Command> autoChooser;
 
@@ -49,7 +49,7 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // Controlers
-    SamKeyboard controler = new SamKeyboard(0);
+    Xbox controler = new Xbox(0);
     cRobotButtons = new RealRobotButtons();
     cDriver = controler;
     cOporator = controler;
@@ -65,32 +65,36 @@ public class Robot extends LoggedRobot {
   }
 
   public void nameCommangs() {
-    NamedCommands.registerCommand("IntakePose", armSub.IntakePositionAuton());
-    NamedCommands.registerCommand("OutakePose", armSub.OutakeTopPositonAuton());
-    NamedCommands.registerCommand("OutakeMidPose", armSub.OutakeMidPositonAuton());
-    NamedCommands.registerCommand("Safe", armSub.SafePositon());
+    NamedCommands.registerCommand("IntakePose", arm.IntakePositionAuton());
+    NamedCommands.registerCommand("OutakePose", arm.OutakeTopPositonAuton());
+    NamedCommands.registerCommand("OutakeMidPose", arm.OutakeMidPositonAuton());
+    NamedCommands.registerCommand("Safe", arm.SafePositon());
   }
 
   // this part should be the state machin
   public void configerButtonBindings() {
+    drivetrain.setDefaultCommand(drivetrain.drive(cDriver));
 
-    cRobotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
-    cRobotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
+    cRobotButtons.zeroSensors().whileTrue(intake.intakePice());
+    cRobotButtons.zeroSensors().onFalse(intake.stopIntake());
 
-    cOporator.intakePice().onTrue(armSub.IntakePosition());
-    cOporator.OuttakeTopPice().onTrue(armSub.OutakeTopPositon());
-    cOporator.OuttakeMidPice().onTrue(armSub.OutakeMidPositon());
+    cOporator.intakePice().onTrue(arm.IntakePosition());
+    cOporator.OuttakeTopPice().onTrue(arm.OutakeTopPositon());
+    cOporator.OuttakeMidPice().onTrue(arm.OutakeMidPositon());
 
-    cOporator.intakePice().onFalse(armSub.SafePositon());
-    cOporator.OuttakeMidPice().onFalse(armSub.SafePositon());
-    cOporator.OuttakeTopPice().onFalse(armSub.SafePositon());
+    cOporator.intakePice().onFalse(arm.SafePositon());
+    cOporator.OuttakeMidPice().onFalse(arm.SafePositon());
+    cOporator.OuttakeTopPice().onFalse(arm.SafePositon());
 
-    cOporator.setPose().onTrue(drivetrainSub.goToPose(new Pose2d(5, 5, new Rotation2d(Math.PI))));
+    cOporator.setPose().onTrue(drivetrain.goToPose(new Pose2d(5, 5, new Rotation2d(Math.PI))));
     cOporator.setPose().onFalse(new InstantCommand(() -> {
-      CommandScheduler.getInstance().cancel(drivetrainSub.getCurrentCommand());
+      CommandScheduler.getInstance().cancel(drivetrain.getCurrentCommand());
     }));
 
-    drivetrainSub.setDefaultCommand(drivetrainSub.drive(cDriver));
+    cOporator.intakePice().onTrue(cDriver.rumble());
+    cOporator.intakePice().onFalse(new InstantCommand(() -> {
+      cDriver.rumble().cancel();
+    }));
   }
 
   @Override
