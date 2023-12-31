@@ -10,7 +10,7 @@ https://gears-and-buccaneers.github.io/2024RobotCode/
 This is testing for 2024. It has advantage scope and unit test.
 
 Was also messing around with formatting the joysticks and motor controllers
-<?in my mind `util`` should be something that can just be copied and pasted year to year. (implementing updates and stuff but not major changes)
+<?in my mind `util` should be something that can just be copied and pasted year to year. (implementing updates and stuff but not major changes)
 
 EDIT: testing isues
 making a pull request
