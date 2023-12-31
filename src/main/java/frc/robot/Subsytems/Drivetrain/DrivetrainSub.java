@@ -71,14 +71,15 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
 
   public Command goToPose(Pose2d pose) {
     return run(() -> {
-      AutoBuilder.pathfindToPose(
-          pose,
-          new PathConstraints(
-              drivetrain.getMaxModuleSpeed(),
-              drivetrain.getMaxModuleAccl(),
-              drivetrain.getMaxAngularVelocity(),
-              drivetrain.getMaxAngularAccl()),
-          0);
+      // AutoBuilder.pathfindToPose(
+      //     pose,
+      //     new PathConstraints(
+      //         drivetrain.getMaxModuleSpeed(),
+      //         drivetrain.getMaxModuleAccl(),
+      //         drivetrain.getMaxAngularVelocity(),
+      //         drivetrain.getMaxAngularAccl()),
+      //     0);
+      drivetrain.setChassisSpeed(ChassisSpeeds.fromFieldRelativeSpeeds(2, 0, 0, drivetrain.getAngle()));
     });
   }
 

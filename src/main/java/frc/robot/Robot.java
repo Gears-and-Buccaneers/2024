@@ -1,9 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Subsytems.Arm.*;
 import frc.robot.Subsytems.Drivetrain.*;
 import frc.robot.Subsytems.Intake.*;
@@ -58,7 +61,7 @@ public class Robot extends LoggedRobot {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
-
+    SmartDashboard.putData("Commands", CommandScheduler.getInstance());
   }
 
   public void nameCommangs() {
@@ -70,7 +73,6 @@ public class Robot extends LoggedRobot {
 
   // this part should be the state machin
   public void configerButtonBindings() {
-    drivetrainSub.setDefaultCommand(drivetrainSub.drive(cDriver));
 
     cRobotButtons.zeroSensors().whileTrue(intakeSub.intakePice());
     cRobotButtons.zeroSensors().onFalse(intakeSub.stopIntake());
@@ -82,6 +84,13 @@ public class Robot extends LoggedRobot {
     cOporator.intakePice().onFalse(armSub.SafePositon());
     cOporator.OuttakeMidPice().onFalse(armSub.SafePositon());
     cOporator.OuttakeTopPice().onFalse(armSub.SafePositon());
+
+    cOporator.setPose().onTrue(drivetrainSub.goToPose(new Pose2d(5, 5, new Rotation2d(Math.PI))));
+    cOporator.setPose().onFalse(new InstantCommand(() -> {
+      CommandScheduler.getInstance().cancel(drivetrainSub.getCurrentCommand());
+    }));
+
+    drivetrainSub.setDefaultCommand(drivetrainSub.drive(cDriver));
   }
 
   @Override

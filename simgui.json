@@ -47,12 +47,18 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX (v6) [10]": "Motor Controller",
       "/SmartDashboard/Auto Mode": "String Chooser",
+      "/SmartDashboard/Commands": "Scheduler",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Mech2d": "Mechanism2d",
       "/SmartDashboard/Mech2d Setpoint": "Mechanism2d"
     },
     "windows": {
       "/SmartDashboard/Auto Mode": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Commands": {
         "window": {
           "visible": true
         }

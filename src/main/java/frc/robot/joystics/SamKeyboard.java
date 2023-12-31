@@ -37,4 +37,14 @@ public class SamKeyboard extends Keyboard implements Oporator, Driver {
   public double getDrivtrainRotation() {
     return EandQ.get();
   }
+
+  @Override
+  public Trigger zeroGyro() {
+    return ZERO;
+  }
+
+  @Override
+  public Trigger setPose() {
+    return NINE;
+  }
 }
