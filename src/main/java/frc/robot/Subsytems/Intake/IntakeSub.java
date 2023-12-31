@@ -7,22 +7,22 @@ import org.littletonrobotics.junction.Logger;
 public class IntakeSub extends SubsystemBase implements AutoCloseable {
   private final String simpleName = this.getClass().getSimpleName();
 
-  private final IntakeRequirments intakeIO;
+  private final IntakeRequirments intake;
 
-  public IntakeSub(IntakeRequirments intakeIO) {
-    this.intakeIO = intakeIO;
+  public IntakeSub(IntakeRequirments intake) {
+    this.intake = intake;
 
     System.out.println("[Init] Creating " + simpleName + " with:");
-    System.out.println("\t" + intakeIO.getClass().getSimpleName());
+    System.out.println("\t" + intake.getClass().getSimpleName());
 
-    intakeIO.setBrakeMode(false);
+    intake.setBrakeMode(false);
   }
 
   @Override
   public void periodic() {
-    Logger.processInputs(simpleName, intakeIO);
+    Logger.processInputs(simpleName, intake);
 
-    intakeIO.periodic();
+    intake.periodic();
   }
 
   @Override
@@ -31,24 +31,24 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   // Commands ------------------------------
   public Command intakePice() {
     return run(() -> {
-          intakeIO.setIntakeSpeed();
+          intake.setIntakeSpeed();
         })
         // .onlyIf(intakeIO::isOpen)
         .handleInterrupt(
             () -> {
-              intakeIO.disable();
+              intake.disable();
             });
     // .until(intakeIO::isClosed);
   }
 
   public Command ejectPice() {
     return run(() -> {
-          intakeIO.setOutakeSpeed();
+          intake.setOutakeSpeed();
         })
         // .onlyIf(intakeIO::isClosed)
         .handleInterrupt(
             () -> {
-              intakeIO.disable();
+              intake.disable();
             });
     // .until(intakeIO::isOpen);
   }
@@ -56,13 +56,13 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public Command stopIntake() {
     return run(
         () -> {
-          intakeIO.disable();
+          intake.disable();
         });
   }
 
   // Closing ------------------------------
   @Override
   public void close() throws Exception {
-    intakeIO.close();
+    intake.close();
   }
 }

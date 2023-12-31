@@ -1,6 +1,9 @@
 package frc.lib.hardware.joystick;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -27,10 +30,10 @@ public class LogitechController {
       UP_LEFT,
       CENTER;
   public final JoystickAxis LS_X, LS_Y, RS_X, RS_Y, LT_S, RT_S;
+  public final Command Rumble;
 
   public LogitechController(int port) {
     Joystick joystick = new Joystick(port);
-
     LS_X = new JoystickAxis(joystick, 0, deadband, 2);
     LS_Y = new JoystickAxis(joystick, 1, deadband, 2);
     RS_X = new JoystickAxis(joystick, 4, deadband, 2);
@@ -59,5 +62,15 @@ public class LogitechController {
     LEFT = new Trigger(() -> joystick.getPOV() == 270);
     UP_LEFT = new Trigger(() -> joystick.getPOV() == 315);
     CENTER = new Trigger(() -> joystick.getPOV() == -1);
+
+    Rumble =
+        new InstantCommand(
+                () -> {
+                  joystick.setRumble(RumbleType.kBothRumble, 1);
+                })
+            .finallyDo(
+                () -> {
+                  joystick.setRumble(RumbleType.kBothRumble, 0);
+                });
   }
 }

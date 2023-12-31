@@ -19,7 +19,7 @@ public class Talon_SRX implements MotorController {
   }
 
   @Override
-  public void runPercentOut(double num) {
+  public void runVolts(double num) {
     motor.set(ControlMode.PercentOutput, num);
   }
 
@@ -38,6 +38,8 @@ public class Talon_SRX implements MotorController {
   public void disable() {
     motor.set(ControlMode.Disabled, 0);
   }
+
+  public void currentLimit() {}
 
   // ----------------------------------------------------------
   @Override

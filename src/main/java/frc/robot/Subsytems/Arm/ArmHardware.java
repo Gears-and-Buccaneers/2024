@@ -1,6 +1,7 @@
 package frc.robot.Subsytems.Arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -9,6 +10,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.Motors.PID.EncoderConfigs;
 import frc.lib.hardware.Motors.PID.PIDConfigs;
+import frc.lib.hardware.Motors.PID.SimConfig;
 import frc.lib.hardware.sensor.encoders.REVBoreEncoder;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogTable;
@@ -36,6 +38,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
+        .SimConfig(new SimConfig(false, 111.8, .5))
         .setName("mElvatorPivot");
 
     mElvatorExstend
@@ -43,6 +46,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
+        .SimConfig(new SimConfig(false, 4.2, 1))
         .setName("mElvatorExstend");
 
     mWristPivot
@@ -50,6 +54,7 @@ public class ArmHardware implements ArmRequirments {
         .inverted(true)
         .pidConfigs(new PIDConfigs())
         .EncoderConfigs(new EncoderConfigs())
+        .SimConfig(new SimConfig(false, 39.5, .5))
         .setName("mWristPivot");
 
     configMech();
@@ -72,13 +77,14 @@ public class ArmHardware implements ArmRequirments {
 
   @Override
   public void periodic() {
-    mElvatorPivot.setPositoin(elevatorSetpoint.getAngle());
-    mElvatorExstend.setPositoin(elevatorSetpoint.getLength());
-    mWristPivot.setPositoin(wristSetpoint.getAngle());
 
-    elevatorAcual.setAngle(mElvatorPivot.getPositoin());
-    elevatorAcual.setLength(mElvatorExstend.getPositoin());
-    wristAcual.setAngle(mWristPivot.getPositoin());
+    mElvatorPivot.setPositoin(Rotation2d.fromDegrees(elevatorSetpoint.getAngle()).getRadians());
+    mElvatorExstend.setPositoin(Rotation2d.fromDegrees(elevatorSetpoint.getLength()).getRadians());
+    mWristPivot.setPositoin(Rotation2d.fromDegrees(wristSetpoint.getAngle()).getRadians());
+
+    elevatorAcual.setAngle(Rotation2d.fromRadians(mElvatorPivot.getPositoin()).getDegrees());
+    elevatorAcual.setLength(Rotation2d.fromRadians(mElvatorExstend.getPositoin()).getDegrees());
+    wristAcual.setAngle(Rotation2d.fromRadians(mWristPivot.getPositoin()).getDegrees());
   }
 
   public void setBrakeMode(boolean enable) {
@@ -92,6 +98,13 @@ public class ArmHardware implements ArmRequirments {
     mElvatorPivot.disable();
     mElvatorExstend.disable();
     mWristPivot.disable();
+  }
+
+  public boolean atSetpoint() {
+    boolean atElvatorPivot = (elevatorAcual.getAngle() - elevatorSetpoint.getAngle()) < 1;
+    boolean atElvatorExstend = (elevatorAcual.getLength() - elevatorSetpoint.getLength()) < 1;
+    boolean atWristPivot = (wristAcual.getAngle() - wristSetpoint.getAngle()) < 1;
+    return (atElvatorPivot && atElvatorExstend && atWristPivot);
   }
 
   // -----------------------------
@@ -115,23 +128,32 @@ public class ArmHardware implements ArmRequirments {
 
   private void configMech() {
     // units are in inches
-    mechSetpoint = new Mechanism2d(122, 126);
+
+    mechSetpoint = new Mechanism2d(Units.inchesToMeters(122), Units.inchesToMeters(126));
     // the mechanism root node
-    MechanismRoot2d rootS = mechSetpoint.getRoot("arm", 50, 12);
+    MechanismRoot2d rootS =
+        mechSetpoint.getRoot("arm", Units.inchesToMeters(50), Units.inchesToMeters(12));
     elevatorSetpoint =
-        rootS.append(new MechanismLigament2d("elevator", 40, 90, 7, new Color8Bit(Color.kPurple)));
+        rootS.append(
+            new MechanismLigament2d(
+                "elevator", Units.inchesToMeters(40), 90, 7, new Color8Bit(Color.kPurple)));
     wristSetpoint =
         elevatorSetpoint.append(
-            new MechanismLigament2d("wrist", 15, 0, 5, new Color8Bit(Color.kPurple)));
+            new MechanismLigament2d(
+                "wrist", Units.inchesToMeters(15), 0, 5, new Color8Bit(Color.kPurple)));
 
     // units are in inches
-    mechAcual = new Mechanism2d(122, 126);
+    mechAcual = new Mechanism2d(Units.inchesToMeters(122), Units.inchesToMeters(126));
     // the mechanism root node
-    MechanismRoot2d rootA = mechAcual.getRoot("arm", 50, 12);
+    MechanismRoot2d rootA =
+        mechAcual.getRoot("arm", Units.inchesToMeters(50), Units.inchesToMeters(12));
     elevatorAcual =
-        rootA.append(new MechanismLigament2d("elevator", 40, 90, 8, new Color8Bit(Color.kCyan)));
+        rootA.append(
+            new MechanismLigament2d(
+                "elevator", Units.inchesToMeters(40), 90, 8, new Color8Bit(Color.kCyan)));
     wristAcual =
         elevatorAcual.append(
-            new MechanismLigament2d("wrist", 15, 0, 6, new Color8Bit(Color.kCyan)));
+            new MechanismLigament2d(
+                "wrist", Units.inchesToMeters(15), 0, 6, new Color8Bit(Color.kCyan)));
   }
 }

@@ -1,45 +1,46 @@
 package frc.robot.Subsytems.Intake;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
 import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.Logger;
 
 public class IntakeHardware implements IntakeRequirments {
-  private final Motor motor;
-  private final ProximitySwitch switch1;
+  public final Motor mIntake;
+  public final ProximitySwitch switch1;
 
   private double setPercentOut = .1;
 
   private String SimpleName;
 
   public IntakeHardware() {
-    motor = new Motor(Motor.ControllerType.TallonSRX, 10, Motor.Type.VP775);
+    mIntake = new Motor(Motor.ControllerType.TallonSRX, 10, Motor.Type.VP775);
+    mIntake.setName("mIntake");
     switch1 = new Huchoo(3);
 
     initPrefrences();
   }
 
   public void setIntakeSpeed() {
-    motor.setPercentOut(setPercentOut);
+    mIntake.setVolts(setPercentOut);
   }
 
   public void setOutakeSpeed() {
-    motor.setPercentOut(-setPercentOut);
+    mIntake.setVolts(-setPercentOut);
   }
 
-  public boolean isOpen() {
+  public boolean canHoldPice() {
     return switch1.isOpen();
   }
 
-  public boolean isClosed() {
+  public boolean hasPice() {
     return switch1.isClosed();
   }
 
   // required things -------------------------------------------------
   public void setBrakeMode(boolean enable) {
-    motor.brakeMode(enable);
+    mIntake.brakeMode(enable);
   }
 
   public void periodic() {
@@ -47,16 +48,10 @@ public class IntakeHardware implements IntakeRequirments {
   }
 
   public void disable() {
-    motor.disable();
+    mIntake.disable();
   }
 
   // Loging ------------------------------------
-  @Override
-  public void toLog(LogTable table) {
-    table.put("setPercentOut", setPercentOut);
-    Logger.processInputs(SimpleName + "/Motor" + motor.getCanID(), motor);
-    Logger.processInputs(SimpleName + "/ProximitySwitch" + switch1.getDIOChannel(), switch1);
-  }
 
   public void setSimpleName(String SimpleName) {
     this.SimpleName = SimpleName;
@@ -75,5 +70,18 @@ public class IntakeHardware implements IntakeRequirments {
 
   public void loadPreferences() {
     setPercentOut = Preferences.getDouble(SimpleName + "/maxVolts", setPercentOut);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'initSendable'");
+  }
+
+  @Override
+  public void toLog(LogTable table) {
+    table.put("setPercentOut", setPercentOut);
+    mIntake.toLog(table);
+    switch1.toLog(table, "ProximitySwitch" + switch1.getDIOChannel());
   }
 }

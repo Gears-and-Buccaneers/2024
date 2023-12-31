@@ -10,4 +10,6 @@ public interface ArmRequirments extends SubsytemRequirments {
   void elevatorAngleSetpoint(Rotation2d angle);
 
   void elevatorLengthSetpoint(double ft);
+
+  boolean atSetpoint();
 }
