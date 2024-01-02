@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.LogTable;
 public class REVBoreEncoder implements Encoder {
 
   @Override
-  public double getPositoin() {
+  public double getPosition() {
     return 20;
   }
 
@@ -27,7 +27,7 @@ public class REVBoreEncoder implements Encoder {
 
   @Override
   public boolean connected() {
-    return true; // TODO probaly Should FIx
+    return true; // TODO probably should fix
   }
 
   // Unit Testing

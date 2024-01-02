@@ -9,30 +9,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Subsytems.Arm.*;
-import frc.robot.Subsytems.Drivetrain.*;
-import frc.robot.Subsytems.Intake.*;
-import frc.robot.joystics.*;
+import frc.robot.Subsystems.Arm.*;
+import frc.robot.Subsystems.Drivetrain.*;
+import frc.robot.Subsystems.Intake.*;
+import frc.robot.joysticks.*;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-// do some copy and past from this
+// do some copy and paste from this
 // https://github.com/FRCTeam2910/2023CompetitionRobot-Public/tree/main
 public class Robot extends LoggedRobot {
-  // Controlers
+  // Controllers
   private Driver cDriver;
-  private Oporator cOporator;
+  private Operator cOperator;
   private RobotButtons cRobotButtons;
 
-  // subsytems
+  // subsystems
   private final SwerveDrivetrain drivetrainIO = new SwerveDrivetrain();
   private final DrivetrainSub drivetrain = new DrivetrainSub(drivetrainIO, drivetrainIO);
 
-  private final IntakeRequirments intakeIO = new IntakeHardware();
+  private final IntakeRequirements intakeIO = new IntakeHardware();
   private final IntakeSub intake = new IntakeSub(intakeIO);
 
-  private final ArmRequirments armIO = new ArmHardware();
+  private final ArmRequirements armIO = new ArmHardware();
   private final ArmSub arm = new ArmSub(armIO);
 
   private SendableChooser<Command> autoChooser;
@@ -46,46 +46,46 @@ public class Robot extends LoggedRobot {
     Logger.disableDeterministicTimestamps();
     Logger.start();
 
-    // Controlers
-    Xbox controler = new Xbox(0);
+    // Controllers
+    Xbox controller = new Xbox(0);
     cRobotButtons = new RealRobotButtons();
-    cDriver = controler;
-    cOporator = controler;
+    cDriver = controller;
+    cOperator = controller;
 
     // Button Bindings
     configerButtonBindings();
 
-    nameCommangs();
+    nameCommands();
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Mode", autoChooser);
     SmartDashboard.putData("Commands", CommandScheduler.getInstance());
   }
 
-  public void nameCommangs() {
+  public void nameCommands() {
     NamedCommands.registerCommand("IntakePose", arm.IntakePositionAuton());
-    NamedCommands.registerCommand("OutakePose", arm.OutakeTopPositonAuton());
-    NamedCommands.registerCommand("OutakeMidPose", arm.OutakeMidPositonAuton());
+    NamedCommands.registerCommand("OuttakePose", arm.OuttakeTopPositonAuton());
+    NamedCommands.registerCommand("OuttakeMidPose", arm.OuttakeMidPositonAuton());
     NamedCommands.registerCommand("Safe", arm.SafePositon());
   }
 
-  // this part should be the state machin
+  // this part should be the state machine
   public void configerButtonBindings() {
     drivetrain.setDefaultCommand(drivetrain.drive(cDriver));
 
-    cRobotButtons.zeroSensors().whileTrue(intake.intakePice());
+    cRobotButtons.zeroSensors().whileTrue(intake.intakePiece());
     cRobotButtons.zeroSensors().onFalse(intake.stopIntake());
 
-    cOporator.intakePice().onTrue(arm.IntakePosition());
-    cOporator.OuttakeTopPice().onTrue(arm.OutakeTopPositon());
-    cOporator.OuttakeMidPice().onTrue(arm.OutakeMidPositon());
+    cOperator.intakePiece().onTrue(arm.IntakePosition());
+    cOperator.outtakeTopPiece().onTrue(arm.OuttakeTopPositon());
+    cOperator.outtakeMidPiece().onTrue(arm.OuttakeMidPositon());
 
-    cOporator.intakePice().onFalse(arm.SafePositon());
-    cOporator.OuttakeMidPice().onFalse(arm.SafePositon());
-    cOporator.OuttakeTopPice().onFalse(arm.SafePositon());
+    cOperator.intakePiece().onFalse(arm.SafePositon());
+    cOperator.outtakeMidPiece().onFalse(arm.SafePositon());
+    cOperator.outtakeTopPiece().onFalse(arm.SafePositon());
 
-    cOporator.setPose().onTrue(drivetrain.goToPose(new Pose2d(5, 5, new Rotation2d(Math.PI))));
-    cOporator
+    cOperator.setPose().onTrue(drivetrain.goToPose(new Pose2d(5, 5, new Rotation2d(Math.PI))));
+    cOperator
         .setPose()
         .onFalse(
             new InstantCommand(
@@ -93,9 +93,9 @@ public class Robot extends LoggedRobot {
                   CommandScheduler.getInstance().cancel(drivetrain.getCurrentCommand());
                 }));
 
-    cOporator.intakePice().onTrue(cDriver.rumble());
-    cOporator
-        .intakePice()
+    cOperator.intakePiece().onTrue(cDriver.rumble());
+    cOperator
+        .intakePiece()
         .onFalse(
             new InstantCommand(
                 () -> {

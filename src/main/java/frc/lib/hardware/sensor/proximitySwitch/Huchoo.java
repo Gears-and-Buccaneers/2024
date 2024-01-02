@@ -35,7 +35,7 @@ public class Huchoo implements ProximitySwitch {
 
   @Override
   public boolean connected() {
-    return true; // TODO probaly Should FIx
+    return true; // TODO probably should fix
   }
 
   // Unit Testing

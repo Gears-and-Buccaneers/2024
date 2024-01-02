@@ -1,12 +1,12 @@
 package frc.lib.hardware.sensor.encoders;
 
-import frc.lib.hardware.HardwareRequirments;
+import frc.lib.hardware.HardwareRequirements;
 
-public interface Encoder extends HardwareRequirments {
+public interface Encoder extends HardwareRequirements {
 
   Encoder config();
 
-  double getPositoin();
+  double getPosition();
 
   double getVelocity();
 

@@ -1,4 +1,4 @@
-package frc.lib.hardware.Motors.MotorControlers;
+package frc.lib.hardware.Motors.MotorControllers;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -54,7 +54,7 @@ public class Talon_SRX implements MotorController {
 
   @Override
   public boolean connected() {
-    return true; // TODO probaly Should FIx
+    return true; // TODO probably should fix
   }
 
   // Unit Testing

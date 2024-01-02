@@ -1,4 +1,4 @@
-package frc.robot.Subsytems.Intake;
+package frc.robot.Subsystems.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -7,9 +7,9 @@ import org.littletonrobotics.junction.Logger;
 public class IntakeSub extends SubsystemBase implements AutoCloseable {
   private final String simpleName = this.getClass().getSimpleName();
 
-  private final IntakeRequirments intake;
+  private final IntakeRequirements intake;
 
-  public IntakeSub(IntakeRequirments intake) {
+  public IntakeSub(IntakeRequirements intake) {
     this.intake = intake;
 
     System.out.println("[Init] Creating " + simpleName + " with:");
@@ -29,7 +29,7 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
   public void simulationPeriodic() {}
 
   // Commands ------------------------------
-  public Command intakePice() {
+  public Command intakePiece() {
     return run(() -> {
           intake.setIntakeSpeed();
         })
@@ -41,9 +41,9 @@ public class IntakeSub extends SubsystemBase implements AutoCloseable {
     // .until(intakeIO::isClosed);
   }
 
-  public Command ejectPice() {
+  public Command ejectPiece() {
     return run(() -> {
-          intake.setOutakeSpeed();
+          intake.setOuttakeSpeed();
         })
         // .onlyIf(intakeIO::isClosed)
         .handleInterrupt(
