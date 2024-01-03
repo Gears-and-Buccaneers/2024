@@ -1,6 +1,5 @@
 package frc.robot.Subsytems.Intake;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
@@ -61,6 +60,7 @@ public class IntakeHardware implements IntakeRequirments {
   @Override
   public void close() throws Exception {
     switch1.close();
+    mIntake.close();
   }
 
   // prefrances ------------------
@@ -70,12 +70,6 @@ public class IntakeHardware implements IntakeRequirments {
 
   public void loadPreferences() {
     setPercentOut = Preferences.getDouble(SimpleName + "/maxVolts", setPercentOut);
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'initSendable'");
   }
 
   @Override
