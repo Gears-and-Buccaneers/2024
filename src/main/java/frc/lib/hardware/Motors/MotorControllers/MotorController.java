@@ -1,4 +1,4 @@
-package frc.lib.hardware.Motors.MotorControlers;
+package frc.lib.hardware.Motors.MotorControllers;
 
 import frc.lib.hardware.HardwareRequirements;
 

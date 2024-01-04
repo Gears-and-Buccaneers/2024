@@ -1,4 +1,4 @@
-package frc.robot.Subsytems.Arm;
+package frc.robot.Subsystems.Arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class ArmSub extends SubsystemBase implements AutoCloseable {
-  public final ArmRequirments arm;
+  public final ArmRequirements arm;
 
   private final String simpleName = this.getClass().getSimpleName();
 
-  public ArmSub(ArmRequirments arm) {
+  public ArmSub(ArmRequirements arm) {
     this.arm = arm;
     arm.wristAngleSetpoint(Rotation2d.fromDegrees(240));
     arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(30));
@@ -47,7 +47,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
             });
   }
 
-  public Command OutakeTopPositon() {
+  public Command OuttakeTopPositon() {
     return run(() -> {
           arm.wristAngleSetpoint(Rotation2d.fromDegrees(90));
           arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(120));
@@ -59,7 +59,7 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
             });
   }
 
-  public Command OutakeMidPositon() {
+  public Command OuttakeMidPositon() {
     return run(() -> {
           arm.wristAngleSetpoint(Rotation2d.fromDegrees(100));
           arm.elevatorAngleSetpoint(Rotation2d.fromDegrees(110));
@@ -91,16 +91,16 @@ public class ArmSub extends SubsystemBase implements AutoCloseable {
             });
   }
 
-  public Command OutakeTopPositonAuton() {
-    return OutakeTopPositon()
+  public Command OuttakeTopPositonAuton() {
+    return OuttakeTopPositon()
         .until(
             () -> {
               return arm.atSetpoint();
             });
   }
 
-  public Command OutakeMidPositonAuton() {
-    return OutakeMidPositon()
+  public Command OuttakeMidPositonAuton() {
+    return OuttakeMidPositon()
         .until(
             () -> {
               return arm.atSetpoint();

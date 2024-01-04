@@ -1,9 +1,9 @@
-package frc.robot.Subsytems.Arm;
+package frc.robot.Subsystems.Arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Subsytems.SubsytemRequirments;
+import frc.robot.Subsystems.SubsystemRequirements;
 
-public interface ArmRequirments extends SubsytemRequirments {
+public interface ArmRequirements extends SubsystemRequirements {
 
   void wristAngleSetpoint(Rotation2d angle);
 

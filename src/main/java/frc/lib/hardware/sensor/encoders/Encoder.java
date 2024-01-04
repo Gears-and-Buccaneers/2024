@@ -6,7 +6,7 @@ public interface Encoder extends HardwareRequirements {
 
   Encoder config();
 
-  double getPositoin();
+  double getPosition();
 
   double getVelocity();
 

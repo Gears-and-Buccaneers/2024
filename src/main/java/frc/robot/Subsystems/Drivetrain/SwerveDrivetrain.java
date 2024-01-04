@@ -1,4 +1,4 @@
-package frc.robot.Subsytems.Drivetrain;
+package frc.robot.Subsystems.Drivetrain;
 
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;

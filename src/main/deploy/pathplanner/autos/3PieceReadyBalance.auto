@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Grab Pice 1"
+                  "pathName": "Grab Piece 1"
                 }
               }
             ]
@@ -37,13 +37,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "OutakePose"
+                  "name": "OuttakePose"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "PlacePiceH2"
+                  "pathName": "PlacePieceH2"
                 }
               }
             ]
@@ -62,7 +62,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Grab Pice 2"
+                  "pathName": "Grab Piece 2"
                 }
               }
             ]
@@ -75,13 +75,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "OutakeMidPose"
+                  "name": "OuttakeMidPose"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "PlacePiceH2"
+                  "pathName": "PlacePieceH2"
                 }
               }
             ]
@@ -100,7 +100,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Race to End"
+                  "pathName": "GoToBalance"
                 }
               }
             ]

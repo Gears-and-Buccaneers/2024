@@ -1,11 +1,11 @@
-package frc.robot.Subsytems.Intake;
+package frc.robot.Subsystems.Intake;
 
 import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.hardware.Motors.*;
 import frc.lib.hardware.sensor.proximitySwitch.*;
 import org.littletonrobotics.junction.LogTable;
 
-public class IntakeHardware implements IntakeRequirments {
+public class IntakeHardware implements IntakeRequirements {
   public final Motor mIntake;
   public final ProximitySwitch switch1;
 
@@ -25,15 +25,15 @@ public class IntakeHardware implements IntakeRequirments {
     mIntake.setVolts(setPercentOut);
   }
 
-  public void setOutakeSpeed() {
+  public void setOuttakeSpeed() {
     mIntake.setVolts(-setPercentOut);
   }
 
-  public boolean canHoldPice() {
+  public boolean canHoldPiece() {
     return switch1.isOpen();
   }
 
-  public boolean hasPice() {
+  public boolean hasPiece() {
     return switch1.isClosed();
   }
 
