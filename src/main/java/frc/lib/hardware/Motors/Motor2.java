@@ -5,15 +5,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+//
 import frc.lib.hardware.HardwareRequirements;
-import frc.lib.hardware.Motors.MotorControlers.MotorController;
-import frc.lib.hardware.Motors.MotorControlers.Talon_SRX;
-import frc.lib.hardware.Motors.PID.EncoderConfigs;
-import frc.lib.hardware.Motors.PID.PIDConfigs;
-import frc.lib.hardware.Motors.PID.SimConfig;
+import frc.lib.hardware.Motors.MotorControllers.*;
+import frc.lib.hardware.Motors.PID.*;
 import frc.lib.hardware.sensor.encoders.Encoder;
-import frc.robot.Robot;
+//
 import org.littletonrobotics.junction.LogTable;
 
 public class Motor2 implements HardwareRequirements {
@@ -34,7 +31,19 @@ public class Motor2 implements HardwareRequirements {
     }
   }
 
+  public enum ControllerType {
+    TalonSRX(new Talon_SRX());
 
+    MotorController mController;
+
+    private ControllerType(MotorController mController) {
+      this.mController = mController;
+    }
+
+    public MotorController config(int canID) {
+      return mController.build(canID);
+    }
+  }
 
   // -----------------------------------------
   private final MotorController mController;
@@ -54,19 +63,19 @@ public class Motor2 implements HardwareRequirements {
   }
 
   // ----------------- COnfigs ---------------------
-  public Motor addEncoder(Encoder encoder) {
+  public Motor2 addEncoder(Encoder encoder) {
     this.mEncoder = encoder;
     hasEncoder = true;
     return this;
   }
 
-  public Motor inverted(boolean enable) {
+  public Motor2 inverted(boolean enable) {
     mController.setInverted(enable);
 
     return this;
   }
 
-  public Motor brakeMode(boolean enable) {
+  public Motor2 brakeMode(boolean enable) {
     mController.brakeMode(enable);
 
     return this;
@@ -74,18 +83,18 @@ public class Motor2 implements HardwareRequirements {
 
   private PIDController mFeedback;
 
-  public Motor pidConfigs(PIDConfigs PIDConfigs) {
+  public Motor2 pidConfigs(PIDConfigs PIDConfigs) {
     mFeedback = new PIDController(1, 0, 0);
 
     return this;
   }
 
-  public Motor EncoderConfigs(EncoderConfigs encoderConfigs) {
+  public Motor2 EncoderConfigs(EncoderConfigs encoderConfigs) {
 
     return this;
   }
 
-  public Motor setName(String name) {
+  public Motor2 setName(String name) {
     this.name = name;
     return this;
   }
@@ -99,31 +108,26 @@ public class Motor2 implements HardwareRequirements {
     if (!hasEncoder) {
       throw new Error("you dumb. This motor has no encoder");
     }
+    mFeedback.setSetpoint(Positoin);
 
-    mSimFeedback.setSetpoint(Positoin);
-    // mFeedback.setSetpoint(Positoin);
-
-    // mAppliedVolts = mFeedback.calculate(getPositoin());
-    // mAppliedVolts = MathUtil.clamp(mAppliedVolts, -12.0, 12.0);
-
-    setVolts(mAppliedVolts);
+    setVolts(clamp(mFeedback.calculate(getPositoin())));
   }
 
   public void setVelocity(double velocity) {
     if (!hasEncoder) {
       throw new Error("you dumb. This motor has no encoder");
     }
-    mSimFeedback.setSetpoint(velocity);
-    // mFeedback.setSetpoint(velocity);
+    mFeedback.setSetpoint(velocity);
 
-    // mAppliedVolts = mFeedback.calculate(getVelocity());
-    // mAppliedVolts = MathUtil.clamp(mAppliedVolts, -12.0, 12.0);
-
-    setVolts(mAppliedVolts);
+    setVolts(clamp(mFeedback.calculate(getVelocity())));
   }
 
   public void disable() {
     mController.disable();
+  }
+
+  public double clamp(double setPoint) {
+    return MathUtil.clamp(setPoint, -12.0, 12.0);
   }
 
   // get ---------------------------------
@@ -142,12 +146,9 @@ public class Motor2 implements HardwareRequirements {
       throw new Error("you dumb. This motor has no encoder");
     }
     if (RobotBase.isReal()) {
-      return mEncoder.getPositoin();
+      return mEncoder.getPosition();
     } else {
-      if (simVelocity)
-        return mSimPositionMeters;
-      else
-        return mSimPositionRad;
+      return 1;
     }
   }
 
@@ -158,7 +159,7 @@ public class Motor2 implements HardwareRequirements {
     if (RobotBase.isReal()) {
       return mEncoder.getVelocity();
     } else {
-      return mSimVelocityDeg;
+      return 1;
     }
   }
 
@@ -179,10 +180,8 @@ public class Motor2 implements HardwareRequirements {
 
   @Override
   public boolean connected() {
-    if (!mController.connected())
-      return false;
-    if (hasEncoder)
-      return mEncoder.connected();
+    if (!mController.connected()) return false;
+    if (hasEncoder) return mEncoder.connected();
     return true;
   }
 }

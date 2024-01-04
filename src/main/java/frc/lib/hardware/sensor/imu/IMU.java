@@ -41,6 +41,5 @@ public interface IMU extends HardwareRequirements {
   }
 
   @Override
-  default void fromLog(LogTable table) {
-  }
+  default void fromLog(LogTable table) {}
 }

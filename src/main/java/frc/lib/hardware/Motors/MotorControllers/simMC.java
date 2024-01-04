@@ -1,59 +1,48 @@
 package frc.lib.hardware.Motors.MotorControllers;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import org.littletonrobotics.junction.LogTable;
+public class simMC implements MotorController {
 
-public class Talon_SRX implements MotorController {
-  private int canID;
+  @Override
+  public boolean connected() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'connected'");
+  }
 
-  private TalonSRX motor;
+  @Override
+  public void close() throws Exception {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'close'");
+  }
 
+  @Override
   public MotorController build(int canID) {
-    this.canID = canID;
-
-    motor = new TalonSRX(canID);
-
-    return this;
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'build'");
   }
 
   @Override
   public void runVolts(double num) {
-    motor.set(ControlMode.PercentOutput, num);
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'runVolts'");
   }
 
   @Override
   public void brakeMode(boolean enable) {
-    if (enable) motor.setNeutralMode(NeutralMode.Brake);
-    else motor.setNeutralMode(NeutralMode.Coast);
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'brakeMode'");
   }
 
+  @Override
   public void disable() {
-    motor.set(ControlMode.Disabled, 0);
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'disable'");
   }
 
-  public void currentLimit() {}
-
-  // ----------------------------------------------------------
   @Override
   public int getCanID() {
-    return canID;
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getCanID'");
   }
-
-  @Override
-  public void toLog(LogTable table, String path) {
-    table.put(path + "/MotorController/Open", 1);
-  }
-
-  @Override
-  public boolean connected() {
-    return true; // TODO probably should fix
-  }
-
-  // Unit Testing
-  @Override
-  public void close() throws Exception {}
 
   @Override
   public double getAppliedVolts() {

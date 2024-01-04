@@ -7,12 +7,9 @@ public interface HardwareRequirements extends AutoCloseable, LoggableInputs {
 
   boolean connected();
 
-  default void toLog(LogTable table, String path) {
-  }
+  default void toLog(LogTable table, String path) {}
 
-  default void fromLog(LogTable table) {
-  }
+  default void fromLog(LogTable table) {}
 
-  default void toLog(LogTable table) {
-  }
+  default void toLog(LogTable table) {}
 }
