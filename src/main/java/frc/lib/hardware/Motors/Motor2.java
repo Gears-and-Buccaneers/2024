@@ -6,7 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.lib.hardware.HardwareRequirments;
+import frc.lib.hardware.HardwareRequirements;
 import frc.lib.hardware.Motors.MotorControlers.MotorController;
 import frc.lib.hardware.Motors.MotorControlers.Talon_SRX;
 import frc.lib.hardware.Motors.PID.EncoderConfigs;
@@ -16,7 +16,7 @@ import frc.lib.hardware.sensor.encoders.Encoder;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.LogTable;
 
-public class Motor2 implements HardwareRequirments {
+public class Motor2 implements HardwareRequirements {
   // Enums --------------
   public enum Type {
     CIM(DCMotor.getFalcon500(1)),

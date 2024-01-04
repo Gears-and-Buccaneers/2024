@@ -2,10 +2,10 @@ package frc.lib.hardware.sensor.imu;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import frc.lib.hardware.HardwareRequirments;
+import frc.lib.hardware.HardwareRequirements;
 import org.littletonrobotics.junction.LogTable;
 
-public interface IMU extends HardwareRequirments {
+public interface IMU extends HardwareRequirements {
 
   Rotation2d getPitch();
 
@@ -41,5 +41,6 @@ public interface IMU extends HardwareRequirments {
   }
 
   @Override
-  default void fromLog(LogTable table) {}
+  default void fromLog(LogTable table) {
+  }
 }

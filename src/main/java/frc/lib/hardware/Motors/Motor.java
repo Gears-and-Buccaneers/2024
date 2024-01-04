@@ -6,7 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import frc.lib.hardware.HardwareRequirments;
+import frc.lib.hardware.HardwareRequirements;
 import frc.lib.hardware.Motors.MotorControlers.MotorController;
 import frc.lib.hardware.Motors.MotorControlers.Talon_SRX;
 import frc.lib.hardware.Motors.PID.EncoderConfigs;
@@ -16,7 +16,7 @@ import frc.lib.hardware.sensor.encoders.Encoder;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.LogTable;
 
-public class Motor implements HardwareRequirments {
+public class Motor implements HardwareRequirements {
   // Enums --------------
   public enum Type {
     CIM(DCMotor.getFalcon500(1)),
@@ -174,8 +174,10 @@ public class Motor implements HardwareRequirments {
     if (RobotBase.isReal()) {
       return mEncoder.getPositoin();
     } else {
-      if (simVelocity) return mSimPositionMeters;
-      else return mSimPositionRad;
+      if (simVelocity)
+        return mSimPositionMeters;
+      else
+        return mSimPositionRad;
     }
   }
 
@@ -223,10 +225,8 @@ public class Motor implements HardwareRequirments {
 
     mSim.update(Robot.defaultPeriodSecs);
 
-    mSimPositionRad =
-        mSimPositionRad + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
-    mSimPositionMeters +=
-        (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
+    mSimPositionRad = mSimPositionRad + (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs);
+    mSimPositionMeters += (mSim.getAngularVelocityRadPerSec() * Robot.defaultPeriodSecs) * Units.inchesToMeters(2);
     mSimVelocityDeg = mSim.getAngularVelocityRadPerSec();
     mSimVelocityMeters = mSim.getAngularVelocityRadPerSec() * Units.inchesToMeters(2);
     // --------------------------------------------------------
@@ -245,8 +245,10 @@ public class Motor implements HardwareRequirments {
 
   @Override
   public boolean connected() {
-    if (!mController.connected()) return false;
-    if (hasEncoder) return mEncoder.connected();
+    if (!mController.connected())
+      return false;
+    if (hasEncoder)
+      return mEncoder.connected();
     return true;
   }
 }
