@@ -10,7 +10,7 @@ public class Talon_SRX implements MotorController {
 
   private TalonSRX motor;
 
-  public MotorController config(int canID) {
+  public MotorController build(int canID) {
     this.canID = canID;
 
     motor = new TalonSRX(canID);
@@ -25,21 +25,19 @@ public class Talon_SRX implements MotorController {
 
   @Override
   public void brakeMode(boolean enable) {
-    if (enable) motor.setNeutralMode(NeutralMode.Brake);
-    else motor.setNeutralMode(NeutralMode.Coast);
+    if (enable)
+      motor.setNeutralMode(NeutralMode.Brake);
+    else
+      motor.setNeutralMode(NeutralMode.Coast);
   }
 
-  /** true inverts it */
-  @Override
-  public void setInverted(boolean enable) {
-    motor.setInverted(enable);
-  }
 
   public void disable() {
     motor.set(ControlMode.Disabled, 0);
   }
 
-  public void currentLimit() {}
+  public void currentLimit() {
+  }
 
   // ----------------------------------------------------------
   @Override
@@ -59,5 +57,43 @@ public class Talon_SRX implements MotorController {
 
   // Unit Testing
   @Override
-  public void close() throws Exception {}
+  public void close() throws Exception {
+  }
+
+  @Override
+  public double getAppliedVolts() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getAppliedVolts'");
+  }
+
+  @Override
+  public double getCurentAmps() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getCurentAmps'");
+  }
+
+  @Override
+  public double getBusVoltage() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getBusVoltage'");
+  }
+
+  @Override
+  public MotorController setInverted(boolean enable) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setInverted'");
+  }
+
+  @Override
+  public MotorController setCurrentLimit(double CurrentLimit) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setCurrentLimit'");
+  }
+
+  @Override
+  public MotorController setSimulated(double simulated) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setSimulated'");
+  }
+
 }

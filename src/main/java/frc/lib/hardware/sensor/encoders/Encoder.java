@@ -4,11 +4,15 @@ import frc.lib.hardware.HardwareRequirements;
 
 public interface Encoder extends HardwareRequirements {
 
-  Encoder config();
+  void zero();
 
   double getPosition();
 
   double getVelocity();
 
-  void setGearRatio(double gearRatio);
+  Encoder setGearRatio(double gearRatio);
+
+  Encoder setInverted(boolean inverted);
+
+  Encoder setOffset(double offset);
 }

@@ -34,19 +34,7 @@ public class Motor2 implements HardwareRequirements {
     }
   }
 
-  public enum ControllerType {
-    TallonSRX(new Talon_SRX());
 
-    MotorController mController;
-
-    private ControllerType(MotorController mController) {
-      this.mController = mController;
-    }
-
-    public MotorController config(int canID) {
-      return mController.config(canID);
-    }
-  }
 
   // -----------------------------------------
   private final MotorController mController;
