@@ -48,26 +48,29 @@ public class Motor2 implements HardwareRequirements {
   // -----------------------------------------
   private final MotorController mController;
   private final Type mType;
-  private Encoder mEncoder;
+  private final Encoder mEncoder;
 
   private boolean hasEncoder = false;
+
   private boolean isSimulated = false;
 
   private String name;
 
   public Motor2(ControllerType motorControllerType, int canID, Type motor) {
+    this(motorControllerType, canID, motor, null);
+    hasEncoder = false;
+  }
+
+  public Motor2(ControllerType motorControllerType, int canID, Type motor, Encoder encoder) {
     this.mController = motorControllerType.config(canID);
+    this.mEncoder = encoder;
     this.mType = motor;
     this.name = "Motor" + canID;
     this.isSimulated = RobotBase.isSimulation();
+    hasEncoder = true;
   }
 
   // ----------------- COnfigs ---------------------
-  public Motor2 addEncoder(Encoder encoder) {
-    this.mEncoder = encoder;
-    hasEncoder = true;
-    return this;
-  }
 
   public Motor2 inverted(boolean enable) {
     mController.setInverted(enable);
@@ -180,8 +183,10 @@ public class Motor2 implements HardwareRequirements {
 
   @Override
   public boolean connected() {
-    if (!mController.connected()) return false;
-    if (hasEncoder) return mEncoder.connected();
+    if (!mController.connected())
+      return false;
+    if (hasEncoder)
+      return mEncoder.connected();
     return true;
   }
 }
