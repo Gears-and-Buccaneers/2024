@@ -63,8 +63,7 @@ public class DrivetrainSub extends SubsystemBase implements AutoCloseable {
   }
 
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 
   // Commands ---------------------------------------------------------
   public Command drive(Driver controller) {
