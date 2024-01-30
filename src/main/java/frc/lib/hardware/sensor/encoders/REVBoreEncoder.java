@@ -14,11 +14,6 @@ public class REVBoreEncoder implements Encoder {
     return 20;
   }
 
-  @Override
-  public void setGearRatio(double gearRatio) {
-    // TODO Auto-generated method stub
-  }
-
   // ----------------------------------------------------------
   @Override
   public void toLog(LogTable table) {
@@ -35,8 +30,26 @@ public class REVBoreEncoder implements Encoder {
   public void close() throws Exception {}
 
   @Override
-  public Encoder config() {
+  public void zero() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'zero'");
+  }
 
-    return this;
+  @Override
+  public Encoder setInverted(boolean inverted) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setInverted'");
+  }
+
+  @Override
+  public Encoder setOffset(double offset) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setOffset'");
+  }
+
+  @Override
+  public Encoder setGearRatio(double gearRatio) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setGearRatio'");
   }
 }

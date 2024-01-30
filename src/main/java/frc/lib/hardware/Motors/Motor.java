@@ -44,7 +44,7 @@ public class Motor implements HardwareRequirements {
     }
 
     public MotorController config(int canID) {
-      return mController.config(canID);
+      return mController.build(canID);
     }
   }
 
