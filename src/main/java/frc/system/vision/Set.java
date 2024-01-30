@@ -1,4 +1,4 @@
-package frc.impl.system.vision;
+package frc.system.vision;
 
 import java.util.Arrays;
 import java.util.List;

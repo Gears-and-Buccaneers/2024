@@ -1,4 +1,4 @@
-package frc.impl.hardware.imu;
+package frc.hardware.imu;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.core.CorePigeon2;

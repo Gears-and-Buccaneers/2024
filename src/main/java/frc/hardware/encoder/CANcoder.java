@@ -1,4 +1,4 @@
-package frc.impl.hardware.encoder;
+package frc.hardware.encoder;
 
 import com.ctre.phoenix6.hardware.core.CoreCANcoder;
 

@@ -1,4 +1,4 @@
-package frc.impl.hardware.motor;
+package frc.hardware.motor;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;

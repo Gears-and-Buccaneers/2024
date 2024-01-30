@@ -4,10 +4,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.Config;
-import frc.impl.hardware.imu.Pigeon;
-import frc.impl.hardware.motor.FX;
-import frc.impl.system.drivetrain.Swerve;
+import frc.hardware.imu.Pigeon;
+import frc.hardware.motor.FX;
 import frc.system.Drivetrain;
+import frc.system.drivetrain.Swerve;
 
 public class SwerveChassis implements Config {
 	@Override

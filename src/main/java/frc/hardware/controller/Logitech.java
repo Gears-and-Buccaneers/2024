@@ -1,4 +1,4 @@
-package frc.impl.hardware.controller;
+package frc.hardware.controller;
 
 import frc.hardware.Controller;
 

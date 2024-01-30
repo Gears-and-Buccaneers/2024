@@ -1,4 +1,4 @@
-package frc.impl.hardware.encoder;
+package frc.hardware.encoder;
 
 import frc.hardware.Encoder;
 

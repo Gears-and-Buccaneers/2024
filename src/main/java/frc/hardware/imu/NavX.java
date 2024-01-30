@@ -1,4 +1,4 @@
-package frc.impl.hardware.imu;
+package frc.hardware.imu;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.hardware.IMU;
