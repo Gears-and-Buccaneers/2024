@@ -1,9 +1,11 @@
-package frc.hardware.motor;
+package frc.hardware.profiledmotor;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 
 import frc.hardware.ProfiledMotor;
@@ -40,5 +42,15 @@ public class FX implements ProfiledMotor {
 	@Override
 	public void setVelocity(double velocity) {
 		inner.setControl(new MotionMagicVelocityTorqueCurrentFOC(velocity));
+	}
+
+	@Override
+	public void setPercent(double percent) {
+		inner.setControl(new DutyCycleOut(percent));
+	}
+
+	@Override
+	public void setVoltage(double voltage) {
+		inner.setControl(new VoltageOut(voltage));
 	}
 }

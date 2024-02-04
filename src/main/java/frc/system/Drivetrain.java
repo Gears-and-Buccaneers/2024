@@ -7,9 +7,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public interface Drivetrain extends Subsystem, Consumer<Vision.Measurement> {
-	void set(Pose2d pose);
+	/** Get the current drivetrain pose. */
+	Pose2d pose();
 
+	/** Resets the drivetrain pose. */
+	void reset(Pose2d pose);
+
+	/** Drives at the provided velocities. */
 	void driveAt(ChassisSpeeds velocity);
 
+	/** Drive to the provided position. */
 	void driveTo(ChassisSpeeds position);
 }

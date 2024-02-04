@@ -5,11 +5,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.Config;
 import frc.hardware.imu.Pigeon;
-import frc.hardware.motor.FX;
+import frc.hardware.profiledmotor.FX;
 import frc.system.Drivetrain;
 import frc.system.drivetrain.Swerve;
 
-public class SwerveChassis implements Config {
+public class SwerveConfig implements Config {
 	@Override
 	public Drivetrain drivetrain() {
 		TalonFXConfiguration angleConf = new TalonFXConfiguration();
