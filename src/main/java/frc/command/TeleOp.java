@@ -1,8 +1,9 @@
 package frc.command;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+// import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.hardware.Controller;
 import frc.system.Drivetrain;
@@ -17,10 +18,14 @@ public class TeleOp extends Command {
 	final Controller.Axis y;
 	final Controller.Axis theta;
 
-	final Controller.Button robotRel;
+	// final Controller.Button robotRel;
 
 	public TeleOp(Drivetrain drivetrain, double maxVelocity, double maxRotVel,
-			Controller.Axis x, Controller.Axis y, Controller.Axis theta, Controller.Button robotRel) {
+			Controller.Axis x, Controller.Axis y, Controller.Axis theta
+	// Controller.Button robotRel
+	) {
+		addRequirements(drivetrain);
+
 		this.drivetrain = drivetrain;
 
 		this.maxVelocity = maxVelocity;
@@ -30,31 +35,22 @@ public class TeleOp extends Command {
 		this.y = y;
 		this.theta = theta;
 
-		this.robotRel = robotRel;
+		// this.robotRel = robotRel;
 	}
 
 	@Override
 	public void execute() {
-		ChassisSpeeds speed;
+		// ChassisSpeeds speed;
 
 		Translation2d xy = new Translation2d(x.get(), y.get());
 
-		double velocity = Math.min(xy.getNorm(), 1);
+		double velocity = Math.min(xy.getNorm(), 1) * maxVelocity;
 		Rotation2d direction = xy.getAngle();
 
 		xy = new Translation2d(velocity, direction);
 
-		double xVel = xy.getX();
-		double yVel = xy.getY();
-		double rVel = theta.get() * maxRotVel;
+		// Rotation2d rot = drivetrain.pose().getRotation();
 
-		Rotation2d rot = drivetrain.pose().getRotation();
-
-		if (robotRel.get())
-			speed = ChassisSpeeds.fromRobotRelativeSpeeds(xVel, yVel, rVel, rot);
-		else
-			speed = ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, rVel, rot);
-
-		drivetrain.driveAt(speed);
+		drivetrain.drive(new Transform2d(xy, new Rotation2d(theta.get() * maxRotVel)));
 	}
 }
