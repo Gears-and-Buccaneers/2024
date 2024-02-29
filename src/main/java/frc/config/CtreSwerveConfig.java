@@ -1,19 +1,24 @@
 package frc.config;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
-import com.ctre.phoenix6.signals.ForwardLimitSourceValue;
 
 import edu.wpi.first.math.util.Units;
 
 import frc.Config;
+import frc.hardware.motor.SRX;
+import frc.hardware.profiledmotor.FX;
 import frc.system.Drivetrain;
+import frc.system.Mechanism;
 import frc.system.drivetrain.CtreSwerve;
+import frc.system.mechanism.components.Intake;
+import frc.system.mechanism.components.Pivot;
+import frc.system.mechanism.components.Shooter;
+import frc.system.mechanism.components.Transit;
 
 public class CtreSwerveConfig implements Config {
 	@Override
@@ -68,11 +73,11 @@ public class CtreSwerveConfig implements Config {
 		double kSteerFrictionVoltage = 0.25;
 		double kDriveFrictionVoltage = 0.25;
 
-		SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
+		SwerveDrivetrainConstants constants = new SwerveDrivetrainConstants()
 				.withPigeon2Id(kPigeonId)
 				.withCANbusName(kCANbusName);
 
-		SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
+		SwerveModuleConstantsFactory kCreator = new SwerveModuleConstantsFactory()
 				.withDriveMotorGearRatio(kDriveGearRatio)
 				.withSteerMotorGearRatio(kSteerGearRatio)
 				.withWheelRadius(kWheelRadiusInches)
@@ -126,30 +131,46 @@ public class CtreSwerveConfig implements Config {
 		double kBackRightXPosInches = -8.375;
 		double kBackRightYPosInches = -10.875;
 
-		SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
+		SwerveModuleConstants frontLeft = kCreator.createModuleConstants(
 				kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
 				kFrontLeftEncoderOffset,
 				Units.inchesToMeters(kFrontLeftXPosInches),
 				Units.inchesToMeters(kFrontLeftYPosInches),
 				kInvertLeftSide);
-		SwerveModuleConstants FrontRight = ConstantCreator.createModuleConstants(
+		SwerveModuleConstants frontRight = kCreator.createModuleConstants(
 				kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId,
 				kFrontRightEncoderOffset,
 				Units.inchesToMeters(kFrontRightXPosInches),
 				Units.inchesToMeters(kFrontRightYPosInches),
 				kInvertRightSide);
-		SwerveModuleConstants BackLeft = ConstantCreator.createModuleConstants(
+		SwerveModuleConstants backLeft = kCreator.createModuleConstants(
 				kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId,
 				kBackLeftEncoderOffset,
 				Units.inchesToMeters(kBackLeftXPosInches),
 				Units.inchesToMeters(kBackLeftYPosInches), kInvertLeftSide);
-		SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
+		SwerveModuleConstants backRight = kCreator.createModuleConstants(
 				kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId,
 				kBackRightEncoderOffset,
 				Units.inchesToMeters(kBackRightXPosInches),
 				Units.inchesToMeters(kBackRightYPosInches),
 				kInvertRightSide);
 
-		return new CtreSwerve(0, 0, DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+		return new CtreSwerve(constants, frontLeft, frontRight, backLeft, backRight);
+	}
+
+	@Override
+	public Mechanism mechanism() {
+		SRX intakeMotor = new SRX(0);
+		SRX transitMotor = new SRX(0);
+		FX pivotMotor = new FX(0);
+		FX shooterMotor = new FX(0);
+
+		Intake intake = new Intake(intakeMotor, 0.6);
+		Transit transit = new Transit(transitMotor, 0.4);
+		Pivot pivot = new Pivot(pivotMotor, 0.01);
+		Shooter shooter = new Shooter(shooterMotor, 100.0, 1.0);
+
+		// TODO Auto-generated method stub
+		return new frc.system.mechanism.Mechanism(intake, transit, pivot, shooter);
 	}
 }

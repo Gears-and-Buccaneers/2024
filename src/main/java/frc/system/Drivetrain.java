@@ -15,7 +15,10 @@ public interface Drivetrain extends Subsystem, Consumer<Vision.Measurement> {
 	void reset(Pose2d pose);
 
 	/** Drives at the provided velocities. */
-	Command drive(Transform2d velocity);
+	void drive(Transform2d velocity);
+
+	/** Drives at the provided velocity, facing the provided direction. */
+	void driveFacing(Transform2d velocity);
 
 	/** Drive to the provided position, ending at the provided velocity. */
 	Command drive(Pose2d position, double velocity);

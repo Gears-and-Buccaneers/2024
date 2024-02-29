@@ -4,7 +4,7 @@ import frc.hardware.Motor;
 import frc.system.mechanism.MotorComponent;
 
 public class Intake extends MotorComponent {
-	Intake(Motor motor) {
-		super(motor, "Mechanism/Intake/Output", 0.6);
+	public Intake(Motor motor, double defaultOutput) {
+		super(motor, "Mechanism/Intake/Output", defaultOutput);
 	}
 }

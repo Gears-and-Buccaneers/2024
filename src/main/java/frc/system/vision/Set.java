@@ -16,7 +16,7 @@ public class Set implements Vision {
 	}
 
 	@Override
-	public void with(Consumer<Measurement> measurement) {
+	public void register(Consumer<Measurement> measurement) {
 
 	}
 }

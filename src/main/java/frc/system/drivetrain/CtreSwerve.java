@@ -9,9 +9,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.system.Drivetrain;
 import frc.system.Vision.Measurement;
@@ -23,16 +20,12 @@ import frc.system.Vision.Measurement;
  */
 public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
 	private final AtomicReference<SwerveDriveState> state;
-	private final TrapezoidProfile profile;
+	// private final TrapezoidProfile profile;
 
-	public CtreSwerve(double velMax, double accMax, SwerveDrivetrainConstants driveTrainConstants,
-			SwerveModuleConstants... modules) {
-
+	public CtreSwerve(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
 		super(driveTrainConstants, modules);
 
 		state = new AtomicReference<>();
-		profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(velMax,
-				accMax));
 
 		registerTelemetry((s) -> state.set(s));
 	}
@@ -44,7 +37,11 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
 
 	@Override
 	public void accept(Measurement t) {
-		addVisionMeasurement(t.pose(), t.timestamp(), t.stdDev());
+		if (t.stdDev() != null) {
+			addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
+		} else {
+			addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
+		}
 	}
 
 	@Override
@@ -54,49 +51,23 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
 
 	@Override
 	public Command drive(Pose2d target, double velocity) {
-		// TODO
+		// TODO: use pathplanner
 		return null;
-
-		// return new Command() {
-		// Pose2d pose = target;
-		// double vel = velocity;
-
-		// double t;
-
-		// @Override
-		// public void initialize() {
-		// t = 0;
-		// }
-
-		// @Override
-		// public void execute() {
-		// SwerveDriveState s = state.get();
-		// ChassisSpeeds speeds = m_kinematics.toChassisSpeeds(s.ModuleStates);
-
-		// Translation2d err = s.Pose.minus(pSetpoint).getTranslation();
-
-		// TrapezoidProfile.State velocity = profile.calculate(t++ / 50.0, new
-		// TrapezoidProfile.State(),
-		// new TrapezoidProfile.State(, vSetpoint));
-
-		// setControl(new SwerveRequest.FieldCentric()
-		// .withVelocityX(velocity.getX())
-		// .withVelocityY(velocity.getY())
-		// .withRotationalRate(velocity.getRotation().getRadians()));
-		// }
-		// };
 	}
 
 	@Override
-	public Command drive(Transform2d velocity) {
-		return new Command() {
-			@Override
-			public void initialize() {
-				setControl(new SwerveRequest.FieldCentric()
-						.withVelocityX(velocity.getX())
-						.withVelocityY(velocity.getY())
-						.withRotationalRate(velocity.getRotation().getRadians()));
-			}
-		};
+	public void drive(Transform2d velocity) {
+		setControl(new SwerveRequest.FieldCentric()
+				.withVelocityX(velocity.getX())
+				.withVelocityY(velocity.getY())
+				.withRotationalRate(velocity.getRotation().getRadians()));
+	}
+
+	@Override
+	public void driveFacing(Transform2d velocity) {
+		setControl(new SwerveRequest.FieldCentric()
+				.withVelocityX(velocity.getX())
+				.withVelocityY(velocity.getY())
+				.withRotationalRate(velocity.getRotation().getRadians()));
 	}
 }

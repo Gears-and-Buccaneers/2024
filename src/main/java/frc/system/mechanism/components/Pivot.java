@@ -1,17 +1,19 @@
 package frc.system.mechanism.components;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.hardware.ProfiledMotor;
 
 public class Pivot {
 	final ProfiledMotor motor;
-	final DigitalInput limit;
+	final DoubleEntry ntDeadband;
 
-	public Pivot(ProfiledMotor motor, DigitalInput limit) {
+	public Pivot(ProfiledMotor motor, double defaultDeadband) {
 		this.motor = motor;
-		this.limit = limit;
+		ntDeadband = NetworkTableInstance.getDefault().getDoubleTopic("Mechanism/Pivot/Deadband")
+				.getEntry(defaultDeadband);
 	}
 
 	public Command aim(Rotation2d angle) {
@@ -26,7 +28,7 @@ public class Pivot {
 
 			@Override
 			public boolean isFinished() {
-				return Math.abs(motor.velocity()) <= 0.1 && Math.abs(motor.position() - rotations) <= 0.1;
+				return Math.abs(motor.position() - rotations) < ntDeadband.get();
 			}
 		};
 	}
