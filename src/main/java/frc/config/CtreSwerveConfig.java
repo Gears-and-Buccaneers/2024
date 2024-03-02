@@ -7,9 +7,13 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 import frc.Config;
+import frc.hardware.Motor;
+import frc.hardware.motor.MotorSet;
 import frc.hardware.motor.SRX;
 import frc.hardware.profiledmotor.FX;
 import frc.system.Drivetrain;
@@ -160,17 +164,25 @@ public class CtreSwerveConfig implements Config {
 
 	@Override
 	public Mechanism mechanism() {
-		SRX intakeMotor = new SRX(0);
-		SRX transitMotor = new SRX(0);
-		FX pivotMotor = new FX(0);
-		FX shooterMotor = new FX(0);
+		Motor intakeMotors = new MotorSet(new Motor[] { new SRX(1), new SRX(2) });
 
-		Intake intake = new Intake(intakeMotor, 0.6);
-		Transit transit = new Transit(transitMotor, 0.4);
-		Pivot pivot = new Pivot(pivotMotor, 0.01);
-		Shooter shooter = new Shooter(shooterMotor, 100.0, 1.0);
+		SRX transitMotor = new SRX(3);
 
-		// TODO Auto-generated method stub
-		return new frc.system.mechanism.Mechanism(intake, transit, pivot, shooter);
+		FX lPivotMotor = new FX(9);
+		FX rPivotMotor = new FX(10);
+
+		lPivotMotor.follow(rPivotMotor, true);
+
+		FX lShooterMotor = new FX(11);
+		FX rShooterMotor = new FX(12);
+
+		rShooterMotor.follow(lShooterMotor, false);
+
+		Intake intake = new Intake(intakeMotors, 0.6);
+		Transit transit = new Transit(transitMotor, 0.4, 0, 250);
+		Pivot pivot = new Pivot(lPivotMotor, 0.01, Rotation2d.fromDegrees(32), 0.42, Rotation2d.fromDegrees(53));
+		Shooter shooter = new Shooter(lShooterMotor, 100.0, 1.0);
+
+		return new frc.system.mechanism.Mechanism(new Translation3d(1, 1, 1), intake, transit, pivot, shooter);
 	}
 }

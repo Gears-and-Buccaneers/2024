@@ -8,25 +8,20 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.system.Drivetrain;
 import frc.system.Vision.Measurement;
 
-/**
- * Class that extends the Phoenix SwerveDrivetrain class and implements
- * subsystem
- * so it can be used in command-based projects easily.
- */
 public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
-	private final AtomicReference<SwerveDriveState> state;
+	private final SwerveRequest.FieldCentric cachedFieldCentric = new SwerveRequest.FieldCentric();
+	private final SwerveRequest.FieldCentricFacingAngle cachedFieldCentricFacing = new SwerveRequest.FieldCentricFacingAngle();
+
+	private final AtomicReference<SwerveDriveState> state = new AtomicReference<>();
 	// private final TrapezoidProfile profile;
 
 	public CtreSwerve(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
 		super(driveTrainConstants, modules);
-
-		state = new AtomicReference<>();
-
 		registerTelemetry((s) -> state.set(s));
 	}
 
@@ -50,24 +45,18 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
 	}
 
 	@Override
-	public Command drive(Pose2d target, double velocity) {
+	public Command driveTo(Pose2d target, double velocity) {
 		// TODO: use pathplanner
 		return null;
 	}
 
 	@Override
-	public void drive(Transform2d velocity) {
-		setControl(new SwerveRequest.FieldCentric()
-				.withVelocityX(velocity.getX())
-				.withVelocityY(velocity.getY())
-				.withRotationalRate(velocity.getRotation().getRadians()));
+	public void drive(double xVel, double yVel, double rVel) {
+		setControl(cachedFieldCentric.withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rVel));
 	}
 
 	@Override
-	public void driveFacing(Transform2d velocity) {
-		setControl(new SwerveRequest.FieldCentric()
-				.withVelocityX(velocity.getX())
-				.withVelocityY(velocity.getY())
-				.withRotationalRate(velocity.getRotation().getRadians()));
+	public void driveFacing(double xVel, double yVel, Rotation2d target) {
+		setControl(cachedFieldCentricFacing.withVelocityX(xVel).withVelocityY(yVel).withTargetDirection(target));
 	}
 }

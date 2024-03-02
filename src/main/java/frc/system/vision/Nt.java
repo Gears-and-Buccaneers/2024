@@ -67,10 +67,12 @@ public class Nt implements Vision {
 				rZ += tagFromCamera.getRotation().getZ();
 			}
 
-			cached.pose = new Pose3d(pX / n, pY / n, pZ / n, new Rotation3d(rX / n, rY / n, rZ / n));
-			cached.timestamp = event.valueData.value.getTime();
-			// TODO: calculate standard deviations of pose measurement.
-			cached.stdDev = null;
+			if (n != 0) {
+				cached.pose = new Pose3d(pX / n, pY / n, pZ / n, new Rotation3d(rX / n, rY / n, rZ / n));
+				cached.timestamp = event.valueData.value.getTime();
+				// TODO: calculate standard deviations of pose measurement.
+				cached.stdDev = null;
+			}
 		});
 	}
 }

@@ -4,6 +4,7 @@
 
 package frc;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.command.TeleOp;
@@ -14,6 +15,8 @@ import frc.system.Drivetrain;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Main extends TimedRobot {
+	public static Translation3d speakerPosition;
+
 	Config conf = Config.get();
 
 	public Motor back = new SRX(9);

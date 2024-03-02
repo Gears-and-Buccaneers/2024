@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -22,6 +23,10 @@ public class FX implements ProfiledMotor {
 
 		position = inner.getPosition();
 		velocity = inner.getVelocity();
+	}
+
+	public void follow(FX other, boolean inverted) {
+		inner.setControl(new Follower(other.inner.getDeviceID(), inverted));
 	}
 
 	public FX with(TalonFXConfiguration conf) {
