@@ -1,15 +1,13 @@
 package frc.command;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-// import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.hardware.Controller;
 import frc.system.Drivetrain;
 
 public class TeleOp extends Command {
-	final Drivetrain drivetrain;
+	public final Drivetrain drivetrain;
 
 	final double maxVelocity;
 	final double maxRotVel;
@@ -38,19 +36,23 @@ public class TeleOp extends Command {
 		// this.robotRel = robotRel;
 	}
 
-	@Override
-	public void execute() {
-		// ChassisSpeeds speed;
-
+	public Translation2d translation() {
 		Translation2d xy = new Translation2d(x.get(), y.get());
 
 		double velocity = Math.min(xy.getNorm(), 1) * maxVelocity;
 		Rotation2d direction = xy.getAngle();
 
-		xy = new Translation2d(velocity, direction);
+		return new Translation2d(velocity, direction);
+	}
 
-		// Rotation2d rot = drivetrain.pose().getRotation();
+	public double rotation() {
+		return theta.get() * maxRotVel;
+	}
 
-		drivetrain.drive(new Transform2d(xy, new Rotation2d(theta.get() * maxRotVel)));
+	@Override
+	public void execute() {
+		Translation2d translation = translation();
+
+		drivetrain.drive(translation.getX(), translation.getY(), rotation());
 	}
 }
