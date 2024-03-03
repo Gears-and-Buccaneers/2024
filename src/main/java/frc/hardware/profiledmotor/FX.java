@@ -18,6 +18,10 @@ public class FX implements ProfiledMotor {
 	final StatusSignal<Double> position;
 	final StatusSignal<Double> velocity;
 
+	// TODO: switch to Phoenix Pro control modes
+	final PositionDutyCycle positionControl = new PositionDutyCycle(0);
+	final VelocityDutyCycle velocityControl = new VelocityDutyCycle(0);
+
 	public FX(int id) {
 		inner = new CoreTalonFX(id);
 
@@ -56,17 +60,12 @@ public class FX implements ProfiledMotor {
 
 	@Override
 	public void setPosition(double position) {
-		inner.setControl(new PositionDutyCycle(position));
-		// TODO: switch to Phoenix Pro control mode:
-		// inner.setControl(new MotionMagicTorqueCurrentFOC(position));
+		inner.setControl(positionControl.withPosition(position));
 	}
 
 	@Override
 	public void setVelocity(double velocity) {
-		System.out.println("Velocity set to " + velocity);
-		inner.setControl(new VelocityDutyCycle(velocity));
-		// TODO: switch to Phoenix Pro control mode
-		// inner.setControl(new MotionMagicVelocityTorqueCurrentFOC(velocity));
+		inner.setControl(velocityControl.withVelocity(velocity));
 	}
 
 	@Override
