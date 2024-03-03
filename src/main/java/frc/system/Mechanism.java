@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public interface Mechanism extends Subsystem {
+	void tmp_zeroPivot();
+
 	Command intake();
 
 	Command amp();

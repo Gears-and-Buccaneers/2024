@@ -1,6 +1,7 @@
 package frc.config;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
@@ -173,8 +174,12 @@ public class CtreSwerveConfig implements Config {
 
 		SRX transitMotor = new SRX(3);
 
-		FX lPivotMotor = new FX(9);
-		FX rPivotMotor = new FX(10);
+		TalonFXConfiguration pivotConf = new TalonFXConfiguration();
+
+		pivotConf.Feedback.SensorToMechanismRatio = 100;
+
+		FX lPivotMotor = new FX(9).with(pivotConf);
+		FX rPivotMotor = new FX(10).with(pivotConf);
 
 		lPivotMotor.follow(rPivotMotor, true);
 

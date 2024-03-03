@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.command.TeleOp;
 import frc.hardware.controller.Xbox;
 import frc.system.Drivetrain;
@@ -58,6 +59,7 @@ public final class Main extends TimedRobot {
 		operator.rT.event(0.5).whileTrue(shoot);
 		operator.lT.event(0.5).whileTrue(speaker);
 		operator.lB.whileTrue(amp);
+		operator.start.onTrue(new InstantCommand(mechanism::tmp_zeroPivot));
 		// TODO: add climb command
 		// TODO: add pivot override
 

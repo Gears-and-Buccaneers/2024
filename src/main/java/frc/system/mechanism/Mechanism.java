@@ -36,6 +36,11 @@ public class Mechanism implements frc.system.Mechanism {
 	}
 
 	@Override
+	public void tmp_zeroPivot() {
+		pivot.motor.setPosition(0);
+	}
+
+	@Override
 	public Command intake() {
 		Command cmd = pivot.toIntake().andThen(intake.run().raceWith(transit.intake()));
 		cmd.addRequirements(this);
