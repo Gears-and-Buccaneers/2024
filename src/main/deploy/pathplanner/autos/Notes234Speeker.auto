@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8725610178493084,
+      "y": 3.6568684046459006
+    },
+    "rotation": 118.61045966596524
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreSpeeker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreSpeeker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreSpeeker"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
