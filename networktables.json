@@ -1,0 +1,10 @@
+[
+  {
+    "name": "/Preferences/bot",
+    "type": "string",
+    "value": "swerve",
+    "properties": {
+      "persistent": true
+    }
+  }
+]

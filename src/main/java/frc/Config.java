@@ -5,7 +5,6 @@ import frc.config.CtreSwerveConfig;
 // import frc.config.MecanumConfig;
 // import frc.config.SwerveConfig;
 import frc.system.Drivetrain;
-import frc.system.Mechanism;
 
 public interface Config {
 	public static Config get() {
@@ -24,7 +23,4 @@ public interface Config {
 
 	/** Get an instance of Drivetrain. */
 	Drivetrain drivetrain();
-
-	/** Get an instance of Mechanism. */
-	Mechanism mechanism();
 }

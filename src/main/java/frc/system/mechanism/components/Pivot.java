@@ -6,8 +6,9 @@ import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.hardware.ProfiledMotor;
+import frc.system.mechanism.MechanismReq;
 
-public class Pivot {
+public class Pivot implements MechanismReq{
 	final double a;
 	final double intakePosition;
 
@@ -50,4 +51,22 @@ public class Pivot {
 			}
 		};
 	}
+
+    @Override
+    public void close() throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'close'");
+    }
+
+    @Override
+    public void disable() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'disable'");
+    }
+
+    @Override
+    public void log() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'log'");
+    }
 }
