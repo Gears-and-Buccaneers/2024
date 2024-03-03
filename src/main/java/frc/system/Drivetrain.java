@@ -14,9 +14,12 @@ public interface Drivetrain extends Subsystem, Consumer<Vision.Measurement> {
 	/** Resets the drivetrain pose. */
 	void reset(Pose2d pose);
 
+	/** Puts the drivetrain in brake mode. */
+	Command brake();
+
 	/**
 	 * Drives at the provided velocities.
-	 * 
+	 *
 	 * @param rVel the rotation velocity in radians.
 	 */
 	void drive(double xVel, double yVel, double rVel);

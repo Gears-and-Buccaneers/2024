@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
+import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
@@ -159,7 +160,11 @@ public class CtreSwerveConfig implements Config {
 				Units.inchesToMeters(kBackRightYPosInches),
 				kInvertRightSide);
 
-		return new CtreSwerve(constants, frontLeft, frontRight, backLeft, backRight);
+		CtreSwerve swerve = new CtreSwerve(new PathConstraints(kSpeedAt12VoltsMps, 4, Units.degreesToRadians(520),
+				Units.degreesToRadians(720)), kSpeedAt12VoltsMps, constants, frontLeft, frontRight, backLeft,
+				backRight);
+
+		return swerve;
 	}
 
 	@Override
@@ -180,7 +185,8 @@ public class CtreSwerveConfig implements Config {
 
 		Intake intake = new Intake(intakeMotors, 0.6);
 		Transit transit = new Transit(transitMotor, 0.4, 0, 250);
-		Pivot pivot = new Pivot(lPivotMotor, 0.01, Rotation2d.fromDegrees(32), 0.42, Rotation2d.fromDegrees(53));
+		Pivot pivot = new Pivot(lPivotMotor, 0.01, Rotation2d.fromDegrees(32),
+				Rotation2d.fromDegrees(130), 0.42, Rotation2d.fromDegrees(53));
 		Shooter shooter = new Shooter(lShooterMotor, 100.0, 1.0);
 
 		return new frc.system.mechanism.Mechanism(new Translation3d(1, 1, 1), intake, transit, pivot, shooter);
