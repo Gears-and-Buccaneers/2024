@@ -15,6 +15,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.system.Vision;
 
 public class Nt implements Vision {
+	Pose3d robotToCamera = new Pose3d(0.32, 0.22, 0.2, new Rotation3d());
+
 	final Measurement cached = new Measurement();
 	final AprilTagFieldLayout tags = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
@@ -54,17 +56,17 @@ public class Nt implements Vision {
 				Pose3d tagPose = maybeTagPose.get();
 				Pose3d tagFromCamera = tagPose.relativeTo(pose);
 
-				// TODO: get camera pose relative to robot
+				Pose3d tagFromRobot = tagFromCamera.relativeTo(robotToCamera);
 
 				n++;
 
-				pX += tagFromCamera.getX();
-				pY += tagFromCamera.getY();
-				pZ += tagFromCamera.getZ();
+				pX += tagFromRobot.getX();
+				pY += tagFromRobot.getY();
+				pZ += tagFromRobot.getZ();
 
-				rX += tagFromCamera.getRotation().getX();
-				rY += tagFromCamera.getRotation().getY();
-				rZ += tagFromCamera.getRotation().getZ();
+				rX += tagFromRobot.getRotation().getX();
+				rY += tagFromRobot.getRotation().getY();
+				rZ += tagFromRobot.getRotation().getZ();
 			}
 
 			if (n != 0) {
