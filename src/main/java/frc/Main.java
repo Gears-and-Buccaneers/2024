@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -16,6 +17,7 @@ import frc.hardware.controller.Xbox;
 import frc.system.Drivetrain;
 import frc.system.Mechanism;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class Main extends TimedRobot {
 	public static Translation3d speakerPosition;
@@ -33,6 +35,13 @@ public final class Main extends TimedRobot {
 	}
 
 	Main() {
+		speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
+				?
+				// Red speaker
+				new Translation3d(0.24, 2.66, 2.06)
+				// Blue speaker
+				: new Translation3d(16.31, 2.66, 2.06);
+
 		TeleOp teleop = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY, driver.rX);
 		drivetrain.setDefaultCommand(teleop);
 
