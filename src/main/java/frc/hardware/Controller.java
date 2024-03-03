@@ -1,26 +1,19 @@
 package frc.hardware;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public abstract class Controller {
 	/** The internal controller. */
-	final GenericHID hid;
+	private final CommandGenericHID hid;
 
 	public Controller(int port) {
-		hid = new GenericHID(port);
+		hid = new CommandGenericHID(port);
 	}
 
-	public class Button {
-		final int id;
-
-		public Button(int id) {
-			this.id = id;
-		}
-
-		/** Get whether the button is pressed. */
-		public boolean get() {
-			return hid.getRawButton(id);
-		}
+	protected Trigger button(int id) {
+		return hid.button(id);
 	}
 
 	public class Axis {
@@ -28,6 +21,14 @@ public abstract class Controller {
 
 		public Axis(int id) {
 			this.id = id;
+		}
+
+		/**
+		 * Returns a new BooleanEvent which can be used for command scheduling, taking
+		 * an activation threshold.
+		 */
+		public Trigger event(double threshold) {
+			return hid.axisGreaterThan(id, threshold, CommandScheduler.getInstance().getDefaultButtonLoop());
 		}
 
 		/** Get the value that this input is at, from -1.0 to +1.0. */

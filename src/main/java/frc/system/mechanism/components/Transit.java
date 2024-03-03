@@ -32,20 +32,6 @@ public class Transit {
 		return measurement != null && measurement.distance_mm < threshold;
 	}
 
-	public Command run() {
-		return new Command() {
-			@Override
-			public void initialize() {
-				motor.setPercent(ntSpeed.get());
-			}
-
-			@Override
-			public void end(boolean interrupted) {
-				motor.setPercent(0);
-			}
-		};
-	}
-
 	public Command intake() {
 		return new Command() {
 			@Override

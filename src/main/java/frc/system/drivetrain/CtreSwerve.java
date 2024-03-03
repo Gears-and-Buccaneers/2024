@@ -23,6 +23,7 @@ import frc.system.Vision.Measurement;
 public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
 	private final PathConstraints constraints;
 
+	private final SwerveRequest.SwerveDriveBrake cachedBrake = new SwerveRequest.SwerveDriveBrake();
 	private final SwerveRequest.FieldCentric cachedFieldCentric = new SwerveRequest.FieldCentric();
 	private final SwerveRequest.FieldCentricFacingAngle cachedFieldCentricFacing = new SwerveRequest.FieldCentricFacingAngle();
 
@@ -93,5 +94,17 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
 	@Override
 	public void driveFacing(double xVel, double yVel, Rotation2d target) {
 		setControl(cachedFieldCentricFacing.withVelocityX(xVel).withVelocityY(yVel).withTargetDirection(target));
+	}
+
+	@Override
+	public Command brake() {
+		Command cmd = new Command() {
+			@Override
+			public void initialize() {
+				setControl(cachedBrake);
+			}
+		};
+		cmd.addRequirements(this);
+		return cmd;
 	}
 }

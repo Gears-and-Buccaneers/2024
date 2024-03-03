@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.command.TeleOp;
 import frc.hardware.controller.Xbox;
@@ -32,16 +33,31 @@ public final class Main extends TimedRobot {
 	}
 
 	Main() {
-		TeleOp teleOp = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY, driver.rX);
-		drivetrain.setDefaultCommand(teleOp);
+		TeleOp teleop = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY, driver.rX);
+		drivetrain.setDefaultCommand(teleop);
 
-		// Register NamedCommands
+		Command brake = drivetrain.brake();
+
+		Command intake = mechanism.intake();
+		Command amp = mechanism.amp();
+		Command speaker = mechanism.speaker(drivetrain, teleop::translation);
+		Command shoot = mechanism.shoot();
+
+		driver.rT.event(0.5).whileTrue(intake);
+		driver.x.whileTrue(brake);
+
+		operator.rT.event(0.5).whileTrue(shoot);
+		operator.lT.event(0.5).whileTrue(speaker);
+		operator.lB.whileTrue(amp);
+		// TODO: add climb command
+		// TODO: add pivot override
+
 		Translation2d stop = new Translation2d();
 
-		NamedCommands.registerCommand("Intake", mechanism.intake());
-		NamedCommands.registerCommand("Amp", mechanism.amp());
+		NamedCommands.registerCommand("Intake", intake);
+		NamedCommands.registerCommand("Amp", amp);
 		NamedCommands.registerCommand("Speaker", mechanism.speaker(drivetrain, () -> stop));
-		NamedCommands.registerCommand("Shoot", mechanism.shoot());
+		NamedCommands.registerCommand("Shoot", shoot);
 	}
 
 	@Override

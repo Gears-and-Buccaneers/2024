@@ -31,15 +31,13 @@ public class Mechanism implements frc.system.Mechanism {
 		this.shooter = shooter;
 
 		Command toIntake = pivot.toIntake();
-
 		toIntake.addRequirements(this);
-
 		setDefaultCommand(toIntake);
 	}
 
 	@Override
 	public Command intake() {
-		Command cmd = pivot.toIntake().andThen(intake.run().raceWith(transit.run()));
+		Command cmd = pivot.toIntake().andThen(intake.run().raceWith(transit.intake()));
 		cmd.addRequirements(this);
 		return cmd;
 	}
@@ -79,7 +77,7 @@ public class Mechanism implements frc.system.Mechanism {
 
 	@Override
 	public Command shoot() {
-		Command cmd = shooter.waitPrimed().andThen(transit.run());
+		Command cmd = shooter.waitPrimed().andThen(transit.shoot());
 		cmd.addRequirements(this);
 		return cmd;
 	}
