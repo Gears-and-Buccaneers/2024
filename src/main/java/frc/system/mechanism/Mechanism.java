@@ -30,14 +30,20 @@ public class Mechanism implements frc.system.Mechanism {
 		this.pivot = pivot;
 		this.shooter = shooter;
 
-		Command toIntake = pivot.toIntake();
-		toIntake.addRequirements(this);
-		setDefaultCommand(toIntake);
+		// TODO: reenable this when motor is tuned
+		// Command toIntake = pivot.toIntake();
+		// toIntake.addRequirements(this);
+		// setDefaultCommand(toIntake);
 	}
 
 	@Override
 	public void tmp_zeroPivot() {
 		pivot.motor.setPosition(0);
+	}
+
+	@Override
+	public void tmp_runPivot(double output) {
+		pivot.motor.setPercent(output * 0.15);
 	}
 
 	@Override

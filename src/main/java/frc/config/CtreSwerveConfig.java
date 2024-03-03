@@ -29,7 +29,6 @@ import frc.system.mechanism.components.Transit;
 public class CtreSwerveConfig implements Config {
 	@Override
 	public Drivetrain drivetrain() {
-
 		// The steer motor uses any SwerveModule.SteerRequestType control request with
 		// the
 		// output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
@@ -55,17 +54,17 @@ public class CtreSwerveConfig implements Config {
 
 		// Theoretical free speed (m/s) at 12v applied output;
 		// This needs to be tuned to your individual robot
-		double kSpeedAt12VoltsMps = 3.92;
+		double kSpeedAt12VoltsMps = 4.48;
 
 		// Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
 		// This may need to be tuned to your individual robot
-		double kCoupleRatio = 3.5714285714285716;
+		double kCoupleRatio = 3.125;
 
-		double kDriveGearRatio = 8.142857142857142;
+		double kDriveGearRatio = 7.125;
 		double kSteerGearRatio = 21.428571428571427;
 		double kWheelRadiusInches = 2;
 
-		boolean kSteerMotorReversed = true;
+		boolean kSteerMotorReversed = false;
 		boolean kInvertLeftSide = false;
 		boolean kInvertRightSide = true;
 
@@ -79,11 +78,11 @@ public class CtreSwerveConfig implements Config {
 		double kSteerFrictionVoltage = 0.25;
 		double kDriveFrictionVoltage = 0.25;
 
-		SwerveDrivetrainConstants constants = new SwerveDrivetrainConstants()
+		SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
 				.withPigeon2Id(kPigeonId)
 				.withCANbusName(kCANbusName);
 
-		SwerveModuleConstantsFactory kCreator = new SwerveModuleConstantsFactory()
+		SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
 				.withDriveMotorGearRatio(kDriveGearRatio)
 				.withSteerMotorGearRatio(kSteerGearRatio)
 				.withWheelRadius(kWheelRadiusInches)
@@ -104,8 +103,8 @@ public class CtreSwerveConfig implements Config {
 		// Front Left
 		int kFrontLeftDriveMotorId = 1;
 		int kFrontLeftSteerMotorId = 2;
-		int kFrontLeftEncoderId = 1;
-		double kFrontLeftEncoderOffset = 0.43603515625;
+		int kFrontLeftEncoderId = 4;
+		double kFrontLeftEncoderOffset = 0.287841796875;
 
 		double kFrontLeftXPosInches = 8.375;
 		double kFrontLeftYPosInches = 10.875;
@@ -113,8 +112,8 @@ public class CtreSwerveConfig implements Config {
 		// Front Right
 		int kFrontRightDriveMotorId = 3;
 		int kFrontRightSteerMotorId = 4;
-		int kFrontRightEncoderId = 2;
-		double kFrontRightEncoderOffset = -0.05615234375;
+		int kFrontRightEncoderId = 3;
+		double kFrontRightEncoderOffset = -0.029541015625;
 
 		double kFrontRightXPosInches = 8.375;
 		double kFrontRightYPosInches = -10.875;
@@ -122,8 +121,8 @@ public class CtreSwerveConfig implements Config {
 		// Back Left
 		int kBackLeftDriveMotorId = 5;
 		int kBackLeftSteerMotorId = 6;
-		int kBackLeftEncoderId = 3;
-		double kBackLeftEncoderOffset = -0.01953125;
+		int kBackLeftEncoderId = 2;
+		double kBackLeftEncoderOffset = -0.054931640625;
 
 		double kBackLeftXPosInches = -8.375;
 		double kBackLeftYPosInches = 10.875;
@@ -131,39 +130,31 @@ public class CtreSwerveConfig implements Config {
 		// Back Right
 		int kBackRightDriveMotorId = 7;
 		int kBackRightSteerMotorId = 8;
-		int kBackRightEncoderId = 4;
-		double kBackRightEncoderOffset = 0.2880859375;
+		int kBackRightEncoderId = 1;
+		double kBackRightEncoderOffset = 0.435302734375;
 
 		double kBackRightXPosInches = -8.375;
 		double kBackRightYPosInches = -10.875;
 
-		SwerveModuleConstants frontLeft = kCreator.createModuleConstants(
-				kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId,
-				kFrontLeftEncoderOffset,
-				Units.inchesToMeters(kFrontLeftXPosInches),
-				Units.inchesToMeters(kFrontLeftYPosInches),
+		SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
+				kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset,
+				Units.inchesToMeters(kFrontLeftXPosInches), Units.inchesToMeters(kFrontLeftYPosInches),
 				kInvertLeftSide);
-		SwerveModuleConstants frontRight = kCreator.createModuleConstants(
-				kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId,
-				kFrontRightEncoderOffset,
-				Units.inchesToMeters(kFrontRightXPosInches),
-				Units.inchesToMeters(kFrontRightYPosInches),
+		SwerveModuleConstants FrontRight = ConstantCreator.createModuleConstants(
+				kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId, kFrontRightEncoderOffset,
+				Units.inchesToMeters(kFrontRightXPosInches), Units.inchesToMeters(kFrontRightYPosInches),
 				kInvertRightSide);
-		SwerveModuleConstants backLeft = kCreator.createModuleConstants(
-				kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId,
-				kBackLeftEncoderOffset,
-				Units.inchesToMeters(kBackLeftXPosInches),
-				Units.inchesToMeters(kBackLeftYPosInches), kInvertLeftSide);
-		SwerveModuleConstants backRight = kCreator.createModuleConstants(
-				kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId,
-				kBackRightEncoderOffset,
-				Units.inchesToMeters(kBackRightXPosInches),
-				Units.inchesToMeters(kBackRightYPosInches),
+		SwerveModuleConstants BackLeft = ConstantCreator.createModuleConstants(
+				kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset,
+				Units.inchesToMeters(kBackLeftXPosInches), Units.inchesToMeters(kBackLeftYPosInches), kInvertLeftSide);
+		SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
+				kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
+				Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches),
 				kInvertRightSide);
 
 		CtreSwerve swerve = new CtreSwerve(new PathConstraints(kSpeedAt12VoltsMps, 4, Units.degreesToRadians(520),
-				Units.degreesToRadians(720)), kSpeedAt12VoltsMps, constants, frontLeft, frontRight, backLeft,
-				backRight);
+				Units.degreesToRadians(720)), kSpeedAt12VoltsMps, DrivetrainConstants, FrontLeft, FrontRight, BackLeft,
+				BackRight);
 
 		return swerve;
 	}

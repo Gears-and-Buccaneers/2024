@@ -60,8 +60,10 @@ public final class Main extends TimedRobot {
 		operator.lT.event(0.5).whileTrue(speaker);
 		operator.lB.whileTrue(amp);
 		operator.start.onTrue(new InstantCommand(mechanism::tmp_zeroPivot));
+
+		operator.b.whileTrue(mechanism.run(() -> mechanism.tmp_runPivot(operator.lY.get())));
+
 		// TODO: add climb command
-		// TODO: add pivot override
 
 		Translation2d stop = new Translation2d();
 
