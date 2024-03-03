@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ScoreSpeeker"
+            "pathName": "ScoreSpeaker"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ScoreSpeeker"
+            "pathName": "ScoreSpeaker"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ScoreSpeeker"
+            "pathName": "ScoreSpeaker"
           }
         }
       ]
