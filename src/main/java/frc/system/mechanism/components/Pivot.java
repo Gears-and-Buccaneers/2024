@@ -9,19 +9,23 @@ import frc.hardware.ProfiledMotor;
 
 public class Pivot {
 	final double a;
-	final double intakePosition;
+
+	final Command gotoIntake;
+	final Command gotoAmp;
 
 	final ProfiledMotor motor;
 	final DoubleEntry ntDeadband;
 
-	public Pivot(ProfiledMotor motor, double defaultDeadband, Rotation2d intakePosition, double armLength,
+	public Pivot(ProfiledMotor motor, double defaultDeadband, Rotation2d intakePosition, Rotation2d ampPosition,
+			double armLength,
 			Rotation2d armOffset) {
 		this.motor = motor;
 		ntDeadband = NetworkTableInstance.getDefault().getDoubleTopic("Mechanism/Pivot/Deadband")
 				.getEntry(defaultDeadband);
 
 		a = armLength * Math.sin(armOffset.getRadians());
-		this.intakePosition = intakePosition.getRotations();
+		gotoIntake = goTo(intakePosition.getRotations());
+		gotoAmp = goTo(intakePosition.getRotations());
 	}
 
 	public static double calculateOffset(double armLength, Rotation2d armOffset) {
@@ -33,8 +37,12 @@ public class Pivot {
 		return goTo(rotations);
 	}
 
+	public Command toAmp() {
+		return gotoAmp;
+	}
+
 	public Command toIntake() {
-		return goTo(intakePosition);
+		return gotoIntake;
 	}
 
 	public Command goTo(double rotations) {

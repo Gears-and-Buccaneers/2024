@@ -4,6 +4,9 @@
 
 package frc;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -12,6 +15,7 @@ import frc.hardware.Motor;
 import frc.hardware.controller.Xbox;
 import frc.hardware.motor.SRX;
 import frc.system.Drivetrain;
+import frc.system.Mechanism;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public final class Main extends TimedRobot {
@@ -25,10 +29,20 @@ public final class Main extends TimedRobot {
 	Xbox driver = new Xbox(0);
 
 	final Drivetrain drivetrain = conf.drivetrain();
+	final Mechanism mechanism = conf.mechanism();
 	final TeleOp teleop = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY, driver.rX);
 
 	public static void main(String... args) {
 		RobotBase.startRobot(Main::new);
+	}
+
+	Main() {
+		Translation2d stop = new Translation2d();
+
+		NamedCommands.registerCommand("Intake", mechanism.intake());
+		NamedCommands.registerCommand("Amp", mechanism.amp());
+		NamedCommands.registerCommand("Speaker", mechanism.speaker(drivetrain, () -> stop));
+		NamedCommands.registerCommand("Shoot", mechanism.shoot());
 	}
 
 	@Override

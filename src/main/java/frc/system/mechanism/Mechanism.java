@@ -1,12 +1,13 @@
 package frc.system.mechanism;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.Main;
-import frc.command.TeleOp;
 import frc.system.Drivetrain;
 import frc.system.mechanism.components.Intake;
 import frc.system.mechanism.components.Pivot;
@@ -44,9 +45,14 @@ public class Mechanism implements frc.system.Mechanism {
 	}
 
 	@Override
-	public Command aim(TeleOp teleop) {
-		Drivetrain drivetrain = teleop.drivetrain;
+	public Command amp() {
+		Command cmd = pivot.toAmp().alongWith(shooter.run());
+		cmd.addRequirements(this);
+		return cmd;
+	}
 
+	@Override
+	public Command speaker(Drivetrain drivetrain, Supplier<Translation2d> translation) {
 		Command cmd = new Command() {
 			@Override
 			public void execute() {
@@ -60,20 +66,20 @@ public class Mechanism implements frc.system.Mechanism {
 				double pitch = Math.asin(vector.getZ() / distance);
 				double yaw = Math.atan2(vector.getY(), vector.getX());
 
-				Translation2d xy = teleop.translation();
+				Translation2d xy = translation.get();
 
 				drivetrain.driveFacing(xy.getX(), xy.getY(), new Rotation2d(yaw));
 				pivot.aim(pitch, distance);
 			}
-		};
+		}.alongWith(shooter.run());
 
-		cmd.addRequirements(this, teleop.drivetrain);
+		cmd.addRequirements(this, drivetrain);
 		return cmd;
 	}
 
 	@Override
 	public Command shoot() {
-		Command cmd = shooter.run().raceWith(shooter.waitPrimed().andThen(transit.run()));
+		Command cmd = shooter.waitPrimed().andThen(transit.run());
 		cmd.addRequirements(this);
 		return cmd;
 	}
