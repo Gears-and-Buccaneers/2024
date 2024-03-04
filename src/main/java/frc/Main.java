@@ -64,16 +64,13 @@ public final class Main extends TimedRobot {
 
         // Operator
         // Shoot
-        operator.rightTrigger().whileTrue( // Option 2
-                shooter.waitPrimed()// pivit at setpoint
-                        .andThen(transit.shoot()));
+        operator.rightTrigger().whileTrue(shoot());
 
         // Prime Amp
         // operator.leftBumper().whileTrue(
         // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("amp")));
         // path finds to amp then scores in amp /\
-        operator.leftBumper().whileTrue(
-                pivot.toAmp().alongWith(shooter.shootAmp()));
+        operator.leftBumper().whileTrue(primeAmp());
 
         // Prime Speaker
         operator.leftTrigger().whileTrue(
@@ -81,9 +78,7 @@ public final class Main extends TimedRobot {
                         driver::getLeftX,
                         driver::getLeftY,
                         null));// TODO: facing speeker
-        operator.leftTrigger().whileTrue(
-                pivot.toSpeaker(1, 1)
-                        .alongWith(shooter.shootSpeaker()));
+        operator.leftTrigger().whileTrue(primeSpeaker());
 
         // TODO: add climb command
 
@@ -95,15 +90,23 @@ public final class Main extends TimedRobot {
         return intake.intake().raceWith(transit.intake());
     }
 
+    private Command shoot() {
+        return shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.shoot()));
+    }
+
+    private Command primeAmp() {
+        return pivot.toAmp().alongWith(shooter.shootAmp());
+    }
+
+    private Command primeSpeaker() {
+        return pivot.toSpeaker(1, 1).alongWith(shooter.shootSpeaker());
+    }
+
     private void namedCommands() {
-        NamedCommands.registerCommand("Intake",
-                intake());
-        NamedCommands.registerCommand("Shoot",
-                shooter.waitPrimed().andThen(transit.shoot()));
-        NamedCommands.registerCommand("PrimeAmp",
-                pivot.toAmp().alongWith(shooter.shootAmp()));
-        NamedCommands.registerCommand("PrimeSpeaker",
-                pivot.toSpeaker(1, 1).alongWith(shooter.shootSpeaker()));
+        NamedCommands.registerCommand("Intake", intake());
+        NamedCommands.registerCommand("Shoot", shoot());
+        NamedCommands.registerCommand("PrimeAmp", primeAmp());
+        NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker());
     }
 
     @Override
