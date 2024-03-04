@@ -8,126 +8,140 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.hardware.controller.Xbox;
+import frc.system.Drivetrain;
 import frc.system.Mechanism;
+import frc.system.mechanism.components.Intake;
+import frc.system.mechanism.components.Shooter;
+import frc.system.mechanism.components.Transit;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class Main extends TimedRobot {
-	public static Translation3d speakerPosition;
+    public static Translation3d speakerPosition;
 
-	Config conf = Config.get();
+    Config conf = Config.get();
 
-	Xbox driver = new Xbox(0);
-	Xbox operator = new Xbox(1);
+    CommandXboxController driver = new CommandXboxController(0);
+    CommandXboxController operator = new CommandXboxController(1);
 
-	// final Drivetrain drivetrain = conf.drivetrain();
-	final Mechanism mechanism = conf.mechanism();
+    final Mechanism mechanism = conf.mechanism();
 
-	public static void main(String... args) {
-		RobotBase.startRobot(Main::new);
-	}
+    public static void main(String... args) {
+        RobotBase.startRobot(Main::new);
+    }
 
-	Main() {
-		speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
-				?
-				// Red speaker
-				new Translation3d(0.24, 2.66, 2.06)
-				// Blue speaker
-				: new Translation3d(16.31, 2.66, 2.06);
+    private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-		// TeleOp teleop = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY,
-		// driver.rX);
-		// drivetrain.setDefaultCommand(teleop);
+    private final Drivetrain drivetrain = conf.drivetrain(subsystemsTable);
 
-		// Command brake = drivetrain.brake();
+    private final Transit transit = new Transit(subsystemsTable, 5);
+    private final Intake intake = new Intake(subsystemsTable, transit::hasNote);
+    private final Shooter shooter = new Shooter(subsystemsTable, transit::hasNote);
 
-		Command intake = mechanism.intake();
-		Command amp = mechanism.amp();
-		// Command speaker = mechanism.speaker(drivetrain, teleop::translation);
-		Command shoot = mechanism.shoot();
+    Main() {
+        speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
+                ?
+                // Red speaker
+                new Translation3d(0.24, 2.66, 2.06)
+                // Blue speaker
+                : new Translation3d(16.31, 2.66, 2.06);
 
-		operator.x.whileTrue(intake);
-		// driver.x.whileTrue(brake);
+        // TeleOp teleop = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY,
+        // driver.rX);
+        // drivetrain.setDefaultCommand(teleop);
 
-		operator.a.whileTrue(shoot);
-		// operator.lT.event(0.5).whileTrue(speaker);
-		operator.lB.whileTrue(amp);
-		operator.start.onTrue(new InstantCommand(mechanism::tmp_zeroPivot));
+        // Command brake = drivetrain.brake();
 
-		operator.b.whileTrue(mechanism.run(() -> mechanism.tmp_runPivot(operator.lY.get())));
+        Command intake = mechanism.intake();
+        Command amp = mechanism.amp();
+        // Command speaker = mechanism.speaker(drivetrain, teleop::translation);
+        Command shoot = mechanism.shoot();
 
-		// TODO: add climb command
+        operator.x().whileTrue(intake);
+        // driver.x.whileTrue(brake);
 
-		Translation2d stop = new Translation2d();
+        operator.a().whileTrue(shoot);
+        // operator.lT.event(0.5).whileTrue(speaker);
+        operator.leftBumper().whileTrue(amp);
+        operator.start().onTrue(new InstantCommand(mechanism::tmp_zeroPivot));
 
-		NamedCommands.registerCommand("Intake", intake);
-		NamedCommands.registerCommand("Amp", amp);
-		// NamedCommands.registerCommand("Speaker", mechanism.speaker(drivetrain, () ->
-		// stop));
-		NamedCommands.registerCommand("Shoot", shoot);
-	}
+        operator.b().whileTrue(mechanism.run(() -> mechanism.tmp_runPivot(operator.getLeftX())));
 
-	@Override
-	public void robotInit() {
-	}
+        // TODO: add climb command
 
-	@Override
-	public void robotPeriodic() {
-		CommandScheduler.getInstance().run();
-	}
+        Translation2d stop = new Translation2d();
 
-	@Override
-	public void disabledInit() {
-	}
+        NamedCommands.registerCommand("Intake", intake);
+        NamedCommands.registerCommand("Amp", amp);
+        // NamedCommands.registerCommand("Speaker", mechanism.speaker(drivetrain, () ->
+        // stop));
+        NamedCommands.registerCommand("Shoot", shoot);
+    }
 
-	@Override
-	public void disabledPeriodic() {
-	}
+    @Override
+    public void robotInit() {
+    }
 
-	@Override
-	public void disabledExit() {
-	}
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
 
-	@Override
-	public void autonomousInit() {
-	}
+    @Override
+    public void disabledInit() {
+    }
 
-	@Override
-	public void autonomousPeriodic() {
-	}
+    @Override
+    public void disabledPeriodic() {
+    }
 
-	@Override
-	public void autonomousExit() {
-	}
+    @Override
+    public void disabledExit() {
+    }
 
-	@Override
-	public void teleopInit() {
-	}
+    @Override
+    public void autonomousInit() {
+    }
 
-	@Override
-	public void teleopPeriodic() {
-	}
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-	@Override
-	public void teleopExit() {
-	}
+    @Override
+    public void autonomousExit() {
+    }
 
-	@Override
-	public void testInit() {
-		CommandScheduler.getInstance().cancelAll();
-	}
+    @Override
+    public void teleopInit() {
+    }
 
-	@Override
-	public void testPeriodic() {
-	}
+    @Override
+    public void teleopPeriodic() {
+    }
 
-	@Override
-	public void testExit() {
-	}
+    @Override
+    public void teleopExit() {
+    }
+
+    @Override
+    public void testInit() {
+        CommandScheduler.getInstance().cancelAll();
+    }
+
+    @Override
+    public void testPeriodic() {
+    }
+
+    @Override
+    public void testExit() {
+    }
 }

@@ -22,10 +22,10 @@ public interface Drivetrain extends Subsystem, Consumer<Vision.Measurement> {
 	 *
 	 * @param rVel the rotation velocity in radians.
 	 */
-	void drive(double xVel, double yVel, double rVel);
+	Command drive(double xVel, double yVel, double rVel);
 
 	/** Drives at the provided velocity, facing the provided direction. */
-	void driveFacing(double xVel, double yVel, Rotation2d target);
+	Command driveFacing(double xVel, double yVel, Rotation2d target);
 
 	/** Drive to the provided position, ending at the provided velocity. */
 	Command driveTo(Pose2d position, double velocity);

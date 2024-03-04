@@ -1,63 +1,162 @@
 package frc.system.mechanism.components;
 
-import edu.wpi.first.networktables.DoubleEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.hardware.ProfiledMotor;
+import frc.system.mechanism.MechanismReq;
 
-public class Shooter {
-	private final ProfiledMotor motor;
+public class Shooter implements MechanismReq {
+    private final String simpleName = this.getClass().getSimpleName();
 
-	private final DoubleEntry ntVelocity;
-	private final DoubleEntry ntDeadband;
+    // Hardware
+    private TalonFX leftMotor;
+    private TalonFX rightMotor;
 
-	private double lastSpeed;
+    // Network
+    private NetworkTable Table;
+    /** Units: RPM */
+    private DoubleSubscriber shooterSpeed;
+    private DoubleSubscriber shooterSpeedDeadBand;
 
-	public Shooter(ProfiledMotor motor, double defaultVelocity, double defaultDeadband) {
-		this.motor = motor;
+    // vars
+    private BooleanSupplier transitHasNote;
+    final VelocityDutyCycle m_request = new VelocityDutyCycle(0);
 
-		NetworkTableInstance nt = NetworkTableInstance.getDefault();
+    public Shooter(NetworkTable networkTable, BooleanSupplier feederNote) {
+        this.Table = networkTable.getSubTable(simpleName);
 
-		ntVelocity = nt.getDoubleTopic("Mechanism/Shooter/Velocity").getEntry(defaultVelocity);
-		ntDeadband = nt.getDoubleTopic("Mechanism/Shooter/Deadband").getEntry(defaultDeadband);
-	}
+        // Motors
+        leftMotor = new TalonFX(9);
+        rightMotor = new TalonFX(10);
 
-	public Command run() {
-		return new Command() {
-			@Override
-			public void initialize() {
-				motor.setPercent(ntVelocity.get());
-			}
+        leftMotor.getConfigurator().apply(new TalonFXConfiguration());
+        rightMotor.getConfigurator().apply(new TalonFXConfiguration());
 
-			@Override
-			public void end(boolean interrupted) {
-				motor.setPercent(0);
-			}
-		};
-	}
+        var slot0Configs = new Slot0Configs();
+        slot0Configs.kV = 0.12;
+        slot0Configs.kP = 0.11;
+        slot0Configs.kI = 0.48;
+        slot0Configs.kD = 0.01;
 
-	// Command reverse() {
-	// return new Command() {
-	// @Override
-	// public void initialize() {
-	// motor.setPercent(-ntVelocity.get());
-	// }
+        leftMotor.getConfigurator().apply(slot0Configs, 0.050);
+        rightMotor.getConfigurator().apply(slot0Configs, 0.050);
 
-	// @Override
-	// public void end(boolean interrupted) {
-	// motor.setPercent(0);
-	// }
-	// };
-	// }
+        leftMotor.setControl(new Follower(rightMotor.getDeviceID(), false));
 
-	public Command waitPrimed() {
-		return new WaitCommand(2);
+        // TODO: CONFIG and CurrentLimit
 
-		// return new WaitUntilCommand(() -> {
+        // Vars
+        shooterSpeed = Table.getDoubleTopic("shooterSpeed").subscribe(6000);
+        this.Table.getDoubleTopic("shooterSpeed").publish();
 
-		// // return Math.abs(motor.velocity() - ntVelocity.get()) <= ntDeadband.get();
-		// });
-	}
+        shooterSpeedDeadBand = Table.getDoubleTopic("shooterSpeedDeadBand").subscribe(6000);
+        this.Table.getDoubleTopic("shooterSpeedDeadBand").publish();
+
+        this.transitHasNote = feederNote;
+
+        System.out.println("[Init] Creating " + simpleName + " with:");
+        System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
+        System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
+
+        this.log();
+    }
+
+    public void periodic() {
+        this.log();
+    }
+
+    private void runForward(double speed) {
+        rightMotor.setControl(m_request.withVelocity(speed));
+    }
+
+    public void disable() {
+        rightMotor.disable();
+    }
+
+    // Commands
+    public Command run() {
+        return new Command() {
+            public void initialize() {
+                runForward(500);
+            }
+
+            // public void end(boolean interrupted) {
+            // disable();
+            // }
+        };
+    }
+
+    public Command shoot() {
+        return new Command() {
+            public void initialize() {
+                runForward(shooterSpeed.getAsDouble());
+            }
+
+            public boolean isFinished() {
+                return !transitHasNote.getAsBoolean();
+            }
+
+            // public void end(boolean interrupted) {
+            // disable();
+            // }
+        };
+    }
+
+    public Command reverse() {
+        return new Command() {
+            public void initialize() {
+                runForward(-100);
+            }
+
+            // public void end(boolean interrupted) {
+            // disable();
+            // }
+        };
+    }
+
+    public Command waitPrimed() {
+        boolean leftMotorAtSpeed = Math
+                .abs(leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
+                        .getAsDouble();
+        boolean rightMotorAtSpeed = Math
+                .abs(rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
+                        .getAsDouble();
+        ;
+
+        return new WaitUntilCommand(() -> {
+            return leftMotorAtSpeed && rightMotorAtSpeed;
+        });
+    }
+
+    // Logging
+    public void log() {
+        Table.getStringArrayTopic("ControlMode").publish()
+                .set(new String[] { leftMotor.getControlMode().toString(), rightMotor.getControlMode().toString() });
+        Table.getIntegerArrayTopic("DeviceID").publish()
+                .set(new long[] { leftMotor.getDeviceID(), rightMotor.getDeviceID() });
+
+        // Table.getDoubleArrayTopic("Temp").publish()
+        // .set(new double[] { leftMotor.getDeviceTemp(), rightMotor.getDeviceTemp() });
+        // Table.getDoubleArrayTopic("Supply Current").publish()
+        // .set(new double[] { leftMotor.getSupplyCurrent(),
+        // rightMotor.getSupplyCurrent() });
+        // Table.getDoubleArrayTopic("Stator Current").publish()
+        // .set(new double[] { leftMotor.getStatorCurrent(),
+        // rightMotor.getStatorCurrent() });
+        // Table.getDoubleArrayTopic("Motor Voltage").publish()
+        // .set(new double[] { leftMotor.getMotorVoltage(), rightMotor.getMotorVoltage()
+        // });
+    }
+
+    public void close() throws Exception {
+    }
 }
