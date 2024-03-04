@@ -14,6 +14,15 @@ import frc.system.mechanism.components.Pivot;
 import frc.system.mechanism.components.Shooter;
 import frc.system.mechanism.components.Transit;
 
+/*
+
+aim
+pivot
+intake
+
+
+ */
+
 public class Mechanism implements frc.system.Mechanism {
 	final Translation3d originToMechanism;
 
@@ -48,14 +57,17 @@ public class Mechanism implements frc.system.Mechanism {
 
 	@Override
 	public Command intake() {
-		Command cmd = pivot.toIntake().andThen(intake.run().raceWith(transit.intake()));
+		Command cmd = intake.run().raceWith(transit.intake());
+		// Command cmd =
+		// pivot.toIntake().andThen(intake.run().raceWith(transit.intake()));
 		cmd.addRequirements(this);
 		return cmd;
 	}
 
 	@Override
 	public Command amp() {
-		Command cmd = pivot.toAmp().alongWith(shooter.run());
+		Command cmd = shooter.run().alongWith(shooter.waitPrimed().andThen(transit.shoot()));
+		// Command cmd = pivot.toAmp().alongWith(shooter.run());
 		cmd.addRequirements(this);
 		return cmd;
 	}

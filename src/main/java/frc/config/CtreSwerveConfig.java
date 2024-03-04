@@ -8,6 +8,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -15,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 
 import frc.Config;
 import frc.hardware.Motor;
+import frc.hardware.motor.Inverted;
 import frc.hardware.motor.MotorSet;
 import frc.hardware.motor.SRX;
 import frc.hardware.profiledmotor.FX;
@@ -161,29 +163,33 @@ public class CtreSwerveConfig implements Config {
 
 	@Override
 	public Mechanism mechanism() {
-		Motor intakeMotors = new MotorSet(new Motor[] { new SRX(1), new SRX(2) });
+		Motor intakeMotors = new MotorSet(new Motor[] { new Inverted(new SRX(9)), new SRX(10) });
 
-		SRX transitMotor = new SRX(3);
+		SRX transitMotor = new SRX(11);
 
 		TalonFXConfiguration pivotConf = new TalonFXConfiguration();
 
 		pivotConf.Feedback.SensorToMechanismRatio = 100;
 
-		FX lPivotMotor = new FX(9).with(pivotConf);
-		FX rPivotMotor = new FX(10).with(pivotConf);
+		FX lPivotMotor = new FX(12).with(pivotConf);
+		FX rPivotMotor = new FX(13).with(pivotConf);
 
 		lPivotMotor.follow(rPivotMotor, true);
 
-		FX lShooterMotor = new FX(11);
-		FX rShooterMotor = new FX(12);
+		TalonFXConfiguration shooterConf = new TalonFXConfiguration();
+
+		shooterConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+		FX lShooterMotor = new FX(14).with(shooterConf);
+		FX rShooterMotor = new FX(15).with(shooterConf);
 
 		rShooterMotor.follow(lShooterMotor, false);
 
-		Intake intake = new Intake(intakeMotors, 0.6);
-		Transit transit = new Transit(transitMotor, 0.4, 0, 250);
+		Intake intake = new Intake(intakeMotors, 0.8);
+		Transit transit = new Transit(transitMotor, -0.4, 0, 250);
 		Pivot pivot = new Pivot(lPivotMotor, 0.01, Rotation2d.fromDegrees(32),
 				Rotation2d.fromDegrees(130), 0.42, Rotation2d.fromDegrees(53));
-		Shooter shooter = new Shooter(lShooterMotor, 100.0, 1.0);
+		Shooter shooter = new Shooter(lShooterMotor, 1, 1.0);
 
 		return new frc.system.mechanism.Mechanism(new Translation3d(1, 1, 1), intake, transit, pivot, shooter);
 	}
