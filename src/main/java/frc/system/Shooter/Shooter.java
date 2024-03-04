@@ -44,10 +44,11 @@ public class Shooter implements MechanismReq {
         shooterConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         var slot0Configs = new Slot0Configs();
-        slot0Configs.kV = 0.12;
-        slot0Configs.kP = 0.11;
-        slot0Configs.kI = 0.48;
-        slot0Configs.kD = 0.01;
+        slot0Configs.kV = 0.18;
+        slot0Configs.kA = 0.0;
+        slot0Configs.kP = 0.0;
+        slot0Configs.kI = 0.0;
+        slot0Configs.kD = 0.0;
 
         leftMotor.getConfigurator().apply(slot0Configs);
         rightMotor.getConfigurator().apply(slot0Configs);
