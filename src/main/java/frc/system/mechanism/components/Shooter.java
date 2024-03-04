@@ -50,6 +50,10 @@ public class Shooter implements MechanismReq {
         this.log();
     }
 
+    public void periodic() {
+        this.log();
+    }
+
     private void runForward(boolean forwards) {
         double speed = forwards ? shooterSpeed.get() : -shooterSpeed.get();
 

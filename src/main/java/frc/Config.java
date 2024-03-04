@@ -1,5 +1,6 @@
 package frc;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Preferences;
 import frc.config.CtreSwerveConfig;
 // import frc.config.MecanumConfig;
@@ -22,5 +23,5 @@ public interface Config {
 	}
 
 	/** Get an instance of Drivetrain. */
-	Drivetrain drivetrain();
+	Drivetrain drivetrain(NetworkTable networkTable);
 }

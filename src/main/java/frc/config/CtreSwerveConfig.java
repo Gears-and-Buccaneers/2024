@@ -8,13 +8,13 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
 import edu.wpi.first.math.util.Units;
-
+import edu.wpi.first.networktables.NetworkTable;
 import frc.Config;
 import frc.system.Drivetrain;
 import frc.system.drivetrain.SwerveDrive;
 
 public class CtreSwerveConfig implements Config {
-    public Drivetrain drivetrain() {
+    public Drivetrain drivetrain(NetworkTable networkTable) {
 
         // The steer motor uses any SwerveModule.SteerRequestType control request with
         // the
@@ -148,6 +148,6 @@ public class CtreSwerveConfig implements Config {
                 Units.inchesToMeters(kBackRightYPosInches),
                 kInvertRightSide);
 
-        return new SwerveDrive(constants, frontLeft, frontRight, backLeft, backRight);
+        return new SwerveDrive(networkTable, constants, frontLeft, frontRight, backLeft, backRight);
     }
 }

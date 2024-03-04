@@ -26,7 +26,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
@@ -52,9 +51,10 @@ public class SwerveDrive extends SwerveDrivetrain implements Drivetrain {
 
     private final AtomicReference<SwerveDriveState> state = new AtomicReference<>();
 
-    public SwerveDrive(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
+    public SwerveDrive(NetworkTable networkTable, SwerveDrivetrainConstants driveTrainConstants,
+            SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        this.table = NetworkTableInstance.getDefault().getTable("Drivetrain");
+        this.table = networkTable.getSubTable(simpleName);
 
         registerTelemetry((s) -> state.set(s));
 

@@ -14,7 +14,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.hardware.controller.Xbox;
 import frc.system.Drivetrain;
 import frc.system.mechanism.components.*;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -52,17 +51,18 @@ public final class Main extends TimedRobot {
     Config conf = Config.get();
 
     private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+    // private final CommandXboxController operator = new CommandXboxController(1);
 
     // Subsystems
     private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-    private final Drivetrain drivetrain = conf.drivetrain();
+    private final Drivetrain drivetrain = conf.drivetrain(subsystemsTable);
 
     private final Transit transit = new Transit(subsystemsTable, 5);
     private final Intake intake = new Intake(subsystemsTable, transit::hasNote);
     private final Shooter shooter = new Shooter(subsystemsTable, transit::hasNote);
-    private final Pivot pivot = new Pivot(null, kDefaultPeriod, null, kDefaultPeriod, null);
+    // private final Pivot pivot = new Pivot(null, kDefaultPeriod, null,
+    // kDefaultPeriod, );
 
     public static void main(String... args) {
         RobotBase.startRobot(Main::new);
@@ -83,26 +83,29 @@ public final class Main extends TimedRobot {
                         -driver.getLeftY() * MaxSpeed,
                         -driver.getLeftX() * MaxSpeed,
                         -driver.getRightX() * MaxAngularRate));
-        pivot.setDefaultCommand(
-                pivot.toIntake());
+        // pivot.setDefaultCommand(
+        // pivot.toIntake());
 
         driver.rightTrigger().onTrue(
-                pivot.toIntake().andThen(intake.run().raceWith(transit.run())));
+                // pivot.toIntake().andThen(
+                intake.run().raceWith(transit.run()));// );
         driver.x().whileTrue(
                 drivetrain.xState());
         driver.leftBumper().onTrue(
                 drivetrain.zeroGyro());
 
-        operator.rightTrigger().onTrue(
-                shooter.run().raceWith(shooter.waitPrimed().andThen(transit.run())));
+        // operator.rightTrigger().onTrue(
+        //         shooter.run().raceWith(shooter.waitPrimed().andThen(transit.run())));
 
-        operator.leftTrigger().onTrue(
-                shooter.shoot().alongWith(pivot.aim(0, 0)));// TODO: speeker pose
+        // operator.leftTrigger().onTrue(
+        // shooter.shoot().alongWith(pivot.aim(0, 0)));// TODO: speeker pose
 
-        operator.a().onTrue(
-                drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("Amp"), kDefaultPeriod)
-                        .andThen(pivot.aim(0, 0))
-                        .andThen(shooter.run().raceWith(shooter.waitPrimed().andThen(transit.run()))));// TODO: amp pose
+        // operator.a().onTrue(
+        // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("Amp"),
+        // kDefaultPeriod)
+        // .andThen(pivot.aim(0, 0))
+        // .andThen(shooter.run().raceWith(shooter.waitPrimed().andThen(transit.run()))));//
+        // TODO: amp pose
 
         // Pose2d robotPose = drivetrain.pose();
 
@@ -123,7 +126,8 @@ public final class Main extends TimedRobot {
     }
 
     private void namedCommands() {
-        NamedCommands.registerCommand("intake", pivot.toIntake().andThen(intake.run().raceWith(transit.run())));
+        // NamedCommands.registerCommand("intake",
+        // pivot.toIntake().andThen(intake.run().raceWith(transit.run())));
         NamedCommands.registerCommand("shoot", shooter.run().raceWith(shooter.waitPrimed().andThen(transit.run())));
 
     }

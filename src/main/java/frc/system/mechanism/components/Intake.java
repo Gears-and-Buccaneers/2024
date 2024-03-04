@@ -49,9 +49,13 @@ public class Intake implements MechanismReq {
         this.log();
     }
 
+    public void periodic() {
+        this.log();
+    }
+
     private void runForward(boolean forwards) {
         double speed = forwards ? intakeSpeed.get() : -intakeSpeed.get();
-
+        System.out.println(1);
         leftMotor.set(TalonSRXControlMode.PercentOutput, speed);
         rightMotor.set(TalonSRXControlMode.PercentOutput, -speed);
     }

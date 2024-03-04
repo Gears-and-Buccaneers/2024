@@ -54,6 +54,10 @@ public class Transit implements MechanismReq {
         this.log();
     }
 
+    public void periodic() {
+        this.log();
+    }
+
     public boolean hasNote() {
         Measurement measurement = laserCan.getMeasurement();
         return measurement != null && measurement.distance_mm < threshold;
