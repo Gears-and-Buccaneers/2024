@@ -1,4 +1,4 @@
-package frc.system.mechanism.components;
+package frc.system.Intake;
 
 import java.util.function.BooleanSupplier;
 
@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.system.mechanism.MechanismReq;
+import frc.system.MechanismReq;
 
 public class Intake implements MechanismReq {
     private final String simpleName = this.getClass().getSimpleName();
@@ -32,12 +32,15 @@ public class Intake implements MechanismReq {
         leftMotor = new TalonSRX(9);
         rightMotor = new TalonSRX(10);
 
+        leftMotor.setInverted(true);
+        rightMotor.setInverted(false);
+
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);
         // TODO: CurrentLimit
 
         // Vars
-        intakeSpeed = Table.getDoubleTopic("intakeSpeed").subscribe(.9);
+        intakeSpeed = Table.getDoubleTopic("intakeSpeed").subscribe(.8);
         this.Table.getDoubleTopic("intakeSpeed").publish();
 
         this.transitHasNote = feederNote;
@@ -46,10 +49,6 @@ public class Intake implements MechanismReq {
         System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
         System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
 
-        this.log();
-    }
-
-    public void periodic() {
         this.log();
     }
 
@@ -90,6 +89,7 @@ public class Intake implements MechanismReq {
 
             public void end(boolean interrupted) {
                 disable();
+                // TODO: add led blinking
             }
         };
     }

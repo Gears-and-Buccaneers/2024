@@ -1,23 +1,31 @@
 package frc.system.drivetrain;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.config.SwerveConfig;
 import frc.system.Drivetrain;
 import frc.system.Vision.Measurement;
 
@@ -27,38 +35,28 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
     private final SwerveRequest.SwerveDriveBrake cachedBrake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.FieldCentric cachedFieldCentric = new SwerveRequest.FieldCentric();
     private final SwerveRequest.FieldCentricFacingAngle cachedFieldCentricFacing = new SwerveRequest.FieldCentricFacingAngle();
+    private final SwerveRequest.ApplyChassisSpeeds AutoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
     private final AtomicReference<SwerveDriveState> state = new AtomicReference<>();
 
-    public CtreSwerve(PathConstraints constraints, double kSpeedAt12VoltsMps,
+    private static final double kSimLoopPeriod = 0.005; // 5 ms
+    private Notifier m_simNotifier = null;
+    private double m_lastSimTime;
+
+    public CtreSwerve(
+            PathConstraints constraints,
+            double kSpeedAt12VoltsMps,
             SwerveDrivetrainConstants driveTrainConstants,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+
         registerTelemetry((s) -> state.set(s));
 
-        SwerveRequest.ApplyChassisSpeeds req = new SwerveRequest.ApplyChassisSpeeds();
-
-        double driveBaseRadius = 0;
-
-        for (var moduleLocation : m_moduleLocations) {
-            driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
+        if (Utils.isSimulation()) {
+            startSimThread();
         }
 
-        AutoBuilder.configureHolonomic(
-                this::pose, // Supplier of current robot pose
-                this::seedFieldRelative, // Consumer for seeding pose against auto
-                () -> m_kinematics.toChassisSpeeds(state.get().ModuleStates),
-                (speeds) -> setControl(req.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the
-                // robot
-                new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
-                        new PIDConstants(10, 0, 0),
-                        kSpeedAt12VoltsMps,
-                        driveBaseRadius,
-                        new ReplanningConfig()),
-                () -> DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent(), // Change this if the path
-                                                                                              // needs to be
-                // flipped on red vs blue
-                this);
+        configurePathPlanner();
 
         this.constraints = constraints;
     }
@@ -82,6 +80,69 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
         return state.get().Pose;
     }
 
+    private ChassisSpeeds getCurrentRobotChassisSpeeds() {
+        return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+    }
+
+    private void startSimThread() {
+        m_lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - m_lastSimTime;
+            m_lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
+            updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+
+        m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    private void configurePathPlanner() {
+        double driveBaseRadius = 0;
+        for (var moduleLocation : m_moduleLocations) {
+            driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
+        }
+
+        AutoBuilder.configureHolonomic(
+                () -> this.getState().Pose, // Supplier of current robot pose
+                this::seedFieldRelative, // Consumer for seeding pose against auto
+                this::getCurrentRobotChassisSpeeds,
+                (speeds) -> this.setControl(AutoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the
+                // robot
+                new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
+                        new PIDConstants(10, 0, 0),
+                        SwerveConfig.kSpeedAt12VoltsMps,
+                        driveBaseRadius,
+                        new ReplanningConfig()),
+                () -> {
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                }, // Change this if the path needs to be flipped on red vs blue
+                this); // Subsystem for requirements
+        PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
+    }
+
+    private Optional<Rotation2d> getRotationTargetOverride() {
+        // // Some condition that should decide if we want to override rotation
+        // if (Limelight.hasGamePieceTarget()) {
+        // // Return an optional containing the rotation override (this should be a
+        // field
+        // // relative rotation)
+        // return Optional.of(Limelight.getRobotToGamePieceRotation());
+        // } else {
+        // // return an empty optional when we don't want to override the path's
+        // rotation
+        return Optional.empty();
+        // }
+    }
+
     // Commands
     private Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
@@ -92,16 +153,27 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
         return AutoBuilder.pathfindToPose(target, constraints, velocity);
     }
 
-    @Override
-    public Command drive(double xVel, double yVel, double rVel) {
-        return applyRequest(
-                () -> cachedFieldCentric.withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rVel));
+    public Command DriveToThenPath(PathPlannerPath path) {
+
+        return AutoBuilder.pathfindThenFollowPath(path, constraints, 0);
     }
 
     @Override
-    public Command driveFacing(double xVel, double yVel, Rotation2d target) {
+    public Command drive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
         return applyRequest(
-                () -> (cachedFieldCentricFacing.withVelocityX(xVel).withVelocityY(yVel).withTargetDirection(target)));
+                () -> cachedFieldCentric
+                        .withVelocityX(xVel.getAsDouble())
+                        .withVelocityY(yVel.getAsDouble())
+                        .withRotationalRate(rVel.getAsDouble()));
+    }
+
+    @Override
+    public Command driveFacing(DoubleSupplier xVel, DoubleSupplier yVel, Rotation2d target) {
+        return applyRequest(
+                () -> (cachedFieldCentricFacing
+                        .withVelocityX(xVel.getAsDouble())
+                        .withVelocityY(yVel.getAsDouble())
+                        .withTargetDirection(target)));
     }
 
     @Override

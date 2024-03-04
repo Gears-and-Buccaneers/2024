@@ -1,4 +1,4 @@
-package frc.system.mechanism.components;
+package frc.system.Transit;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
@@ -9,7 +9,7 @@ import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.system.mechanism.MechanismReq;
+import frc.system.MechanismReq;
 
 public class Transit implements MechanismReq {
     private final String simpleName = this.getClass().getSimpleName();
@@ -23,38 +23,36 @@ public class Transit implements MechanismReq {
     private DoubleSubscriber transitSpeed;
 
     // vars
-    private final double threshold;
-
     /**
      * @param distanceThreshold The LaserCAN distance threshold, in millimeters,
      *                          after which a game piece is considered to be in the
      *                          transit.
      */
-    public Transit(NetworkTable networkTable, double distanceThreshold) {
+    private final double threshold;
+
+    public Transit(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        transitMotor = new TalonSRX(9); // TODO: set can id
+        transitMotor = new TalonSRX(11);
+
+        transitMotor.setInverted(true);
 
         transitMotor.setNeutralMode(NeutralMode.Coast);
         // TODO: CurrentLimit
 
         // LaserCan
-        laserCan = new LaserCan(1); // TODO: set laser can can id
-        this.threshold = distanceThreshold;
+        laserCan = new LaserCan(0);
+        this.threshold = 250;
 
         // Vars
-        transitSpeed = Table.getDoubleTopic("transitSpeed").subscribe(.9);
+        transitSpeed = Table.getDoubleTopic("transitSpeed").subscribe(.4);
         this.Table.getDoubleTopic("transitSpeed").publish();
 
         System.out.println("[Init] Creating " + simpleName + " with:");
         System.out.println("\t" + transitMotor.getClass().getSimpleName() + " ID:" + transitMotor.getDeviceID());
         System.out.println("\t" + laserCan.getClass().getSimpleName());
 
-        this.log();
-    }
-
-    public void periodic() {
         this.log();
     }
 

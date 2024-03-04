@@ -5,8 +5,6 @@
 package frc;
 
 import com.pathplanner.lib.auto.NamedCommands;
-
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,38 +12,36 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.hardware.controller.Xbox;
-import frc.system.Drivetrain;
-import frc.system.Mechanism;
-import frc.system.mechanism.components.Intake;
-import frc.system.mechanism.components.Shooter;
-import frc.system.mechanism.components.Transit;
+import frc.config.SwerveConfig;
+import frc.system.*;
+import frc.system.Intake.Intake;
+import frc.system.Pivot.Pivot;
+import frc.system.Shooter.Shooter;
+import frc.system.Transit.Transit;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class Main extends TimedRobot {
-    public static Translation3d speakerPosition;
-
-    Config conf = Config.get();
-
-    CommandXboxController driver = new CommandXboxController(0);
-    CommandXboxController operator = new CommandXboxController(1);
-
-    final Mechanism mechanism = conf.mechanism();
-
     public static void main(String... args) {
         RobotBase.startRobot(Main::new);
     }
 
+    public static Translation3d speakerPosition;
+
+    // Controllers
+    CommandXboxController driver = new CommandXboxController(0);
+    CommandXboxController operator = new CommandXboxController(1);
+
+    // Subsystems
     private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-    private final Drivetrain drivetrain = conf.drivetrain(subsystemsTable);
+    private final Drivetrain drivetrain = SwerveConfig.swerve;
 
-    private final Transit transit = new Transit(subsystemsTable, 5);
+    private final Transit transit = new Transit(subsystemsTable);
     private final Intake intake = new Intake(subsystemsTable, transit::hasNote);
     private final Shooter shooter = new Shooter(subsystemsTable, transit::hasNote);
+    private final Pivot pivot = new Pivot(subsystemsTable);
 
     Main() {
         speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
@@ -55,36 +51,59 @@ public final class Main extends TimedRobot {
                 // Blue speaker
                 : new Translation3d(16.31, 2.66, 2.06);
 
-        // TeleOp teleop = new TeleOp(drivetrain, 1, 1, driver.lX, driver.lY,
-        // driver.rX);
-        // drivetrain.setDefaultCommand(teleop);
+        // Default Commands
+        drivetrain.setDefaultCommand(
+                drivetrain.drive(driver::getLeftX, driver::getLeftY, driver::getRightX));
+        shooter.setDefaultCommand(
+                shooter.run());
+        pivot.setDefaultCommand(
+                pivot.toIntake());
 
-        // Command brake = drivetrain.brake();
+        // Driver
+        driver.leftTrigger().whileTrue(intake()); // Option 1
 
-        Command intake = mechanism.intake();
-        Command amp = mechanism.amp();
-        // Command speaker = mechanism.speaker(drivetrain, teleop::translation);
-        Command shoot = mechanism.shoot();
+        // Operator
+        // Shoot
+        operator.rightTrigger().whileTrue( // Option 2
+                shooter.waitPrimed()// pivit at setpoint
+                        .andThen(transit.shoot()));
 
-        operator.x().whileTrue(intake);
-        // driver.x.whileTrue(brake);
+        // Prime Amp
+        // operator.leftBumper().whileTrue(
+        // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("amp")));
+        // path finds to amp then scores in amp /\
+        operator.leftBumper().whileTrue(
+                pivot.toAmp().alongWith(shooter.shootAmp()));
 
-        operator.a().whileTrue(shoot);
-        // operator.lT.event(0.5).whileTrue(speaker);
-        operator.leftBumper().whileTrue(amp);
-        operator.start().onTrue(new InstantCommand(mechanism::tmp_zeroPivot));
-
-        operator.b().whileTrue(mechanism.run(() -> mechanism.tmp_runPivot(operator.getLeftX())));
+        // Prime Speaker
+        operator.leftTrigger().whileTrue(
+                drivetrain.driveFacing(
+                        driver::getLeftX,
+                        driver::getLeftY,
+                        null));// TODO: facing speeker
+        operator.leftTrigger().whileTrue(
+                pivot.toSpeaker(1, 1)
+                        .alongWith(shooter.shootSpeaker()));
 
         // TODO: add climb command
 
-        Translation2d stop = new Translation2d();
+        namedCommands();
+    }
 
-        NamedCommands.registerCommand("Intake", intake);
-        NamedCommands.registerCommand("Amp", amp);
-        // NamedCommands.registerCommand("Speaker", mechanism.speaker(drivetrain, () ->
-        // stop));
-        NamedCommands.registerCommand("Shoot", shoot);
+    // Commands
+    private Command intake() {
+        return intake.intake().raceWith(transit.intake());
+    }
+
+    private void namedCommands() {
+        NamedCommands.registerCommand("Intake",
+                intake());
+        NamedCommands.registerCommand("Shoot",
+                shooter.waitPrimed().andThen(transit.shoot()));
+        NamedCommands.registerCommand("PrimeAmp",
+                pivot.toAmp().alongWith(shooter.shootAmp()));
+        NamedCommands.registerCommand("PrimeSpeaker",
+                pivot.toSpeaker(1, 1).alongWith(shooter.shootSpeaker()));
     }
 
     @Override

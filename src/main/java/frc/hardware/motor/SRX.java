@@ -25,6 +25,6 @@ public class SRX implements Motor {
 
 	@Override
 	public void setVoltage(double voltage) {
-		// TODO
+		
 	}
 }

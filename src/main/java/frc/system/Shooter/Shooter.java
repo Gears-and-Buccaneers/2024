@@ -1,4 +1,4 @@
-package frc.system.mechanism.components;
+package frc.system.Shooter;
 
 import java.util.function.BooleanSupplier;
 
@@ -7,12 +7,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.system.mechanism.MechanismReq;
+import frc.system.MechanismReq;
 
 public class Shooter implements MechanismReq {
     private final String simpleName = this.getClass().getSimpleName();
@@ -35,11 +36,12 @@ public class Shooter implements MechanismReq {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        leftMotor = new TalonFX(9);
-        rightMotor = new TalonFX(10);
+        leftMotor = new TalonFX(14);
+        rightMotor = new TalonFX(15);
 
-        leftMotor.getConfigurator().apply(new TalonFXConfiguration());
-        rightMotor.getConfigurator().apply(new TalonFXConfiguration());
+        // Configs
+        TalonFXConfiguration shooterConf = new TalonFXConfiguration();
+        shooterConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         var slot0Configs = new Slot0Configs();
         slot0Configs.kV = 0.12;
@@ -47,12 +49,16 @@ public class Shooter implements MechanismReq {
         slot0Configs.kI = 0.48;
         slot0Configs.kD = 0.01;
 
-        leftMotor.getConfigurator().apply(slot0Configs, 0.050);
-        rightMotor.getConfigurator().apply(slot0Configs, 0.050);
+        leftMotor.getConfigurator().apply(slot0Configs);
+        rightMotor.getConfigurator().apply(slot0Configs);
 
-        leftMotor.setControl(new Follower(rightMotor.getDeviceID(), false));
+        leftMotor.getConfigurator().apply(shooterConf);
+        rightMotor.getConfigurator().apply(shooterConf);
+
+        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), false));
 
         // TODO: CONFIG and CurrentLimit
+        // TODO: make sure that phinox 6 imple is corect
 
         // Vars
         shooterSpeed = Table.getDoubleTopic("shooterSpeed").subscribe(6000);
@@ -70,16 +76,12 @@ public class Shooter implements MechanismReq {
         this.log();
     }
 
-    public void periodic() {
-        this.log();
-    }
-
     private void runForward(double speed) {
-        rightMotor.setControl(m_request.withVelocity(speed));
+        leftMotor.setControl(m_request.withVelocity(speed));
     }
 
     public void disable() {
-        rightMotor.disable();
+        leftMotor.disable();
     }
 
     // Commands
@@ -95,10 +97,26 @@ public class Shooter implements MechanismReq {
         };
     }
 
-    public Command shoot() {
+    public Command shootSpeaker() {
         return new Command() {
             public void initialize() {
                 runForward(shooterSpeed.getAsDouble());
+            }
+
+            public boolean isFinished() {
+                return !transitHasNote.getAsBoolean();
+            }
+
+            // public void end(boolean interrupted) {
+            // disable();
+            // }
+        };
+    }
+
+    public Command shootAmp() {
+        return new Command() {
+            public void initialize() {
+                runForward(1000);
             }
 
             public boolean isFinished() {
