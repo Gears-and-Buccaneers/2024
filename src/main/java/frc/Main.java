@@ -4,13 +4,11 @@
 
 package frc;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.config.SwerveConfig;
@@ -21,6 +19,7 @@ import frc.system.Shooter.Shooter;
 import frc.system.Transit.Transit;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class Main extends TimedRobot {
     public static void main(String... args) {
@@ -41,7 +40,7 @@ public final class Main extends TimedRobot {
     private final Transit transit = new Transit(subsystemsTable);
     private final Intake intake = new Intake(subsystemsTable, transit::hasNote);
     private final Shooter shooter = new Shooter(subsystemsTable, transit::hasNote);
-    private final Pivot pivot = new Pivot(subsystemsTable);
+    private final Pivot pivot = new Pivot(subsystemsTable, drivetrain::getVectorToSpeaker);
 
     Main() {
         speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
@@ -51,66 +50,54 @@ public final class Main extends TimedRobot {
                 // Blue speaker
                 : new Translation3d(16.31, 2.66, 2.06);
 
+    }
+
+    private void namedCommands() {
+        // NamedCommands.registerCommand("Intake", intake());
+        // NamedCommands.registerCommand("Shoot", shoot());
+        // NamedCommands.registerCommand("PrimeAmp", primeAmp());
+        // NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker());
+    }
+
+    @Override
+    public void robotInit() {
+        SmartDashboard.putData("auto", drivetrain.getAutoPaths());
         // Default Commands
         drivetrain.setDefaultCommand(
                 drivetrain.drive(driver::getLeftX, driver::getLeftY, driver::getRightX));
-        shooter.setDefaultCommand(
-                shooter.run());
-        pivot.setDefaultCommand(
-                pivot.toIntake());
 
         // Driver
-        driver.leftTrigger().whileTrue(intake()); // Option 1
+        driver.leftTrigger().whileTrue(
+                intake.intake().raceWith(transit.intake())); // Option 1
 
         // Operator
         // Shoot
-        operator.rightTrigger().whileTrue(shoot());
+        operator.rightTrigger().whileTrue(
+                shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.shoot())));
 
         // Prime Amp
         // operator.leftBumper().whileTrue(
         // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("amp")));
         // path finds to amp then scores in amp /\
-        operator.leftBumper().whileTrue(primeAmp());
+        operator.leftBumper().whileTrue(
+                pivot.toAmp().alongWith(shooter.shootAmp()));
 
         // Prime Speaker
+        operator.a().onTrue(pivot.congigPID());
+        operator.x().whileTrue(pivot.manual(operator::getLeftY));
+        operator.b().whileTrue(shooter.shootSpeaker());
+        operator.b().onFalse(shooter.stop());
+
         operator.leftTrigger().whileTrue(
-                drivetrain.driveFacing(
+                drivetrain.driveFacingSpeaker(
                         driver::getLeftX,
-                        driver::getLeftY,
-                        null));// TODO: facing speeker
-        operator.leftTrigger().whileTrue(primeSpeaker());
+                        driver::getLeftY));// TODO: facing speeker
+        operator.leftTrigger().whileTrue(shooter.shootSpeaker());
+        operator.leftTrigger().whileTrue(pivot.toSpeaker());
 
         // TODO: add climb command
 
         namedCommands();
-    }
-
-    // Commands
-    private Command intake() {
-        return intake.intake().raceWith(transit.intake());
-    }
-
-    private Command shoot() {
-        return shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.shoot()));
-    }
-
-    private Command primeAmp() {
-        return pivot.toAmp().alongWith(shooter.shootAmp());
-    }
-
-    private Command primeSpeaker() {
-        return pivot.toSpeaker(1, 1).alongWith(shooter.shootSpeaker());
-    }
-
-    private void namedCommands() {
-        NamedCommands.registerCommand("Intake", intake());
-        NamedCommands.registerCommand("Shoot", shoot());
-        NamedCommands.registerCommand("PrimeAmp", primeAmp());
-        NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker());
-    }
-
-    @Override
-    public void robotInit() {
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -12,6 +13,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.system.MechanismReq;
 
@@ -46,7 +48,7 @@ public class Shooter implements MechanismReq {
         var slot0Configs = new Slot0Configs();
         slot0Configs.kV = 0.18;
         slot0Configs.kA = 0.0;
-        slot0Configs.kP = 0.0;
+        slot0Configs.kP = 0.1;
         slot0Configs.kI = 0.0;
         slot0Configs.kD = 0.0;
 
@@ -78,23 +80,42 @@ public class Shooter implements MechanismReq {
     }
 
     private void runForward(double speed) {
-        leftMotor.setControl(m_request.withVelocity(speed));
+        leftMotor.setControl(new DutyCycleOut(speed / 6000));
     }
 
     public void disable() {
         leftMotor.disable();
     }
 
+    public void initDefaultCommand() {
+        // // Set the default command for a subsystem here.
+        setDefaultCommand(stop());
+    }
+
+    //
+
     // Commands
     public Command run() {
         return new Command() {
             public void initialize() {
-                runForward(500);
+                runForward(100);
             }
 
-            // public void end(boolean interrupted) {
-            // disable();
-            // }
+            public void end(boolean interrupted) {
+                disable();
+            }
+        };
+    }
+
+    public Command stop() {
+        return new Command() {
+            public void initialize() {
+                disable();
+            }
+
+            public boolean isFinished() {
+                return false;
+            }
         };
     }
 
@@ -108,9 +129,9 @@ public class Shooter implements MechanismReq {
                 return !transitHasNote.getAsBoolean();
             }
 
-            // public void end(boolean interrupted) {
-            // disable();
-            // }
+            public void end(boolean interrupted) {
+                disable();
+            }
         };
     }
 
@@ -124,9 +145,9 @@ public class Shooter implements MechanismReq {
                 return !transitHasNote.getAsBoolean();
             }
 
-            // public void end(boolean interrupted) {
-            // disable();
-            // }
+            public void end(boolean interrupted) {
+                disable();
+            }
         };
     }
 
@@ -136,32 +157,57 @@ public class Shooter implements MechanismReq {
                 runForward(-100);
             }
 
-            // public void end(boolean interrupted) {
-            // disable();
-            // }
+            public void end(boolean interrupted) {
+                disable();
+            }
         };
     }
 
     public Command waitPrimed() {
-        boolean leftMotorAtSpeed = Math
-                .abs(leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
+        boolean leftMotorAtSpeed = Math.abs(
+                leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
                         .getAsDouble();
-        boolean rightMotorAtSpeed = Math
-                .abs(rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
+        boolean rightMotorAtSpeed = Math.abs(
+                rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
                         .getAsDouble();
         ;
 
-        return new WaitUntilCommand(() -> {
-            return leftMotorAtSpeed && rightMotorAtSpeed;
-        });
+        // return new WaitUntilCommand(() -> {
+        // return leftMotorAtSpeed && rightMotorAtSpeed;
+        // });
+        return new WaitCommand(.5);
     }
 
     // Logging
     public void log() {
         Table.getStringArrayTopic("ControlMode").publish()
-                .set(new String[] { leftMotor.getControlMode().toString(), rightMotor.getControlMode().toString() });
+                .set(new String[] {
+                        leftMotor.getControlMode().toString(),
+                        rightMotor.getControlMode().toString() });
         Table.getIntegerArrayTopic("DeviceID").publish()
-                .set(new long[] { leftMotor.getDeviceID(), rightMotor.getDeviceID() });
+                .set(new long[] {
+                        leftMotor.getDeviceID(),
+                        rightMotor.getDeviceID() });
+
+        Table.getDoubleArrayTopic("set speed").publish()
+                .set(new double[] {
+                        leftMotor.get(),
+                        rightMotor.get() });
+
+        Table.getDoubleArrayTopic("getVelocity").publish()
+                .set(new double[] {
+                        leftMotor.getVelocity().getValueAsDouble(),
+                        rightMotor.getVelocity().getValueAsDouble() });
+
+        Table.getDoubleArrayTopic("getDeviceTemp").publish()
+                .set(new double[] {
+                        leftMotor.getDeviceTemp().getValueAsDouble(),
+                        rightMotor.getDeviceTemp().getValueAsDouble() });
+
+        Table.getDoubleArrayTopic("getMotorVoltage").publish()
+                .set(new double[] {
+                        leftMotor.getMotorVoltage().getValueAsDouble(),
+                        rightMotor.getMotorVoltage().getValueAsDouble() });
 
         // Table.getDoubleArrayTopic("Temp").publish()
         // .set(new double[] { leftMotor.getDeviceTemp(), rightMotor.getDeviceTemp() });

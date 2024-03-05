@@ -33,7 +33,7 @@ public class Intake implements MechanismReq {
         rightMotor = new TalonSRX(10);
 
         leftMotor.setInverted(true);
-        rightMotor.setInverted(false);
+        rightMotor.setInverted(true);
 
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);

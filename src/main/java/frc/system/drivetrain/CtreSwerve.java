@@ -20,11 +20,15 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.Main;
 import frc.config.SwerveConfig;
 import frc.system.Drivetrain;
 import frc.system.Vision.Measurement;
@@ -75,6 +79,10 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
         }
     }
 
+    public SendableChooser<Command> getAutoPaths() {
+        return AutoBuilder.buildAutoChooser();
+    }
+
     @Override
     public Pose2d pose() {
         return state.get().Pose;
@@ -107,7 +115,7 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
         }
 
         AutoBuilder.configureHolonomic(
-                () -> this.getState().Pose, // Supplier of current robot pose
+                this::pose, // Supplier of current robot pose
                 this::seedFieldRelative, // Consumer for seeding pose against auto
                 this::getCurrentRobotChassisSpeeds,
                 (speeds) -> this.setControl(AutoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the
@@ -126,7 +134,7 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
                     return false;
                 }, // Change this if the path needs to be flipped on red vs blue
                 this); // Subsystem for requirements
-        PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
+        // PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
     private Optional<Rotation2d> getRotationTargetOverride() {
@@ -162,23 +170,32 @@ public class CtreSwerve extends SwerveDrivetrain implements Drivetrain {
     public Command drive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
         return applyRequest(
                 () -> cachedFieldCentric
-                        .withVelocityX(xVel.getAsDouble())
-                        .withVelocityY(yVel.getAsDouble())
-                        .withRotationalRate(rVel.getAsDouble()));
+                        .withVelocityX(xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withVelocityY(-yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withRotationalRate(rVel.getAsDouble() * SwerveConfig.kMaxAngularRate));
     }
 
     @Override
-    public Command driveFacing(DoubleSupplier xVel, DoubleSupplier yVel, Rotation2d target) {
+    public Command driveFacingSpeaker(DoubleSupplier xVel, DoubleSupplier yVel) {
+        Translation3d vectorToSpeaker = getVectorToSpeaker();
+        double yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
+
         return applyRequest(
                 () -> (cachedFieldCentricFacing
-                        .withVelocityX(xVel.getAsDouble())
-                        .withVelocityY(yVel.getAsDouble())
-                        .withTargetDirection(target)));
+                        .withVelocityX(xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withVelocityY(-yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withTargetDirection(new Rotation2d(yaw))));
     }
 
     @Override
     public Command brake() {
         return applyRequest(
                 () -> cachedBrake);
+    }
+
+    public Translation3d getVectorToSpeaker() {
+        Translation3d origin = new Translation3d(pose().getX(), pose().getY(), 0);
+        Translation3d mechanism = origin.plus(new Translation3d(1, 1, 1));
+        return Main.speakerPosition.minus(mechanism);
     }
 }
