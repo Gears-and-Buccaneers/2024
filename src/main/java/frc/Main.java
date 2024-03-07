@@ -12,11 +12,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.config.SwerveConfig;
-import frc.system.*;
-import frc.system.Intake.Intake;
-import frc.system.Pivot.Pivot;
-import frc.system.Shooter.Shooter;
-import frc.system.Transit.Transit;
+import frc.system.CtreSwerve;
+import frc.system.Intake;
+import frc.system.Pivot;
+import frc.system.Shooter;
+import frc.system.Transit;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +35,7 @@ public final class Main extends TimedRobot {
     // Subsystems
     private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-    private final Drivetrain drivetrain = SwerveConfig.swerve;
+    private final CtreSwerve drivetrain = SwerveConfig.swerve;
 
     private final Transit transit = new Transit(subsystemsTable);
     private final Intake intake = new Intake(subsystemsTable, transit::hasNote);
@@ -70,6 +70,7 @@ public final class Main extends TimedRobot {
         driver.leftTrigger().whileTrue(
                 intake.intake().raceWith(transit.intake())); // Option 1
 
+        driver.x().whileTrue(drivetrain.brake());
         // Operator
         // Shoot
         operator.rightTrigger().whileTrue(
@@ -77,6 +78,7 @@ public final class Main extends TimedRobot {
 
         // Prime Amp
         // operator.leftBumper().whileTrue(
+
         // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("amp")));
         // path finds to amp then scores in amp /\
         operator.leftBumper().whileTrue(
@@ -85,6 +87,8 @@ public final class Main extends TimedRobot {
         // Prime Speaker
         operator.a().onTrue(pivot.congigPID());
         operator.x().whileTrue(pivot.manual(operator::getLeftY));
+        operator.y().whileTrue(pivot.manual2(operator::getLeftY));
+
         operator.b().whileTrue(shooter.shootSpeaker());
         operator.b().onFalse(shooter.stop());
 

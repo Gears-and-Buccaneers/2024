@@ -1,4 +1,4 @@
-package frc.system.Transit;
+package frc.system;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
@@ -9,7 +9,6 @@ import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.system.MechanismReq;
 
 public class Transit implements MechanismReq {
     private final String simpleName = this.getClass().getSimpleName();

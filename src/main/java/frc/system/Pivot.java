@@ -1,4 +1,4 @@
-package frc.system.Pivot;
+package frc.system;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -13,16 +13,18 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.system.MechanismReq;
 
 public class Pivot implements MechanismReq {
+    /**
+     * The shooter degree offset from being perpendicular to the arm, in radians.
+     */
     final double o;
     final double a;
 
@@ -30,10 +32,11 @@ public class Pivot implements MechanismReq {
     final Command gotoAmp;
 
     private final double defaultDeadband;
-    private final Rotation2d intakePosition;
-    private final Rotation2d ampPosition;
+    /** The position for intaking, in rotations. */
+    private final double intakePosition;
+    /** The position for shooting into the amp, in rotations. */
+    private final double ampPosition;
     private final double armLength;
-    private final Rotation2d armOffset;
 
     private final String simpleName = this.getClass().getSimpleName();
 
@@ -53,6 +56,7 @@ public class Pivot implements MechanismReq {
     private DoubleSubscriber kv;
 
     private DoubleSubscriber speed;
+    private DoubleSubscriber speed3;
 
     private final Supplier<Translation3d> vectorToSpeaker;
 
@@ -63,16 +67,16 @@ public class Pivot implements MechanismReq {
     public Pivot(NetworkTable networkTable, Supplier<Translation3d> vectorToSpeaker) {
         // TODO: the pivot
         this.defaultDeadband = 0.01;
-        this.intakePosition = Rotation2d.fromDegrees(32);
-        this.ampPosition = Rotation2d.fromDegrees(130);
-        this.armLength = .42;
-        this.armOffset = Rotation2d.fromDegrees(53);
+
+        this.intakePosition = Units.degreesToRotations(-32);
+        this.ampPosition = Units.degreesToRotations(90);
+        this.armLength = 0.42;
         this.vectorToSpeaker = vectorToSpeaker;
 
-        o = armOffset.getRadians();
-        a = armLength * Math.sin(armOffset.getRadians());
-        gotoIntake = goTo(intakePosition.getRotations());
-        gotoAmp = goTo(ampPosition.getRotations());
+        o = Units.degreesToRadians(53);
+        a = armLength * Math.sin(o);
+        gotoIntake = goTo(intakePosition);
+        gotoAmp = goTo(ampPosition);
 
         // Motors
         this.Table = networkTable.getSubTable(simpleName);
@@ -85,6 +89,8 @@ public class Pivot implements MechanismReq {
         TalonFXConfiguration pivotConf = new TalonFXConfiguration();
         pivotConf.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: check this
         pivotConf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        pivotConf.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
         pivotConf.Feedback.SensorToMechanismRatio = 100;
 
@@ -131,8 +137,10 @@ public class Pivot implements MechanismReq {
         kv = Table.getDoubleTopic("v").subscribe(0);
         this.Table.getDoubleTopic("v").publish();
 
-        speed = Table.getDoubleTopic("speed").subscribe(0.3);
         this.Table.getDoubleTopic("speed").publish();
+        speed = Table.getDoubleTopic("speed").subscribe(0.3);
+        this.Table.getDoubleTopic("speed2").publish();
+        speed3 = Table.getDoubleTopic("speed2").subscribe(0.3);
 
         TalonFXConfiguration pivotConf = new TalonFXConfiguration();
         pivotConf.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: check this
@@ -147,7 +155,6 @@ public class Pivot implements MechanismReq {
         pivotConf.Slot0.kP = kp.getAsDouble();
         pivotConf.Slot0.kS = ks.getAsDouble();
         pivotConf.Slot0.kV = kv.getAsDouble();
-        // pivotConf.Slot0. = kv.getAsDouble();
 
         leftMotor.getConfigurator().apply(pivotConf);
         rightMotor.getConfigurator().apply(pivotConf);
@@ -161,10 +168,30 @@ public class Pivot implements MechanismReq {
         return goTo(rotations);
     }
 
+    public Command manual2(DoubleSupplier speed1) {
+        return new Command() {
+            public void execute() {
+                SmartDashboard.putNumber("SetVal", Math.round(speed1.getAsDouble()) * speed3.getAsDouble());
+                leftMotor.setControl(
+                        new TorqueCurrentFOC(Math.round(speed1.getAsDouble()) * speed3.getAsDouble()));
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                leftMotor.setControl(new DutyCycleOut(0));
+            }
+        };
+    }
+
     public Command manual(DoubleSupplier speed1) {
         return new Command() {
             public void execute() {
-                leftMotor.setControl(new DutyCycleOut(speed1.getAsDouble() * speed.getAsDouble()));
+                leftMotor.setControl(new TorqueCurrentFOC(speed1.getAsDouble() * speed.getAsDouble()));
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                leftMotor.setControl(new DutyCycleOut(0));
             }
         };
     }

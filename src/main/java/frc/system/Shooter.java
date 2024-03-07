@@ -1,4 +1,4 @@
-package frc.system.Shooter;
+package frc.system;
 
 import java.util.function.BooleanSupplier;
 
@@ -14,8 +14,6 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.system.MechanismReq;
 
 public class Shooter implements MechanismReq {
     private final String simpleName = this.getClass().getSimpleName();
