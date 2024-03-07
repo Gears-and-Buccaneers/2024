@@ -222,6 +222,10 @@ public class Pivot implements MechanismReq {
         };
     }
 
+    public void atIntake() {
+        leftMotor.setPosition(intakePosition);
+    }
+
     @Override
     public void close() throws Exception {
         // TODO Auto-generated method stub

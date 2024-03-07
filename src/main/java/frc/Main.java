@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.config.SwerveConfig;
 import frc.system.CtreSwerve;
@@ -77,8 +78,8 @@ public final class Main extends TimedRobot {
                 shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.shoot())));
 
         // Prime Amp
-        // operator.leftBumper().whileTrue(
 
+        // operator.leftBumper().whileTrue(
         // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("amp")));
         // path finds to amp then scores in amp /\
         operator.leftBumper().whileTrue(
@@ -88,16 +89,13 @@ public final class Main extends TimedRobot {
         operator.a().onTrue(pivot.congigPID());
         operator.x().whileTrue(pivot.manual(operator::getLeftY));
         operator.y().whileTrue(pivot.manual2(operator::getLeftY));
-
         operator.b().whileTrue(shooter.shootSpeaker());
-        operator.b().onFalse(shooter.stop());
 
-        operator.leftTrigger().whileTrue(
-                drivetrain.driveFacingSpeaker(
-                        driver::getLeftX,
-                        driver::getLeftY));// TODO: facing speeker
-        operator.leftTrigger().whileTrue(shooter.shootSpeaker());
-        operator.leftTrigger().whileTrue(pivot.toSpeaker());
+        operator.leftTrigger().whileTrue(pivot.toSpeaker().raceWith(
+                drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
+                shooter.shootSpeaker()));
+
+        operator.start().onTrue(new InstantCommand(pivot::atIntake));
 
         // TODO: add climb command
 
