@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -33,7 +34,11 @@ import frc.config.SwerveConfig;
 import frc.system.Vision.Measurement;
 
 public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<Vision.Measurement> {
+    private boolean hasPose = false;
+
     private final PathConstraints constraints;
+
+    private final double angleDeadband = Units.degreesToRadians(5);
 
     private final SwerveRequest.SwerveDriveBrake cachedBrake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.FieldCentric cachedFieldCentric = new SwerveRequest.FieldCentric();
@@ -64,15 +69,16 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
         this.constraints = constraints;
     }
 
-    public void reset(Pose2d pose) {
-        seedFieldRelative(pose);
-    }
-
     public void accept(Measurement t) {
-        if (t.stdDev() != null) {
-            addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
+        if (hasPose) {
+            if (t.stdDev() != null) {
+                addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
+            } else {
+                addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
+            }
         } else {
-            addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
+            seedFieldRelative(t.pose().toPose2d());
+            hasPose = true;
         }
     }
 
@@ -82,6 +88,10 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
 
     public Pose2d pose() {
         return state.get().Pose;
+    }
+
+    public boolean hasPose() {
+        return hasPose;
     }
 
     private ChassisSpeeds getCurrentRobotChassisSpeeds() {
@@ -152,8 +162,9 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-    public Command ZeroGyro() {
-        return run(() -> this.reset(new Pose2d()));
+    public void zeroGyro() {
+        hasPose = false;
+        seedFieldRelative(new Pose2d());
     }
 
     public Command driveTo(Pose2d target, double velocity) {
@@ -173,15 +184,21 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
                         .withRotationalRate(rVel.getAsDouble() * SwerveConfig.kMaxAngularRate));
     }
 
-    public Command driveFacingSpeaker(DoubleSupplier xVel, DoubleSupplier yVel) {
+    public double speakerYaw() {
         Translation3d vectorToSpeaker = getVectorToSpeaker();
-        double yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
+        return Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
+    }
 
+    public Command driveFacingSpeaker(DoubleSupplier xVel, DoubleSupplier yVel) {
         return applyRequest(
                 () -> (cachedFieldCentricFacing
                         .withVelocityX(xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
                         .withVelocityY(-yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
-                        .withTargetDirection(new Rotation2d(yaw))));
+                        .withTargetDirection(new Rotation2d(speakerYaw()))));
+    }
+
+    public boolean isAimedSpeaker() {
+        return Math.abs(pose().getRotation().getRadians() - speakerYaw()) <= angleDeadband;
     }
 
     public Command brake() {

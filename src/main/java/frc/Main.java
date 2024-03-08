@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.config.SwerveConfig;
 import frc.system.CtreSwerve;
@@ -21,6 +22,7 @@ import frc.system.Shooter;
 import frc.system.Transit;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -28,6 +30,9 @@ public final class Main extends TimedRobot {
     public static void main(String... args) {
         RobotBase.startRobot(Main::new);
     }
+
+    Command autonomousCommand;
+    SendableChooser<Command> chooser = new SendableChooser<>();
 
     public static Translation3d speakerPosition;
 
@@ -66,51 +71,62 @@ public final class Main extends TimedRobot {
 
     @Override
     public void robotInit() {
-        SendableChooser<Command> chooser = new SendableChooser<>();
         chooser.addOption("Nothing", new Command() {
         });
         chooser.addOption("Shoot",
                 shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.run().until(transit::hasNote))));
         SmartDashboard.putData("auto", chooser);
 
+        Command rumble = new Command() {
+            @Override
+            public void initialize() {
+                driver.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+                operator.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                driver.getHID().setRumble(RumbleType.kBothRumble, 0);
+                operator.getHID().setRumble(RumbleType.kBothRumble, 0);
+            }
+        }.withTimeout(0.25);
+
         // ----------- DEFAULT COMMAND -----------
-        drivetrain.setDefaultCommand(
-                drivetrain.drive(driver::getLeftX, driver::getLeftY, driver::getRightX));
+
+        transit.hasNoteTrigger.whileFalse(runIntake);
+        transit.hasNoteTrigger.onTrue(rumble);
+        transit.hasNoteTrigger.onFalse(rumble);
 
         // ----------- DRIVER CONTROLS -----------
-        driver.leftBumper().onTrue(
-                drivetrain.ZeroGyro());
-        driver.x().whileTrue(
-                drivetrain.brake());
+
+        drivetrain.setDefaultCommand(
+                drivetrain.drive(driver::getLeftX, driver::getLeftY, driver::getRightX));
+        driver.leftBumper().onTrue(new InstantCommand(drivetrain::zeroGyro));
+        driver.x().whileTrue(drivetrain.brake());
 
         // ---------- OPERATOR CONTROLS ----------
-        operator.rightTrigger().whileTrue(
-                shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.run())));
 
-        // Prime Amp
+        // TODO: path to the amp
+        operator.leftBumper().whileTrue(pivot.toAmp().alongWith(
+                shooter.shootAmp(),
+                new WaitUntilCommand(() -> pivot.isAimedAmp()).andThen(rumble)));
+        operator.leftTrigger().whileTrue(pivot.toSpeaker().alongWith(
+                drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
+                shooter.shootSpeaker(),
+                new WaitUntilCommand(() -> pivot.isAimedSpeaker() && drivetrain.isAimedSpeaker()).andThen(rumble)));
 
-        // operator.leftBumper().whileTrue(
-        // drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("amp")));
-        // path finds to amp then scores in amp /\
-        operator.leftBumper().whileTrue(
-                pivot.toAmp().alongWith(shooter.shootAmp()));
+        operator.rightTrigger().whileTrue(transit.run());
 
-        // Prime Speaker
-        operator.a().onTrue(pivot.congigPID());
         operator.x().whileTrue(pivot.manual(operator::getLeftY));
+
+        operator.a().onTrue(new InstantCommand(pivot::configPID));
+
         operator.y().whileTrue(pivot.manual2(operator::getLeftY));
         operator.b().whileTrue(shooter.shootSpeaker());
-
-        operator.leftTrigger().whileTrue(pivot.toSpeaker().raceWith(
-                drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
-                shooter.shootSpeaker()));
 
         operator.start().onTrue(new InstantCommand(pivot::atIntake));
 
         // TODO: add climb command
-
-        // --------------- Sensors ---------------
-        transit.hasNoteTrigger.whileFalse(runIntake);
 
         namedCommands();
     }
@@ -134,6 +150,9 @@ public final class Main extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        autonomousCommand = chooser.getSelected();
+        if (autonomousCommand != null)
+            autonomousCommand.schedule();
     }
 
     @Override
@@ -142,6 +161,8 @@ public final class Main extends TimedRobot {
 
     @Override
     public void autonomousExit() {
+        if (autonomousCommand != null)
+            autonomousCommand.cancel();
     }
 
     @Override

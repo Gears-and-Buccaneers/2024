@@ -68,6 +68,8 @@ public class Shooter implements Subsystem {
         System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
 
         this.log();
+
+        setDefaultCommand(stop());
     }
 
     private void runForward(double speed) {
@@ -82,40 +84,32 @@ public class Shooter implements Subsystem {
         rightMotor.disable();
     }
 
-    public void initDefaultCommand() {
-        // // Set the default command for a subsystem here.
-        setDefaultCommand(stop());
-    }
-
-    //
-
     // Commands
     public Command run() {
-        return new Command() {
+        Command cmd = new Command() {
             public void initialize() {
                 runForward(6000);
             }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
         };
+
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     public Command stop() {
-        return new Command() {
+        Command cmd = new Command() {
             public void initialize() {
                 disable();
             }
-
-            public boolean isFinished() {
-                return false;
-            }
         };
+
+        cmd.addRequirements(this);
+
+        return cmd;
     }
 
     public Command shootSpeaker() {
-        return new Command() {
+        Command cmd = new Command() {
             public void initialize() {
                 runForward(shooterSpeed.getAsDouble());
             }
@@ -123,15 +117,14 @@ public class Shooter implements Subsystem {
             public boolean isFinished() {
                 return !transitHasNote.getAsBoolean();
             }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
         };
+
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     public Command shootAmp() {
-        return new Command() {
+        Command cmd = new Command() {
             public void initialize() {
                 runForward(1000);
             }
@@ -139,35 +132,35 @@ public class Shooter implements Subsystem {
             public boolean isFinished() {
                 return !transitHasNote.getAsBoolean();
             }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
         };
+
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     public Command reverse() {
-        return new Command() {
+        Command cmd = new Command() {
             public void initialize() {
                 runForward(-100);
             }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
         };
+
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     public Command waitPrimed() {
-        // TODO: acceleration deadbanding:
+        // TODO: acceleration deadbanding
         // leftMotor.getAcceleration();
 
-        boolean leftMotorAtSpeed = Math.abs(
-                leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
-                        .getAsDouble();
-        boolean rightMotorAtSpeed = Math.abs(
-                rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
-                        .getAsDouble();
+        // boolean leftMotorAtSpeed = Math.abs(
+        // leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <=
+        // shooterSpeedDeadBand
+        // .getAsDouble();
+        // boolean rightMotorAtSpeed = Math.abs(
+        // rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <=
+        // shooterSpeedDeadBand
+        // .getAsDouble();
 
         // return new WaitUntilCommand(() -> {
         // return leftMotorAtSpeed && rightMotorAtSpeed;

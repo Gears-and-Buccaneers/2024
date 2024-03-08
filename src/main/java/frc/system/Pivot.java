@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class Pivot implements Subsystem {
@@ -80,8 +79,20 @@ public class Pivot implements Subsystem {
 
         o = Units.degreesToRadians(52);
         a = armLength * Math.sin(o);
-        gotoIntake = goTo(intakePosition);
-        gotoAmp = goTo(ampPosition);
+
+        gotoIntake = new Command() {
+            @Override
+            public void initialize() {
+                goTo(intakePosition);
+            }
+        };
+
+        gotoAmp = new Command() {
+            @Override
+            public void initialize() {
+                goTo(ampPosition);
+            }
+        };
 
         // Motors
         this.Table = networkTable.getSubTable(simpleName);
@@ -98,7 +109,7 @@ public class Pivot implements Subsystem {
         setDefaultCommand(toIntake());
     }
 
-    private void configPID() {
+    public void configPID() {
         ka = Table.getDoubleTopic("a").subscribe(0);
         this.Table.getDoubleTopic("a").publish();
         kd = Table.getDoubleTopic("d").subscribe(0);
@@ -148,12 +159,20 @@ public class Pivot implements Subsystem {
         // startMech();
     }
 
-    public Command toSpeaker() {
+    private double rotationsToSpeaker() {
         Translation3d vector = vectorToSpeaker.get();
         double distance = vector.getNorm();
         double pitch = Math.asin(vector.getZ() / distance);
-        double rotations = Units.radiansToRotations(Math.PI - o - Math.asin(a / distance) + pitch);
-        return goTo(rotations);
+        return Units.radiansToRotations(Math.PI - o - Math.asin(a / distance) + pitch);
+    }
+
+    public Command toSpeaker() {
+        return new Command() {
+            @Override
+            public void execute() {
+                goTo(rotationsToSpeaker());
+            }
+        };
     }
 
     public Command manual2(DoubleSupplier speed1) {
@@ -173,23 +192,6 @@ public class Pivot implements Subsystem {
         };
     }
 
-    // public Command manual(DoubleSupplier speed1) {
-    // return new Command() {
-    // public void execute() {
-    // double s = speed1.getAsDouble() * speed.getAsDouble();
-
-    // leftMotor.setControl(new DutyCycleOut(s));
-    // rightMotor.setControl(new DutyCycleOut(s));
-    // }
-
-    // @Override
-    // public void end(boolean interrupted) {
-    // leftMotor.setControl(new DutyCycleOut(0));
-    // rightMotor.setControl(new DutyCycleOut(0));
-    // }
-    // };
-    // }
-
     public Command manual(DoubleSupplier speed1) {
         return new Command() {
             public void execute() {
@@ -207,10 +209,6 @@ public class Pivot implements Subsystem {
         };
     }
 
-    public Command congigPID() {
-        return new InstantCommand(this::configPID);
-    }
-
     public Command toAmp() {
         return gotoAmp;
     }
@@ -219,19 +217,21 @@ public class Pivot implements Subsystem {
         return gotoIntake;
     }
 
-    public Command goTo(double rotations) {
-        return new Command() {
-            @Override
-            public void initialize() {
-                leftMotor.setControl(new MotionMagicDutyCycle(rotations));
-                // arm.setAngle(rotations);
-            }
+    public void goTo(double rotations) {
+        leftMotor.setControl(new MotionMagicDutyCycle(rotations));
+        // arm.setAngle(rotations);
+    }
 
-            @Override
-            public boolean isFinished() {
-                return Math.abs(leftMotor.getPosition().getValueAsDouble() - rotations) < defaultDeadband;
-            }
-        };
+    public boolean isAimedSpeaker() {
+        return isAimedTo(rotationsToSpeaker());
+    }
+
+    public boolean isAimedAmp() {
+        return isAimedTo(ampPosition);
+    }
+
+    private boolean isAimedTo(double rotations) {
+        return Math.abs(leftMotor.getPosition().getValueAsDouble() - rotations) < defaultDeadband;
     }
 
     public void atIntake() {
