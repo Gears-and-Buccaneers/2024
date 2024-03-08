@@ -64,7 +64,7 @@ public class Transit implements Subsystem {
         return measurement != null && measurement.distance_mm < threshold;
     }
 
-    private Command runForward(boolean forwards) {
+    public Command run(boolean forwards) {
         return new Command() {
             @Override
             public void initialize() {
@@ -80,17 +80,14 @@ public class Transit implements Subsystem {
     }
 
     // Commands
-    public Command run() {
-        return runForward(true);
-    }
 
     public Command autoShoot() {
-        return runForward(true)
+        return run(true)
                 .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
     }
 
     public Command reverse() {
-        return runForward(false);
+        return run(false);
     }
 
     // Logging

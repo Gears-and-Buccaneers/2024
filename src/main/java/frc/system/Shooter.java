@@ -27,8 +27,6 @@ public class Shooter implements Subsystem {
     private DoubleSubscriber shooterSpeed;
     private DoubleSubscriber shooterSpeedDeadBand;
 
-    // vars
-    private BooleanSupplier transitHasNote;
     final VelocityDutyCycle m_request = new VelocityDutyCycle(0);
 
     public Shooter(NetworkTable networkTable, BooleanSupplier feederNote) {
@@ -61,13 +59,13 @@ public class Shooter implements Subsystem {
         shooterSpeedDeadBand = Table.getDoubleTopic("shooterSpeedDeadBand").subscribe(6000);
         this.Table.getDoubleTopic("shooterSpeedDeadBand").publish();
 
-        this.transitHasNote = feederNote;
-
         System.out.println("[Init] Creating " + simpleName + " with:");
         System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
         System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
 
         this.log();
+
+        register();
 
         setDefaultCommand(stop());
     }
@@ -85,17 +83,6 @@ public class Shooter implements Subsystem {
     }
 
     // Commands
-    public Command run() {
-        Command cmd = new Command() {
-            public void initialize() {
-                runForward(6000);
-            }
-        };
-
-        cmd.addRequirements(this);
-        return cmd;
-    }
-
     public Command stop() {
         Command cmd = new Command() {
             public void initialize() {
@@ -113,10 +100,6 @@ public class Shooter implements Subsystem {
             public void initialize() {
                 runForward(shooterSpeed.getAsDouble());
             }
-
-            public boolean isFinished() {
-                return !transitHasNote.getAsBoolean();
-            }
         };
 
         cmd.addRequirements(this);
@@ -127,10 +110,6 @@ public class Shooter implements Subsystem {
         Command cmd = new Command() {
             public void initialize() {
                 runForward(1000);
-            }
-
-            public boolean isFinished() {
-                return !transitHasNote.getAsBoolean();
             }
         };
 
@@ -210,8 +189,5 @@ public class Shooter implements Subsystem {
         // Table.getDoubleArrayTopic("Motor Voltage").publish()
         // .set(new double[] { leftMotor.getMotorVoltage(), rightMotor.getMotorVoltage()
         // });
-    }
-
-    public void close() throws Exception {
     }
 }

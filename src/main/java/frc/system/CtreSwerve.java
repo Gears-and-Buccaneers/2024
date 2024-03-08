@@ -162,9 +162,11 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-    public void zeroGyro() {
-        hasPose = false;
-        seedFieldRelative(new Pose2d());
+    public Command zeroGyro() {
+        return runOnce(() -> {
+            hasPose = false;
+            seedFieldRelative(new Pose2d(0, 0, Rotation2d.fromDegrees(270)));
+        });
     }
 
     public Command driveTo(Pose2d target, double velocity) {
@@ -179,9 +181,11 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
     public Command drive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
         return applyRequest(
                 () -> cachedFieldCentric
-                        .withVelocityX(xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
-                        .withVelocityY(-yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
-                        .withRotationalRate(rVel.getAsDouble() * SwerveConfig.kMaxAngularRate));
+                        .withVelocityX(Math.copySign(xVel.getAsDouble() * xVel.getAsDouble(), xVel.getAsDouble())
+                                * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withVelocityY(Math.copySign(yVel.getAsDouble() * yVel.getAsDouble(), -yVel.getAsDouble())
+                                * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withRotationalRate(-rVel.getAsDouble() * SwerveConfig.kMaxAngularRate));
     }
 
     public double speakerYaw() {

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -30,9 +31,6 @@ public class Pivot implements Subsystem {
     final double o;
     final double a;
 
-    final Command gotoIntake;
-    final Command gotoAmp;
-
     private final double defaultDeadband;
     /** The position for intaking, in rotations. */
     private final double intakePosition;
@@ -51,10 +49,10 @@ public class Pivot implements Subsystem {
 
     private DoubleSubscriber ka;
     private DoubleSubscriber kd;
-    // private DoubleSubscriber kg;
+    private DoubleSubscriber kg;
     private DoubleSubscriber ki;
     private DoubleSubscriber kp;
-    // private DoubleSubscriber ks;
+    private DoubleSubscriber ks;
     private DoubleSubscriber kv;
 
     private DoubleSubscriber speed;
@@ -80,20 +78,6 @@ public class Pivot implements Subsystem {
         o = Units.degreesToRadians(52);
         a = armLength * Math.sin(o);
 
-        gotoIntake = new Command() {
-            @Override
-            public void initialize() {
-                goTo(intakePosition);
-            }
-        };
-
-        gotoAmp = new Command() {
-            @Override
-            public void initialize() {
-                goTo(ampPosition);
-            }
-        };
-
         // Motors
         this.Table = networkTable.getSubTable(simpleName);
 
@@ -114,14 +98,14 @@ public class Pivot implements Subsystem {
         this.Table.getDoubleTopic("a").publish();
         kd = Table.getDoubleTopic("d").subscribe(0);
         this.Table.getDoubleTopic("d").publish();
-        // kg = Table.getDoubleTopic("g").subscribe(0);
-        // this.Table.getDoubleTopic("g").publish();
+        kg = Table.getDoubleTopic("g").subscribe(0);
+        this.Table.getDoubleTopic("g").publish();
         ki = Table.getDoubleTopic("i").subscribe(0);
         this.Table.getDoubleTopic("i").publish();
         kp = Table.getDoubleTopic("p").subscribe(0);
         this.Table.getDoubleTopic("p").publish();
-        // ks = Table.getDoubleTopic("s").subscribe(0);
-        // this.Table.getDoubleTopic("s").publish();
+        ks = Table.getDoubleTopic("s").subscribe(0);
+        this.Table.getDoubleTopic("s").publish();
         kv = Table.getDoubleTopic("v").subscribe(0);
         this.Table.getDoubleTopic("v").publish();
 
@@ -136,18 +120,20 @@ public class Pivot implements Subsystem {
         pivotConf.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
         pivotConf.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        pivotConf.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.1;
+        pivotConf.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.25;
 
-        pivotConf.Slot0.kA = ka.getAsDouble();
-        pivotConf.Slot0.kD = kd.getAsDouble();
-        pivotConf.Slot0.kG = 70.0;
-        pivotConf.Slot0.kI = ki.getAsDouble();
-        pivotConf.Slot0.kP = kp.getAsDouble();
-        pivotConf.Slot0.kS = 70.0;
-        pivotConf.Slot0.kV = kv.getAsDouble();
+        pivotConf.Slot0.kP = 13;
+        pivotConf.Slot0.kG = 0.07;
 
-        pivotConf.MotionMagic.MotionMagicAcceleration = 0.2;
-        pivotConf.MotionMagic.MotionMagicCruiseVelocity = 0.2;
+        // pivotConf.Slot0.kA = ka.getAsDouble();
+        // pivotConf.Slot0.kD = kd.getAsDouble();
+        // pivotConf.Slot0.kI = ki.getAsDouble();
+        // pivotConf.Slot0.kP = kp.getAsDouble();
+        // pivotConf.Slot0.kS = 70.0;
+        // pivotConf.Slot0.kV = kv.getAsDouble();
+
+        pivotConf.MotionMagic.MotionMagicAcceleration = 0.5;
+        pivotConf.MotionMagic.MotionMagicCruiseVelocity = 1;
 
         pivotConf.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         leftMotor.getConfigurator().apply(pivotConf);
@@ -180,23 +166,6 @@ public class Pivot implements Subsystem {
             public void execute() {
                 double s = Math.round(speed1.getAsDouble()) * speed3.getAsDouble();
                 SmartDashboard.putNumber("SetVal", s);
-                leftMotor.setControl(new TorqueCurrentFOC(s));
-                rightMotor.setControl(new TorqueCurrentFOC(s));
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                leftMotor.setControl(new DutyCycleOut(0));
-                rightMotor.setControl(new DutyCycleOut(0));
-            }
-        };
-    }
-
-    public Command manual(DoubleSupplier speed1) {
-        return new Command() {
-            public void execute() {
-                double s = speed1.getAsDouble() * speed.getAsDouble();
-
                 leftMotor.setControl(new DutyCycleOut(s));
                 rightMotor.setControl(new DutyCycleOut(s));
             }
@@ -209,17 +178,48 @@ public class Pivot implements Subsystem {
         };
     }
 
+    public Command manual(DoubleSupplier speed1) {
+        Command cmd = new Command() {
+            public void execute() {
+                double s = -speed1.getAsDouble() * speed.getAsDouble();
+
+                leftMotor.setControl(new DutyCycleOut(s));
+                rightMotor.setControl(new DutyCycleOut(s));
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                leftMotor.setControl(new DutyCycleOut(0));
+                rightMotor.setControl(new DutyCycleOut(0));
+            }
+        };
+        cmd.addRequirements(this);
+        return cmd;
+    }
+
     public Command toAmp() {
-        return gotoAmp;
+        return goToCmd(ampPosition);
     }
 
     public Command toIntake() {
-        return gotoIntake;
+        return goToCmd(intakePosition);
     }
 
     public void goTo(double rotations) {
         leftMotor.setControl(new MotionMagicDutyCycle(rotations));
+        rightMotor.setControl(new MotionMagicDutyCycle(rotations));
         // arm.setAngle(rotations);
+    }
+
+    public Command goToCmd(double rotations) {
+        Command cmd = new Command() {
+            @Override
+            public void initialize() {
+                goTo(rotations);
+            }
+        };
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     public boolean isAimedSpeaker() {

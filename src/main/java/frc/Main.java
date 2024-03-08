@@ -4,6 +4,8 @@
 
 package frc;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -50,7 +52,7 @@ public final class Main extends TimedRobot {
     private final Shooter shooter = new Shooter(subsystemsTable, transit::hasNote);
     private final Pivot pivot = new Pivot(subsystemsTable, drivetrain::getVectorToSpeaker);
 
-    private final Command runIntake = transit.run().alongWith(intake.run());
+    private final Command runIntake = transit.run(true).alongWith(intake.run()).until(transit::hasNote);
 
     Main() {
         speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
@@ -73,58 +75,71 @@ public final class Main extends TimedRobot {
     public void robotInit() {
         chooser.addOption("Nothing", new Command() {
         });
+
+        chooser.addOption("Go go go go", drivetrain.drive(() -> -0.5, () -> 0, () -> 0));
+
         chooser.addOption("Shoot",
-                shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.run().until(transit::hasNote))));
+                pivot.goToCmd(-0.0530455469).alongWith(
+                        shooter.shootSpeaker(),
+                        shooter.waitPrimed().andThen(transit.run(true)))
+                        .until(() -> !transit.hasNote())
+                        .andThen(shooter.stop().alongWith(pivot.toIntake())));
+                        
         SmartDashboard.putData("auto", chooser);
 
-        Command rumble = new Command() {
-            @Override
-            public void initialize() {
-                driver.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-                operator.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-            }
+        // Command rumble = new Command() {
+        // @Override
+        // public void initialize() {
+        // driver.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+        // operator.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+        // }
 
-            @Override
-            public void end(boolean interrupted) {
-                driver.getHID().setRumble(RumbleType.kBothRumble, 0);
-                operator.getHID().setRumble(RumbleType.kBothRumble, 0);
-            }
-        }.withTimeout(0.25);
+        // @Override
+        // public void end(boolean interrupted) {
+        // driver.getHID().setRumble(RumbleType.kBothRumble, 0);
+        // operator.getHID().setRumble(RumbleType.kBothRumble, 0);
+        // }
+        // }.withTimeout(0.25);
 
         // ----------- DEFAULT COMMAND -----------
 
-        transit.hasNoteTrigger.whileFalse(runIntake);
-        transit.hasNoteTrigger.onTrue(rumble);
-        transit.hasNoteTrigger.onFalse(rumble);
+        // transit.hasNoteTrigger.onTrue(rumble);
+        // transit.hasNoteTrigger.onFalse(rumble);
 
         // ----------- DRIVER CONTROLS -----------
 
         drivetrain.setDefaultCommand(
                 drivetrain.drive(driver::getLeftX, driver::getLeftY, driver::getRightX));
-        driver.leftBumper().onTrue(new InstantCommand(drivetrain::zeroGyro));
+        driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.x().whileTrue(drivetrain.brake());
+        driver.leftTrigger().whileTrue(runIntake);
+
+        // pivot.setDefaultCommand(pivot.toIntake());
 
         // ---------- OPERATOR CONTROLS ----------
 
         // TODO: path to the amp
-        operator.leftBumper().whileTrue(pivot.toAmp().alongWith(
-                shooter.shootAmp(),
-                new WaitUntilCommand(() -> pivot.isAimedAmp()).andThen(rumble)));
-        operator.leftTrigger().whileTrue(pivot.toSpeaker().alongWith(
-                drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
-                shooter.shootSpeaker(),
-                new WaitUntilCommand(() -> pivot.isAimedSpeaker() && drivetrain.isAimedSpeaker()).andThen(rumble)));
+        // operator.leftBumper().whileTrue(pivot.toAmp().alongWith(
+        // shooter.shootAmp()));
 
-        operator.rightTrigger().whileTrue(transit.run());
+        // operator.leftTrigger().whileTrue(//pivot.toSpeaker().alongWith(
+        // //drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
+        // shooter.shootSpeaker());
 
-        operator.x().whileTrue(pivot.manual(operator::getLeftY));
+        operator.rightTrigger().whileTrue(transit.run(true));
+        operator.rightBumper().whileTrue(transit.run(false));
+        operator.leftBumper().whileTrue(pivot.toIntake());
+
+        operator.b().whileTrue(pivot.goToCmd(0.25));
+
+        operator.y().whileTrue(pivot.goToCmd(-0.0530455469));
+        pivot.setDefaultCommand(pivot.manual(operator::getLeftY));
 
         operator.a().onTrue(new InstantCommand(pivot::configPID));
-
-        operator.y().whileTrue(pivot.manual2(operator::getLeftY));
-        operator.b().whileTrue(shooter.shootSpeaker());
-
+        operator.leftTrigger().whileTrue(shooter.shootSpeaker());
         operator.start().onTrue(new InstantCommand(pivot::atIntake));
+
+        drivetrain.zeroGyro();
 
         // TODO: add climb command
 
@@ -167,8 +182,8 @@ public final class Main extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        if (!transit.hasNote())
-            runIntake.schedule();
+        // if (!transit.hasNote())
+        // runIntake.schedule();
     }
 
     @Override
