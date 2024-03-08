@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,6 +21,7 @@ import frc.system.Shooter;
 import frc.system.Transit;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class Main extends TimedRobot {
@@ -43,6 +45,8 @@ public final class Main extends TimedRobot {
     private final Shooter shooter = new Shooter(subsystemsTable, transit::hasNote);
     private final Pivot pivot = new Pivot(subsystemsTable, drivetrain::getVectorToSpeaker);
 
+    private final Command runIntake = transit.run().alongWith(intake.run());
+
     Main() {
         speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
                 ?
@@ -62,20 +66,26 @@ public final class Main extends TimedRobot {
 
     @Override
     public void robotInit() {
-        SmartDashboard.putData("auto", drivetrain.getAutoPaths());
-        // Default Commands
+        SendableChooser<Command> chooser = new SendableChooser<>();
+        chooser.addOption("Nothing", new Command() {
+        });
+        chooser.addOption("Shoot",
+                shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.run().until(transit::hasNote))));
+        SmartDashboard.putData("auto", chooser);
+
+        // ----------- DEFAULT COMMAND -----------
         drivetrain.setDefaultCommand(
                 drivetrain.drive(driver::getLeftX, driver::getLeftY, driver::getRightX));
 
-        // Driver
-        driver.leftTrigger().whileTrue(
-                intake.intake().raceWith(transit.intake())); // Option 1
+        // ----------- DRIVER CONTROLS -----------
+        driver.leftBumper().onTrue(
+                drivetrain.ZeroGyro());
+        driver.x().whileTrue(
+                drivetrain.brake());
 
-        driver.x().whileTrue(drivetrain.brake());
-        // Operator
-        // Shoot
+        // ---------- OPERATOR CONTROLS ----------
         operator.rightTrigger().whileTrue(
-                shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.shoot())));
+                shooter.shootSpeaker().alongWith(shooter.waitPrimed().andThen(transit.run())));
 
         // Prime Amp
 
@@ -98,6 +108,9 @@ public final class Main extends TimedRobot {
         operator.start().onTrue(new InstantCommand(pivot::atIntake));
 
         // TODO: add climb command
+
+        // --------------- Sensors ---------------
+        transit.hasNoteTrigger.whileFalse(runIntake);
 
         namedCommands();
     }
@@ -133,6 +146,8 @@ public final class Main extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        if (!transit.hasNote())
+            runIntake.schedule();
     }
 
     @Override

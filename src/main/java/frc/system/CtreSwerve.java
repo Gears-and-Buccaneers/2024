@@ -152,6 +152,10 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
+    public Command ZeroGyro() {
+        return run(() -> this.reset(new Pose2d()));
+    }
+
     public Command driveTo(Pose2d target, double velocity) {
         return AutoBuilder.pathfindToPose(target, constraints, velocity);
     }

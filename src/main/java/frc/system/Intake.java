@@ -9,8 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class Intake implements MechanismReq {
+public class Intake implements Subsystem {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
@@ -20,9 +21,6 @@ public class Intake implements MechanismReq {
     // Network
     private NetworkTable Table;
     private DoubleSubscriber intakeSpeed;
-
-    // vars
-    private BooleanSupplier transitHasNote;
 
     public Intake(NetworkTable networkTable, BooleanSupplier feederNote) {
         this.Table = networkTable.getSubTable(simpleName);
@@ -41,8 +39,6 @@ public class Intake implements MechanismReq {
         // Vars
         intakeSpeed = Table.getDoubleTopic("intakeSpeed").subscribe(.8);
         this.Table.getDoubleTopic("intakeSpeed").publish();
-
-        this.transitHasNote = feederNote;
 
         System.out.println("[Init] Creating " + simpleName + " with:");
         System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
@@ -72,23 +68,6 @@ public class Intake implements MechanismReq {
 
             public void end(boolean interrupted) {
                 disable();
-            }
-        };
-    }
-
-    public Command intake() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public boolean isFinished() {
-                return transitHasNote.getAsBoolean();
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-                // TODO: add led blinking
             }
         };
     }

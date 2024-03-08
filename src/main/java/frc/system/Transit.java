@@ -9,13 +9,17 @@ import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class Transit implements MechanismReq {
+public class Transit implements Subsystem {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
     private TalonSRX transitMotor;
     private final LaserCan laserCan;
+    public final Trigger hasNoteTrigger = new Trigger(this::hasNote);
 
     // Network
     private NetworkTable Table;
@@ -60,71 +64,33 @@ public class Transit implements MechanismReq {
         return measurement != null && measurement.distance_mm < threshold;
     }
 
-    private void runForward(boolean forwards) {
-        double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
+    private Command runForward(boolean forwards) {
+        return new Command() {
+            @Override
+            public void initialize() {
+                double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
+                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            }
 
-        transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
-    }
-
-    public void disable() {
-        transitMotor.set(TalonSRXControlMode.Disabled, 0);
+            @Override
+            public void end(boolean interrupted) {
+                transitMotor.set(TalonSRXControlMode.Disabled, 0);
+            }
+        };
     }
 
     // Commands
     public Command run() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
+        return runForward(true);
     }
 
-    public Command intake() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public boolean isFinished() {
-                return hasNote();
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
-    }
-
-    public Command shoot() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public boolean isFinished() {
-                return !hasNote();
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
+    public Command autoShoot() {
+        return runForward(true)
+                .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
     }
 
     public Command reverse() {
-        return new Command() {
-            public void initialize() {
-                runForward(false);
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
+        return runForward(false);
     }
 
     // Logging
