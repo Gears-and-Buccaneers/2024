@@ -46,6 +46,11 @@ public class Shooter implements Subsystem {
         shooterConf.Slot0.kI = 0.0;
         shooterConf.Slot0.kD = 0.0;
 
+        // shooterConf.CurrentLimits.StatorCurrentLimit = 80;
+        // shooterConf.CurrentLimits.StatorCurrentLimitEnable = true;
+        // shooterConf.CurrentLimits.SupplyCurrentLimit = 80;
+        // shooterConf.CurrentLimits.SupplyCurrentLimitEnable = true;
+
         leftMotor.getConfigurator().apply(shooterConf);
         rightMotor.getConfigurator().apply(shooterConf);
 

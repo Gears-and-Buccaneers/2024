@@ -64,6 +64,21 @@ public class Transit implements Subsystem {
         return measurement != null && measurement.distance_mm < threshold;
     }
 
+    public Command runSlow() {
+        return new Command() {
+            @Override
+            public void initialize() {
+                double speed = transitSpeed.get() * 0.25;
+                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                transitMotor.set(TalonSRXControlMode.Disabled, 0);
+            }
+        };
+    }
+
     public Command run(boolean forwards) {
         return new Command() {
             @Override

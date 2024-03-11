@@ -125,6 +125,12 @@ public class Pivot implements Subsystem {
         pivotConf.Slot0.kP = 13;
         pivotConf.Slot0.kG = 0.07;
 
+
+        // pivotConf.CurrentLimits.StatorCurrentLimit = 75;
+        // pivotConf.CurrentLimits.StatorCurrentLimitEnable = true;
+        // pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
+        // pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
+        
         // pivotConf.Slot0.kA = ka.getAsDouble();
         // pivotConf.Slot0.kD = kd.getAsDouble();
         // pivotConf.Slot0.kI = ki.getAsDouble();

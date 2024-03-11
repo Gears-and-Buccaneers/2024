@@ -60,6 +60,8 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
 
         registerTelemetry((s) -> state.set(s));
 
+        
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
