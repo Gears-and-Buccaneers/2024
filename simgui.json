@@ -1,0 +1,24 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/MechThingggy": "Mechanism2d",
+      "/SmartDashboard/auto": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/MechThingggy": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/auto": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

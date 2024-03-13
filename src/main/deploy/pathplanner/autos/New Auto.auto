@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8725610178493084,
-      "y": 3.6568684046459006
+      "x": 0.7419585748262406,
+      "y": 4.41249682499365
     },
-    "rotation": 118.61045966596524
+    "rotation": 121.75948008481282
   },
   "command": {
     "type": "sequential",
@@ -20,25 +20,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ScoreSpeaker"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Note2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "ScoreSpeaker"
+            "pathName": "Note1"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Note4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note6"
           }
         },
         {
