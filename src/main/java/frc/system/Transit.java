@@ -8,6 +8,7 @@ import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -64,45 +65,58 @@ public class Transit implements Subsystem {
         return measurement != null && measurement.distance_mm < threshold;
     }
 
-    public Command runSlow() {
-        return new Command() {
-            @Override
-            public void initialize() {
-                double speed = transitSpeed.get() * 0.25;
-                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                transitMotor.set(TalonSRXControlMode.Disabled, 0);
-            }
-        };
+    private void run(boolean forwards) {
+        double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
+        transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
     }
 
-    public Command run(boolean forwards) {
-        return new Command() {
-            @Override
-            public void initialize() {
-                double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
-                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                transitMotor.set(TalonSRXControlMode.Disabled, 0);
-            }
-        };
+    public void disable() {
+        transitMotor.set(TalonSRXControlMode.Disabled, 0);
     }
 
     // Commands
 
-    public Command autoShoot() {
-        return run(true)
-                .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
+    public Command runForwards() {
+        Command runForwards = new Command() {
+            public void initialize() {
+                run(true);
+            }
+
+            public void end(boolean interrupted) {
+                disable();
+            }
+
+            public void setName(String name) {
+                super.setName(name);
+            }
+        };
+        runForwards.setName("Forwards");
+        return runForwards;
     }
 
-    public Command reverse() {
-        return run(false);
+    public Command runBackward() {
+        return new Command() {
+            public void initialize() {
+                run(false);
+            }
+
+            public void end(boolean interrupted) {
+                disable();
+            }
+        };
+    }
+
+    public Command stop() {
+        return new Command() {
+            public void initialize() {
+                disable();
+            }
+        };
+    }
+
+    public Command autoShoot() {
+        return runForwards()
+                .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
     }
 
     // Logging

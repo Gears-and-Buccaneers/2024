@@ -4,6 +4,8 @@
 
 package frc;
 
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -80,55 +83,28 @@ public final class Main extends TimedRobot {
         rumble.setName("Rumble");
 
         // Intake
-        intakeNote = pivot.toIntake().andThen(transit.run(true).alongWith(intake.run()));
+        intakeNote = pivot.toIntake().andThen(transit.runForwards().alongWith(intake.run()));
 
         intakeNote.until(transit::hasNote);
         intakeNote.addRequirements(transit, pivot, intake);
         intakeNote.setName("intakeNote");
 
         // Amp
-        primeAmp = new Command() {
-            public void initialize() {
-            }
-
-            public void end(boolean interrupted) {
-            }
-
-            public boolean isFinished() {
-                return false;
-            }
-        };
-        primeAmp.addRequirements();
+        primeAmp = pivot.toAmp().alongWith(shooter.shootAmp());
+        primeAmp.addRequirements(pivot, shooter);
         primeAmp.setName("PrimeAmp");
 
         // Speaker
-        primeSpeaker = new Command() {
-            public void initialize() {
-            }
-
-            public void end(boolean interrupted) {
-            }
-
-            public boolean isFinished() {
-                return false;
-            }
-        };
-        primeSpeaker.addRequirements();
+        primeSpeaker = pivot.toSpeaker().alongWith(shooter.shootSpeaker());
+        primeSpeaker.addRequirements(pivot, shooter);
         primeSpeaker.setName("PrimeSpeaker");
 
         // Shoot
-        shootNote = new Command() {
-            public void initialize() {
-            }
+        shootNote = shooter.waitPrimed()
+                .andThen(transit.runForwards());
 
-            public void end(boolean interrupted) {
-            }
-
-            public boolean isFinished() {
-                return false;
-            }
-        };
-        shootNote.addRequirements(transit, shooter);
+        shootNote.until(() -> !transit.hasNote()).andThen(shooter.stop(), transit.stop());
+        shootNote.addRequirements(transit, shooter); // TODO: woried about this line and the previus
         shootNote.setName("Shoot");
     }
 
@@ -138,8 +114,8 @@ public final class Main extends TimedRobot {
         transit.hasNoteTrigger.onTrue(rumble);
         transit.hasNoteTrigger.onFalse(rumble);
 
-        // pivot.setDefaultCommand(pivot.toIntake());
-        pivot.setDefaultCommand(pivot.manual(operator::getLeftY));
+        pivot.setDefaultCommand(pivot.toIntake());
+        // pivot.setDefaultCommand(pivot.manual(operator::getLeftY));
 
         // ----------- DRIVER CONTROLS -----------
 
@@ -154,7 +130,7 @@ public final class Main extends TimedRobot {
                         () -> {
                             // return Math.copySign(driver.getRightX() * driver.getRightX(),-
                             // driver.getRightX());
-                            // TODO: ask if driver wants this
+                            // TODO: ask if driver wants turning squared aswell
                             return -driver.getRightX();
                         }));
 
@@ -173,17 +149,25 @@ public final class Main extends TimedRobot {
         // operator.leftTrigger().whileTrue(//pivot.toSpeaker().alongWith(
         // //drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
         // shooter.shootSpeaker());
+        // operator.leftBumper().whileTrue(pivot.toIntake());
+        // // operator.b().whileTrue(pivot.goToRadCmd(0.25));
 
-        operator.rightTrigger().whileTrue(transit.run(true));
-        operator.rightBumper().whileTrue(transit.run(false));
-        operator.leftBumper().whileTrue(pivot.toIntake());
-        operator.b().whileTrue(pivot.goToRadCmd(0.25));
+        // operator.y().whileTrue(pivot.toSpeaker());
 
-        operator.y().whileTrue(pivot.toSpeaker());
+        // operator.a().onTrue(new InstantCommand(pivot::configPID));
+        // operator.leftTrigger().whileTrue(shooter.shootSpeaker());
+        // operator.start().onTrue(new InstantCommand(pivot::atIntake)); // zeros piviot
+        boolean driveToAmp = false;
 
-        operator.a().onTrue(new InstantCommand(pivot::configPID));
-        operator.leftTrigger().whileTrue(shooter.shootSpeaker());
-        operator.start().onTrue(new InstantCommand(pivot::atIntake)); // zeros piviot
+        operator.rightBumper().and(operator.leftBumper().or(operator.a())).whileTrue(shootNote);
+        operator.leftBumper().whileTrue(primeSpeaker);
+        operator.a().whileTrue(// TODO: Chechk this is the right button binding
+                Commands.either(
+                        drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("ScoreAmp")), // Score amp drives to the
+                                                                                              // amp, this calles prime
+                                                                                              // amp and shoot
+                        primeAmp,
+                        () -> driveToAmp));
 
         operator.x().whileTrue(intake.reverse());
 
@@ -218,13 +202,13 @@ public final class Main extends TimedRobot {
         autonomousChooser.addOption("Shoot",
                 pivot.toSpeaker().alongWith(
                         shooter.shootSpeaker(),
-                        shooter.waitPrimed().andThen(transit.run(true)))
+                        shooter.waitPrimed().andThen(transit.runForwards()))
                         .until(() -> !transit.hasNote())
                         .andThen(shooter.stop().alongWith(pivot.toIntake())));
         autonomousChooser.addOption("Shoot after 5sec",
                 new WaitCommand(5).andThen(pivot.toSpeaker().alongWith(
                         shooter.shootSpeaker(),
-                        shooter.waitPrimed().andThen(transit.run(true)))
+                        shooter.waitPrimed().andThen(transit.runForwards()))
                         .until(() -> !transit.hasNote())
                         .andThen(shooter.stop().alongWith(pivot.toIntake()))));
 
