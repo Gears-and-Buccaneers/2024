@@ -28,8 +28,8 @@ public class Pivot implements Subsystem {
     /**
      * The shooter degree offset from being perpendicular to the arm, in radians.
      */
-    final double o;
-    final double a;
+    final double pivotBarPlatformRads;
+    final double offsetToShooterPlane;
 
     private final double defaultDeadband;
     /** The position for intaking, in rotations. */
@@ -60,6 +60,8 @@ public class Pivot implements Subsystem {
 
     private final Supplier<Translation3d> vectorToSpeaker;
 
+    private final double subwooferAngleRads = -0.0530455469;
+
     /**
      * Assumes 90 degree angle is 0 and the intake position has negative rotational
      * sign.
@@ -75,8 +77,8 @@ public class Pivot implements Subsystem {
 
         // 11 in
 
-        o = Units.degreesToRadians(52);
-        a = armLength * Math.sin(o);
+        pivotBarPlatformRads = Units.degreesToRadians(52);
+        offsetToShooterPlane = armLength * Math.sin(pivotBarPlatformRads);
 
         // Motors
         this.Table = networkTable.getSubTable(simpleName);
@@ -125,12 +127,11 @@ public class Pivot implements Subsystem {
         pivotConf.Slot0.kP = 13;
         pivotConf.Slot0.kG = 0.07;
 
-
         // pivotConf.CurrentLimits.StatorCurrentLimit = 75;
         // pivotConf.CurrentLimits.StatorCurrentLimitEnable = true;
         // pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
         // pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
-        
+
         // pivotConf.Slot0.kA = ka.getAsDouble();
         // pivotConf.Slot0.kD = kd.getAsDouble();
         // pivotConf.Slot0.kI = ki.getAsDouble();
@@ -155,16 +156,13 @@ public class Pivot implements Subsystem {
         Translation3d vector = vectorToSpeaker.get();
         double distance = vector.getNorm();
         double pitch = Math.asin(vector.getZ() / distance);
-        return Units.radiansToRotations(Math.PI - o - Math.asin(a / distance) + pitch);
+        return Units.radiansToRotations(Math.PI - pivotBarPlatformRads - Math.asin(offsetToShooterPlane / distance) + pitch);
     }
 
-    public Command toSpeaker() {
-        return new Command() {
-            @Override
-            public void execute() {
-                goTo(rotationsToSpeaker());
-            }
-        };
+    public void goTo(double rotations) {
+        leftMotor.setControl(new MotionMagicDutyCycle(rotations));
+        rightMotor.setControl(new MotionMagicDutyCycle(rotations));
+        // arm.setAngle(rotations);
     }
 
     public Command manual2(DoubleSupplier speed1) {
@@ -203,21 +201,19 @@ public class Pivot implements Subsystem {
         return cmd;
     }
 
+    public Command toSpeaker() {
+        return goToRadCmd(subwooferAngleRads);//rotationsToSpeaker()); //TODO: add auto aming
+    }
+
     public Command toAmp() {
-        return goToCmd(ampPosition);
+        return goToRadCmd(ampPosition);
     }
 
     public Command toIntake() {
-        return goToCmd(intakePosition);
+        return goToRadCmd(intakePosition);
     }
 
-    public void goTo(double rotations) {
-        leftMotor.setControl(new MotionMagicDutyCycle(rotations));
-        rightMotor.setControl(new MotionMagicDutyCycle(rotations));
-        // arm.setAngle(rotations);
-    }
-
-    public Command goToCmd(double rotations) {
+    public Command goToRadCmd(double rotations) {
         Command cmd = new Command() {
             @Override
             public void initialize() {

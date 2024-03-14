@@ -51,6 +51,8 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    private Supplier<Rotation2d> rotationOverride;
+
     public CtreSwerve(
             PathConstraints constraints,
             double kSpeedAt12VoltsMps,
@@ -59,8 +61,6 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
         super(driveTrainConstants, modules);
 
         registerTelemetry((s) -> state.set(s));
-
-        
 
         if (Utils.isSimulation()) {
             startSimThread();
@@ -180,7 +180,18 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
         return AutoBuilder.pathfindThenFollowPath(path, constraints, 0);
     }
 
-    public Command drive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
+    /**
+     * Values are squared!!!! this adds more perdition at low speeds
+     * 
+     * @param xVel [-1,1] percent speed + is forward
+     * @param yVel [-1,1] percent speed + is Left
+     * @param rVel [-1, 1] percent angler rate + CC+//TODO: chech this value
+     * @return
+     */
+    public Command controllerDrive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
+        // TODO: if there is a rotoin overide applie it w/ drive with
+        // cachedFieldCentricFacing
+
         return applyRequest(
                 () -> cachedFieldCentric
                         .withVelocityX(Math.copySign(xVel.getAsDouble() * xVel.getAsDouble(), xVel.getAsDouble())
