@@ -22,7 +22,7 @@ public class Intake implements Subsystem {
     private NetworkTable Table;
     private DoubleSubscriber intakeSpeed;
 
-    public Intake(NetworkTable networkTable, BooleanSupplier feederNote) {
+    public Intake(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors

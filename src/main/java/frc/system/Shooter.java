@@ -29,7 +29,7 @@ public class Shooter implements Subsystem {
 
     final VelocityDutyCycle m_request = new VelocityDutyCycle(0);
 
-    public Shooter(NetworkTable networkTable, BooleanSupplier feederNote) {
+    public Shooter(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors

@@ -194,11 +194,9 @@ public class CtreSwerve extends SwerveDrivetrain implements Subsystem, Consumer<
 
         return applyRequest(
                 () -> cachedFieldCentric
-                        .withVelocityX(Math.copySign(xVel.getAsDouble() * xVel.getAsDouble(), xVel.getAsDouble())
-                                * SwerveConfig.kSpeedAt12VoltsMps)
-                        .withVelocityY(Math.copySign(yVel.getAsDouble() * yVel.getAsDouble(), -yVel.getAsDouble())
-                                * SwerveConfig.kSpeedAt12VoltsMps)
-                        .withRotationalRate(-rVel.getAsDouble() * SwerveConfig.kMaxAngularRate));
+                        .withVelocityX(xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withVelocityY(yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps)
+                        .withRotationalRate(rVel.getAsDouble() * SwerveConfig.kMaxAngularRate));
     }
 
     public double speakerYaw() {
