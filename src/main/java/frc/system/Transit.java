@@ -1,4 +1,4 @@
-package frc.system.Transit;
+package frc.system;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
@@ -9,14 +9,17 @@ import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.system.MechanismReq;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class Transit implements MechanismReq {
+public class Transit implements Subsystem {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
     private TalonSRX transitMotor;
     private final LaserCan laserCan;
+    public final Trigger hasNoteTrigger = new Trigger(this::hasNote);
 
     // Network
     private NetworkTable Table;
@@ -61,71 +64,45 @@ public class Transit implements MechanismReq {
         return measurement != null && measurement.distance_mm < threshold;
     }
 
-    private void runForward(boolean forwards) {
-        double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
+    public Command runSlow() {
+        return new Command() {
+            @Override
+            public void initialize() {
+                double speed = transitSpeed.get() * 0.25;
+                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            }
 
-        transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            @Override
+            public void end(boolean interrupted) {
+                transitMotor.set(TalonSRXControlMode.Disabled, 0);
+            }
+        };
     }
 
-    public void disable() {
-        transitMotor.set(TalonSRXControlMode.Disabled, 0);
+    public Command run(boolean forwards) {
+        return new Command() {
+            @Override
+            public void initialize() {
+                double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
+                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                transitMotor.set(TalonSRXControlMode.Disabled, 0);
+            }
+        };
     }
 
     // Commands
-    public Command run() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
 
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
-    }
-
-    public Command intake() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public boolean isFinished() {
-                return hasNote();
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
-    }
-
-    public Command shoot() {
-        return new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public boolean isFinished() {
-                return !hasNote();
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
+    public Command autoShoot() {
+        return run(true)
+                .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
     }
 
     public Command reverse() {
-        return new Command() {
-            public void initialize() {
-                runForward(false);
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
+        return run(false);
     }
 
     // Logging

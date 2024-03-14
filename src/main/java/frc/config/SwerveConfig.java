@@ -9,7 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
 import edu.wpi.first.math.util.Units;
-import frc.system.drivetrain.CtreSwerve;
+import frc.system.CtreSwerve;
 
 public class SwerveConfig {
 

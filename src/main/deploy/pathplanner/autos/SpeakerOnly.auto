@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2,
-      "y": 2
+      "x": 1.7121481515690302,
+      "y": 3.9367307825524747
     },
-    "rotation": 0
+    "rotation": 179.5071833569755
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,24 @@
           "type": "path",
           "data": {
             "pathName": "ScoreSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreAmp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2"
           }
         }
       ]
