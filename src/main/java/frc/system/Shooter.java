@@ -58,10 +58,10 @@ public class Shooter implements Subsystem {
         // TODO: make sure that phinox 6 imple is corect
 
         // Vars
-        shooterSpeed = Table.getDoubleTopic("shooterSpeed").subscribe(6000);
+        shooterSpeed = Table.getDoubleTopic("shooterSpeed").subscribe(5000);
         this.Table.getDoubleTopic("shooterSpeed").publish();
 
-        shooterSpeedDeadBand = Table.getDoubleTopic("shooterSpeedDeadBand").subscribe(6000);
+        shooterSpeedDeadBand = Table.getDoubleTopic("shooterSpeedDeadBand").subscribe(5000);
         this.Table.getDoubleTopic("shooterSpeedDeadBand").publish();
 
         System.out.println("[Init] Creating " + simpleName + " with:");

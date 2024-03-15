@@ -4,6 +4,7 @@
 
 package frc;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Translation3d;
@@ -95,15 +96,21 @@ public final class Main extends TimedRobot {
         primeAmp.setName("PrimeAmp");
 
         // Speaker
-        primeSpeaker = pivot.toSpeaker().alongWith(shooter.shootSpeaker());
+        primeSpeaker = pivot.toSpeaker()
+                .alongWith(shooter.shootSpeaker())
+                .alongWith(drivetrain.driveFacingSpeaker(
+                        () -> {
+                            return Math.copySign(driver.getLeftX() * driver.getLeftX(), driver.getLeftX());
+                        },
+                        () -> {
+                            return Math.copySign(driver.getLeftY() * driver.getLeftY(), -driver.getLeftY());
+                        }));
         primeSpeaker.addRequirements(pivot, shooter);
         primeSpeaker.setName("PrimeSpeaker");
 
         // Shoot
-        shootNote = shooter.waitPrimed()
-                .andThen(transit.runForwards());
-
-        shootNote.until(() -> !transit.hasNote()).andThen(shooter.stop(), transit.stop());
+        shootNote = shooter.waitPrimed().alongWith(drivetrain.brake())
+                .andThen(transit.runForwards()).until(() -> !transit.hasNote()).andThen(shooter.stop(), transit.stop());
         shootNote.addRequirements(transit, shooter); // TODO: woried about this line and the previus
         shootNote.setName("Shoot");
     }
@@ -206,20 +213,16 @@ public final class Main extends TimedRobot {
                         .until(() -> !transit.hasNote())
                         .andThen(shooter.stop().alongWith(pivot.toIntake())));
         autonomousChooser.addOption("Shoot after 5sec",
-                new WaitCommand(5).andThen(pivot.toSpeaker().alongWith(
-                        shooter.shootSpeaker(),
-                        shooter.waitPrimed().andThen(transit.runForwards()))
-                        .until(() -> !transit.hasNote())
-                        .andThen(shooter.stop().alongWith(pivot.toIntake()))));
+                new WaitCommand(5).andThen(primeSpeaker.andThen(shootNote)));
 
         SmartDashboard.putData("auto", autonomousChooser);
     }
 
     private void configNamedCommands() {
-        // NamedCommands.registerCommand("Intake", intake());
-        // NamedCommands.registerCommand("Shoot", shoot());
-        // NamedCommands.registerCommand("PrimeAmp", primeAmp());
-        // NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker());
+        NamedCommands.registerCommand("Intake", intakeNote);
+        NamedCommands.registerCommand("Shoot", shootNote);
+        NamedCommands.registerCommand("PrimeAmp", primeAmp);
+        NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker);
     }
 
     // ---------------------------------------------------

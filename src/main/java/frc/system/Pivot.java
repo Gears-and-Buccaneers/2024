@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -125,19 +126,20 @@ public class Pivot implements Subsystem {
         pivotConf.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.25;
 
         pivotConf.Slot0.kP = 13;
-        pivotConf.Slot0.kG = 0.07;
+        pivotConf.Slot0.kG = 0.27; // TODO: check this val
+        pivotConf.Slot0.kV = 1.88;
+        pivotConf.Slot0.kA = 0.01;
 
         // pivotConf.CurrentLimits.StatorCurrentLimit = 75;
         // pivotConf.CurrentLimits.StatorCurrentLimitEnable = true;
-        // pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
-        // pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConf.CurrentLimits.SupplyCurrentLimit = 75; // TODO:pick a number
+        pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // pivotConf.CurrentLimits.SupplyTimeThreshold = 0;
 
-        // pivotConf.Slot0.kA = ka.getAsDouble();
         // pivotConf.Slot0.kD = kd.getAsDouble();
         // pivotConf.Slot0.kI = ki.getAsDouble();
         // pivotConf.Slot0.kP = kp.getAsDouble();
         // pivotConf.Slot0.kS = 70.0;
-        // pivotConf.Slot0.kV = kv.getAsDouble();
 
         pivotConf.MotionMagic.MotionMagicAcceleration = 0.5;
         pivotConf.MotionMagic.MotionMagicCruiseVelocity = 1;
@@ -156,30 +158,14 @@ public class Pivot implements Subsystem {
         Translation3d vector = vectorToSpeaker.get();
         double distance = vector.getNorm();
         double pitch = Math.asin(vector.getZ() / distance);
-        return Units.radiansToRotations(Math.PI - pivotBarPlatformRads - Math.asin(offsetToShooterPlane / distance) + pitch);
+        return Units.radiansToRotations(
+                Math.PI - pivotBarPlatformRads - Math.asin(offsetToShooterPlane / distance) + pitch);
     }
 
     public void goTo(double rotations) {
-        leftMotor.setControl(new MotionMagicDutyCycle(rotations));
-        rightMotor.setControl(new MotionMagicDutyCycle(rotations));
+        leftMotor.setControl(new MotionMagicVoltage(rotations));
+        rightMotor.setControl(new MotionMagicVoltage(rotations));
         // arm.setAngle(rotations);
-    }
-
-    public Command manual2(DoubleSupplier speed1) {
-        return new Command() {
-            public void execute() {
-                double s = Math.round(speed1.getAsDouble()) * speed3.getAsDouble();
-                SmartDashboard.putNumber("SetVal", s);
-                leftMotor.setControl(new DutyCycleOut(s));
-                rightMotor.setControl(new DutyCycleOut(s));
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                leftMotor.setControl(new DutyCycleOut(0));
-                rightMotor.setControl(new DutyCycleOut(0));
-            }
-        };
     }
 
     public Command manual(DoubleSupplier speed1) {
@@ -202,7 +188,7 @@ public class Pivot implements Subsystem {
     }
 
     public Command toSpeaker() {
-        return goToRadCmd(subwooferAngleRads);//rotationsToSpeaker()); //TODO: add auto aming
+        return goToRadCmd(subwooferAngleRads);// rotationsToSpeaker()); //TODO: add auto aming
     }
 
     public Command toAmp() {

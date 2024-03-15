@@ -114,6 +114,7 @@ public class Transit implements Subsystem {
         };
     }
 
+    @Deprecated
     public Command autoShoot() {
         return runForwards()
                 .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
