@@ -9,7 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
 import edu.wpi.first.math.util.Units;
-import frc.system.CtreSwerve;
+import frc.system.Swerve;
 
 public class SwerveConfig {
 
@@ -136,7 +136,7 @@ public class SwerveConfig {
             Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches),
             kInvertRightSide);
 
-    public static final CtreSwerve swerve = new CtreSwerve(
+    public static final Swerve swerve = new Swerve(
             new PathConstraints(kSpeedAt12VoltsMps, 4, Units.degreesToRadians(520),
                     Units.degreesToRadians(720)),
             kSpeedAt12VoltsMps, DrivetrainConstants, FrontLeft, FrontRight, BackLeft,

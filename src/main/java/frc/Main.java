@@ -4,6 +4,9 @@
 
 package frc;
 
+import java.util.function.DoubleFunction;
+import java.util.function.Function;
+
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -16,7 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,280 +26,268 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.config.SwerveConfig;
-import frc.system.CtreSwerve;
+import frc.system.Swerve;
 import frc.system.Intake;
 import frc.system.Pivot;
 import frc.system.Shooter;
 import frc.system.Transit;
+import frc.system.vision.Nt;
 
 public final class Main extends TimedRobot {
-    public static void main(String... args) {
-        RobotBase.startRobot(Main::new);
-    }
+	public static void main(String... args) {
+		RobotBase.startRobot(Main::new);
+	}
 
-    SendableChooser<Command> autonomousChooser = new SendableChooser<>();
+	SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 
-    public static Translation3d speakerPosition;
+	public static Translation3d speakerPosition;
 
-    // Controllers
-    private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+	// Controllers
+	private final CommandXboxController driver = new CommandXboxController(0);
+	private final CommandXboxController operator = new CommandXboxController(1);
 
-    // Subsystems
-    private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
+	// Subsystems
+	private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-    private final CtreSwerve drivetrain = SwerveConfig.swerve;
+	private final Swerve drivetrain = SwerveConfig.swerve;
 
-    private final Transit transit = new Transit(subsystemsTable);
-    private final Intake intake = new Intake(subsystemsTable);
-    private final Shooter shooter = new Shooter(subsystemsTable);
-    private final Pivot pivot = new Pivot(subsystemsTable, drivetrain::getVectorToSpeaker);
+	private final Transit transit = new Transit(subsystemsTable);
+	private final Intake intake = new Intake(subsystemsTable);
+	private final Shooter shooter = new Shooter(subsystemsTable);
+	private final Pivot pivot = new Pivot(subsystemsTable, drivetrain::getVectorToSpeaker);
 
-    // ---------------------------- Commands ------------------
-    private Command rumble;
-    private Command intakeNote;
-    private Command primeAmp;
-    private Command primeSpeaker;
-    private Command shootNote;
+	// ---------------------------- Commands ------------------
+	// private Command rumble;
+	private Command intakeNote;
+	private Command primeAmp;
+	private Command shootNote;
 
-    private void configCommands() {
-        // LEDS
-        // Rumble
-        rumble = new Command() {
-            @Override
-            public void initialize() {
-                driver.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-                operator.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-            }
+	static double squareInput(double input) {
+		return Math.copySign(input * input, input);
+	}
 
-            @Override
-            public void end(boolean interrupted) {
-                driver.getHID().setRumble(RumbleType.kBothRumble, 0);
-                operator.getHID().setRumble(RumbleType.kBothRumble, 0);
-            }
-        };
+	private void configCommands() {
+		// ------------------- Const -------------------
+		speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
+				?
+				// Red speaker
+				new Translation3d(16.31, 5.55, 2.06)
+				// Blue speaker
+				: new Translation3d(0.24, 5.55, 2.06);
 
-        rumble.withTimeout(.25);
-        rumble.addRequirements();
-        rumble.setName("Rumble");
+		// LEDS
+		// Rumble
+		// rumble = new Command() {
+		// @Override
+		// public void initialize() {
+		// driver.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+		// operator.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+		// }
 
-        // Intake
-        intakeNote = pivot.toIntake().andThen(transit.runForwards().alongWith(intake.run()));
+		// @Override
+		// public void end(boolean interrupted) {
+		// driver.getHID().setRumble(RumbleType.kBothRumble, 0);
+		// operator.getHID().setRumble(RumbleType.kBothRumble, 0);
+		// }
+		// };
 
-        intakeNote.until(transit::hasNote);
-        intakeNote.addRequirements(transit, pivot, intake);
-        intakeNote.setName("intakeNote");
+		// rumble.withTimeout(.25);
+		// rumble.addRequirements();
+		// rumble.setName("Rumble");
 
-        // Amp
-        primeAmp = pivot.toAmp().alongWith(shooter.shootAmp());
-        primeAmp.addRequirements(pivot, shooter);
-        primeAmp.setName("PrimeAmp");
+		// Intake
+		intakeNote = pivot.toIntake().andThen(transit.runForwards().alongWith(intake.run())).until(transit::hasNote);
 
-        // Speaker
-        primeSpeaker = pivot.toSpeaker()
-                .alongWith(shooter.shootSpeaker())
-                .alongWith(drivetrain.driveFacingSpeaker(
-                        () -> {
-                            return Math.copySign(driver.getLeftX() * driver.getLeftX(), driver.getLeftX());
-                        },
-                        () -> {
-                            return Math.copySign(driver.getLeftY() * driver.getLeftY(), -driver.getLeftY());
-                        }));
-        primeSpeaker.addRequirements(pivot, shooter);
-        primeSpeaker.setName("PrimeSpeaker");
+		intakeNote.addRequirements(transit, pivot, intake);
+		intakeNote.setName("intakeNote");
 
-        // Shoot
-        shootNote = shooter.waitPrimed().alongWith(drivetrain.brake())
-                .andThen(transit.runForwards()).until(() -> !transit.hasNote()).andThen(shooter.stop(), transit.stop());
-        shootNote.addRequirements(transit, shooter); // TODO: woried about this line and the previus
-        shootNote.setName("Shoot");
-    }
+		// Amp
+		primeAmp = pivot.toAmp().alongWith(shooter.shootAmp());
+		primeAmp.addRequirements(pivot, shooter);
+		primeAmp.setName("PrimeAmp");
 
-    private void configButtonBindings() {
-        // ----------- DEFAULT COMMAND -----------
+		// Shoot
+		shootNote = shooter.waitPrimed().alongWith(drivetrain.brake())
+				.andThen(transit.runForwards()).until(() -> !transit.hasNote()).andThen(shooter.stop(), transit.stop());
+		shootNote.addRequirements(transit, shooter); // TODO: woried about this line and the previus
+		shootNote.setName("Shoot");
+	}
 
-        transit.hasNoteTrigger.onTrue(rumble);
-        transit.hasNoteTrigger.onFalse(rumble);
+	private void configButtonBindings() {
+		// ----------- DEFAULT COMMAND -----------
 
-        pivot.setDefaultCommand(pivot.toIntake());
-        // pivot.setDefaultCommand(pivot.manual(operator::getLeftY));
+		// transit.hasNoteTrigger.onTrue(rumble);
+		// transit.hasNoteTrigger.onFalse(rumble);
 
-        // ----------- DRIVER CONTROLS -----------
+		// pivot.setDefaultCommand(pivot.toIntake());
+		pivot.setDefaultCommand(pivot.manual(operator::getLeftY));
 
-        drivetrain.setDefaultCommand(
-                drivetrain.controllerDrive(
-                        () -> {
-                            return Math.copySign(driver.getLeftX() * driver.getLeftX(), driver.getLeftX());
-                        },
-                        () -> {
-                            return Math.copySign(driver.getLeftY() * driver.getLeftY(), -driver.getLeftY());
-                        },
-                        () -> {
-                            // return Math.copySign(driver.getRightX() * driver.getRightX(),-
-                            // driver.getRightX());
-                            // TODO: ask if driver wants turning squared aswell
-                            return -driver.getRightX();
-                        }));
+		// ----------- DRIVER CONTROLS -----------
 
-        driver.leftBumper().onTrue(
-                drivetrain.zeroGyro());
-        driver.x().whileTrue(
-                drivetrain.brake());
-        driver.leftTrigger().whileTrue(intakeNote);
+		drivetrain.setDefaultCommand(
+				drivetrain.controllerDrive(
+						() -> squareInput(driver.getLeftY()),
+						() -> squareInput(driver.getLeftX()),
+						// TODO: ask if driver wants turning squared aswell
+						() -> -driver.getRightX()));
 
-        // ---------- OPERATOR CONTROLS ----------
+		driver.leftBumper().onTrue(
+				drivetrain.zeroGyro());
+		driver.x().whileTrue(
+				drivetrain.brake());
+		driver.leftTrigger().whileTrue(intakeNote);
 
-        // TODO: path to the amp
-        // operator.leftBumper().whileTrue(pivot.toAmp().alongWith(
-        // shooter.shootAmp()));
+		// ---------- OPERATOR CONTROLS ----------
 
-        // operator.leftTrigger().whileTrue(//pivot.toSpeaker().alongWith(
-        // //drivetrain.driveFacingSpeaker(driver::getLeftX, driver::getLeftY),
-        // shooter.shootSpeaker());
-        // operator.leftBumper().whileTrue(pivot.toIntake());
-        // // operator.b().whileTrue(pivot.goToRadCmd(0.25));
+		// TODO: path to the amp
+		operator.leftBumper().whileTrue(pivot.toAmp().alongWith(shooter.shootAmp()));
 
-        // operator.y().whileTrue(pivot.toSpeaker());
+		operator.leftTrigger().whileTrue(pivot.toSpeaker().alongWith(
+				// drivetrain.faceSpeaker(),
+				shooter.shootSpeaker()));
 
-        // operator.a().onTrue(new InstantCommand(pivot::configPID));
-        // operator.leftTrigger().whileTrue(shooter.shootSpeaker());
-        // operator.start().onTrue(new InstantCommand(pivot::atIntake)); // zeros piviot
-        boolean driveToAmp = false;
+		// operator.leftBumper().whileTrue(pivot.toIntake());
+		// // operator.b().whileTrue(pivot.goToRadCmd(0.25));
 
-        operator.rightBumper().and(operator.leftBumper().or(operator.a())).whileTrue(shootNote);
-        operator.leftBumper().whileTrue(primeSpeaker);
-        operator.a().whileTrue(// TODO: Chechk this is the right button binding
-                Commands.either(
-                        drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("ScoreAmp")), // Score amp drives to the
-                                                                                              // amp, this calles prime
-                                                                                              // amp and shoot
-                        primeAmp,
-                        () -> driveToAmp));
+		operator.y().whileTrue(pivot.subwoofer().alongWith(shooter.shootSpeaker()));
 
-        operator.x().whileTrue(intake.reverse());
+		// operator.a().onTrue(new InstantCommand(pivot::configPID));
+		// operator.leftTrigger().whileTrue(shooter.shootSpeaker());
+		operator.rightTrigger().whileTrue(transit.runForwards());
+		operator.start().onTrue(new InstantCommand(pivot::atIntake)); // zeros piviot
 
-        drivetrain.zeroGyro();
+		// operator.rightBumper().and(operator.leftBumper().or(operator.a())).whileTrue(shootNote);
+		// operator.leftBumper().whileTrue(primeSpeaker);
+		operator.a().whileTrue(// TODO: Chechk this is the right button binding
+				// Commands.either(
+				// drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("ScoreAmp")), //
+				// Score amp drives to the
+				// amp, this calles
+				// prime
+				// amp and shoot
+				primeAmp
+		// () -> driveToAmp));
+		);
 
-        // TODO: add climb command
-    }
+		operator.x().whileTrue(intake.reverse());
 
-    private void configAutos() {
-        // Righthanded origain is scorce side of blue allaince + x tords red TODO:
-        // askiart
+		// operator.b().whileTrue(drivetrain.faceSpeaker());
 
-        // ------------------- Const -------------------
-        speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
-                ?
-                // Red speaker
-                new Translation3d(0.24, 2.66, 2.06) // TODO: chech numbers
-                // Blue speaker
-                : new Translation3d(16.31, 2.66, 2.06); // TODO: chech numbers
+		drivetrain.zeroGyro();
 
-        // ------------------ Auto ------------------
-        // adds pathplaner paths
-        autonomousChooser = drivetrain.getAutoPaths();
+		// TODO: add climb command
+	}
 
-        autonomousChooser.setDefaultOption("Nothing",
-                new Command() {
-                });
+	private void configAutos() {
+		// ------------------ Auto ------------------
+		// adds pathplaner paths
+		// autonomousChooser = drivetrain.getAutoPaths();
+		autonomousChooser = new SendableChooser<>();
 
-        autonomousChooser.addOption("Go go go go",
-                drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0)); // TODO: chech speed of back out
+		autonomousChooser.setDefaultOption("Nothing",
+				new Command() {
+				});
 
-        autonomousChooser.addOption("Shoot",
-                pivot.toSpeaker().alongWith(
-                        shooter.shootSpeaker(),
-                        shooter.waitPrimed().andThen(transit.runForwards()))
-                        .until(() -> !transit.hasNote())
-                        .andThen(shooter.stop().alongWith(pivot.toIntake())));
-        autonomousChooser.addOption("Shoot after 5sec",
-                new WaitCommand(5).andThen(primeSpeaker.andThen(shootNote)));
+		autonomousChooser.addOption("Go go go go",
+				drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0)); // TODO: chech speed of back out
 
-        SmartDashboard.putData("auto", autonomousChooser);
-    }
+		autonomousChooser.addOption("Shoot",
+				pivot.toSpeaker().alongWith(
+						shooter.shootSpeaker(),
+						shooter.waitPrimed().andThen(transit.runForwards()))
+						.until(() -> !transit.hasNote())
+						.andThen(shooter.stop().alongWith(pivot.toIntake())));
+		// autonomousChooser.addOption("Shoot after 5sec",
+		// new WaitCommand(5).andThen(primeSpeaker.andThen(shootNote)));
 
-    private void configNamedCommands() {
-        NamedCommands.registerCommand("Intake", intakeNote);
-        NamedCommands.registerCommand("Shoot", shootNote);
-        NamedCommands.registerCommand("PrimeAmp", primeAmp);
-        NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker);
-    }
+		SmartDashboard.putData("auto", autonomousChooser);
+	}
 
-    // ---------------------------------------------------
+	private void configNamedCommands() {
+		// NamedCommands.registerCommand("Intake", intakeNote);
+		// NamedCommands.registerCommand("Shoot", shootNote);
+		// NamedCommands.registerCommand("PrimeAmp", primeAmp);
+		// NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker);
+	}
 
-    @Override
-    public void robotInit() {
-        // ------------------- Logging -------------------
-        DataLogManager.start();
-        DriverStation.startDataLog(DataLogManager.getLog());
+	// ---------------------------------------------------
 
-        configCommands();
-        configAutos();
-        configButtonBindings();
-        configNamedCommands();
-    }
+	@Override
+	public void robotInit() {
+		// ------------------- Logging -------------------
+		DataLogManager.start();
+		DriverStation.startDataLog(DataLogManager.getLog());
 
-    @Override
-    public void robotPeriodic() {
-        CommandScheduler.getInstance().run();
-    }
+		// new Nt().register(drivetrain);
 
-    @Override
-    public void disabledInit() {
-    }
+		configCommands();
+		configAutos();
+		configButtonBindings();
+		configNamedCommands();
+	}
 
-    @Override
-    public void disabledPeriodic() {
-    }
+	@Override
+	public void robotPeriodic() {
+		CommandScheduler.getInstance().run();
+	}
 
-    @Override
-    public void disabledExit() {
-    }
+	@Override
+	public void disabledInit() {
+	}
 
-    private Command autonomousCommand;
+	@Override
+	public void disabledPeriodic() {
+	}
 
-    @Override
-    public void autonomousInit() {
-        autonomousCommand = autonomousChooser.getSelected();
-        if (autonomousCommand != null)
-            autonomousCommand.schedule();
-    }
+	@Override
+	public void disabledExit() {
+	}
 
-    @Override
-    public void autonomousPeriodic() {
-    }
+	private Command autonomousCommand;
 
-    @Override
-    public void autonomousExit() {
-        if (autonomousCommand != null)
-            autonomousCommand.cancel();
-    }
+	@Override
+	public void autonomousInit() {
+		autonomousCommand = autonomousChooser.getSelected();
+		if (autonomousCommand != null)
+			autonomousCommand.schedule();
+	}
 
-    @Override
-    public void teleopInit() {
-    }
+	@Override
+	public void autonomousPeriodic() {
+	}
 
-    @Override
-    public void teleopPeriodic() {
-    }
+	@Override
+	public void autonomousExit() {
+		if (autonomousCommand != null)
+			autonomousCommand.cancel();
+	}
 
-    @Override
-    public void teleopExit() {
-    }
+	@Override
+	public void teleopInit() {
+	}
 
-    @Override
-    public void testInit() {
-        // TODO: run full system check so its easy to do pre and post maches
-        CommandScheduler.getInstance().cancelAll();
-    }
+	@Override
+	public void teleopPeriodic() {
+	}
 
-    @Override
-    public void testPeriodic() {
-    }
+	@Override
+	public void teleopExit() {
+	}
 
-    @Override
-    public void testExit() {
-    }
+	@Override
+	public void testInit() {
+		// TODO: run full system check so its easy to do pre and post maches
+		CommandScheduler.getInstance().cancelAll();
+	}
+
+	@Override
+	public void testPeriodic() {
+	}
+
+	@Override
+	public void testExit() {
+	}
 }
