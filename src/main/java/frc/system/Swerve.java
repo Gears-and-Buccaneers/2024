@@ -12,7 +12,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -21,8 +20,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -34,7 +31,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.Main;
 import frc.config.SwerveConfig;
 import frc.system.Vision.Measurement;
 
@@ -43,7 +39,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
 
 	private final PathConstraints constraints;
 
-	private final double angleDeadband = Units.degreesToRadians(5);
+	private final double angleDeadbandRadians = Units.degreesToRadians(5);
 
 	private final SwerveRequest.SwerveDriveBrake cachedBrake = new SwerveRequest.SwerveDriveBrake();
 	private final SwerveRequest.FieldCentric cachedFieldCentric = new SwerveRequest.FieldCentric();
@@ -71,21 +67,20 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
 			SwerveDrivetrainConstants driveTrainConstants,
 			SwerveModuleConstants... modules) {
 		super(driveTrainConstants, modules);
+		this.constraints = constraints;
 
 		registerTelemetry((s) -> {
 			ntPose.set(s.Pose);
 			state.set(s);
 		});
 
+		zeroGyro();
+		configurePathPlanner();
+		register();
+
 		if (Utils.isSimulation()) {
 			startSimThread();
 		}
-
-		configurePathPlanner();
-
-		this.constraints = constraints;
-
-		register();
 	}
 
 	public void accept(Measurement t) {
@@ -224,25 +219,14 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
 		rotationOverride = rotation;
 	}
 
-	public double speakerYaw() {
-		Translation3d vectorToSpeaker = getVectorToSpeaker();
-		return Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
-	}
-
-	public boolean isAimedSpeaker() {
-		return Math.abs(pose().getRotation().getRadians() - speakerYaw()) <= angleDeadband;
+	/** Returns whether the drivetrain is facing the stored rotational override. */
+	public boolean isAimed() {
+		return rotationOverride != null
+				&& Math.abs(pose().getRotation().getRadians() - rotationOverride.getRadians()) <= angleDeadbandRadians;
 	}
 
 	public Command brake() {
 		return applyRequest(
 				() -> cachedBrake);
-	}
-
-	public Translation3d getVectorToSpeaker() {
-		Pose2d mechanismPose = pose()
-				.plus(new Transform2d(Units.inchesToMeters(27 / 2 - 4), 0, new Rotation2d()));
-		Translation3d mechanism = new Translation3d(mechanismPose.getX(), mechanismPose.getY(),
-				Units.inchesToMeters(21.75));
-		return Main.speakerPosition.minus(mechanism);
 	}
 }

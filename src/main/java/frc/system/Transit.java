@@ -1,6 +1,7 @@
 package frc.system;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -8,7 +9,6 @@ import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -26,7 +26,6 @@ public class Transit implements Subsystem {
 	private NetworkTable Table;
 	private DoubleSubscriber transitSpeed;
 
-	// vars
 	/**
 	 * @param distanceThreshold The LaserCAN distance threshold, in millimeters,
 	 *                          after which a game piece is considered to be in the
@@ -41,9 +40,12 @@ public class Transit implements Subsystem {
 		transitMotor = new TalonSRX(11);
 
 		transitMotor.setInverted(true);
-
 		transitMotor.setNeutralMode(NeutralMode.Coast);
-		// TODO: CurrentLimit
+
+		SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
+		currentLimits.currentLimit = 40;
+		currentLimits.enable = true;
+		transitMotor.configSupplyCurrentLimit(currentLimits);
 
 		// LaserCan
 		laserCan = new LaserCan(0);
@@ -65,50 +67,43 @@ public class Transit implements Subsystem {
 		return measurement != null && measurement.distance_mm < threshold;
 	}
 
-	private void run(boolean forwards) {
-		double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
-		transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
-	}
-
-	public void disable() {
-		transitMotor.set(TalonSRXControlMode.Disabled, 0);
-	}
-
 	// Commands
 
-	public Command runForwards() {
-		Command runForwards = new Command() {
+	/**
+	 * Feeds a note into the transit until it hits the sensor, then backfeeds at 20%
+	 * power until it is no longer detected.
+	 */
+	public Command feedIn() {
+		return runForwards().until(this::hasNote).andThen(runAtPercent(-0.2).until(() -> !hasNote()));
+	}
+
+	/** Feeds the transit until a note is no longer detected. */
+	public Command feedOut() {
+		return runForwards().until(() -> !hasNote());
+	}
+
+	/** Runs at a scaling percentage of the NetworkTables speed setpoint. */
+	public Command runAtPercent(double percent) {
+		Command cmd = new Command() {
 			public void initialize() {
-				run(true);
+				double speed = transitSpeed.get() * percent;
+				transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
 			}
 
 			public void end(boolean interrupted) {
-				disable();
+				transitMotor.set(TalonSRXControlMode.Disabled, 0);
 			}
 		};
-		runForwards.addRequirements(this);
-		runForwards.setName("Forwards");
-		return runForwards;
+		cmd.addRequirements(this);
+		return cmd;
+	}
+
+	public Command runForwards() {
+		return runAtPercent(1);
 	}
 
 	public Command runBackward() {
-		return new Command() {
-			public void initialize() {
-				run(false);
-			}
-
-			public void end(boolean interrupted) {
-				disable();
-			}
-		};
-	}
-
-	public Command stop() {
-		return new Command() {
-			public void initialize() {
-				disable();
-			}
-		};
+		return runAtPercent(-1);
 	}
 
 	@Deprecated
@@ -134,8 +129,5 @@ public class Transit implements Subsystem {
 				.set(new double[] { transitMotor.getMotorOutputVoltage() });
 		Table.getDoubleArrayTopic("Bus Voltage").publish()
 				.set(new double[] { transitMotor.getBusVoltage() });
-	}
-
-	public void close() throws Exception {
 	}
 }

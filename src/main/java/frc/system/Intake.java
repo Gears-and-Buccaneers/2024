@@ -35,7 +35,7 @@ public class Intake implements Subsystem {
 		rightMotor.setNeutralMode(NeutralMode.Coast);
 
 		SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
-		currentLimits.currentLimit = 50;
+		currentLimits.currentLimit = 40;
 		currentLimits.enable = true;
 
 		leftMotor.configSupplyCurrentLimit(currentLimits);
@@ -66,7 +66,7 @@ public class Intake implements Subsystem {
 
 	// Commands
 	public Command run() {
-		return new Command() {
+		Command cmd = new Command() {
 			public void initialize() {
 				runForward(true);
 			}
@@ -75,6 +75,9 @@ public class Intake implements Subsystem {
 				disable();
 			}
 		};
+
+		cmd.addRequirements(this);
+		return cmd;
 	}
 
 	public Command reverse() {

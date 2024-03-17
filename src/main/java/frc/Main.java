@@ -4,18 +4,10 @@
 
 package frc;
 
-import java.util.function.DoubleFunction;
-import java.util.function.Function;
-
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -23,18 +15,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.cmd.AimSpeaker;
 import frc.config.SwerveConfig;
 import frc.system.Swerve;
 import frc.system.Intake;
 import frc.system.Pivot;
 import frc.system.Shooter;
 import frc.system.Transit;
-import frc.system.vision.Nt;
 
 public final class Main extends TimedRobot {
 	public static void main(String... args) {
@@ -42,8 +33,6 @@ public final class Main extends TimedRobot {
 	}
 
 	SendableChooser<Command> autonomousChooser = new SendableChooser<>();
-
-	public static Translation3d speakerPosition;
 
 	// Controllers
 	private final CommandXboxController driver = new CommandXboxController(0);
@@ -57,156 +46,107 @@ public final class Main extends TimedRobot {
 	private final Transit transit = new Transit(subsystemsTable);
 	private final Intake intake = new Intake(subsystemsTable);
 	private final Shooter shooter = new Shooter(subsystemsTable);
-	private final Pivot pivot = new Pivot(subsystemsTable, drivetrain::getVectorToSpeaker);
+	private final Pivot pivot = new Pivot(subsystemsTable);
 
-	// ---------------------------- Commands ------------------
-	// private Command rumble;
-	private Command intakeNote;
-	private Command primeAmp;
-	private Command shootNote;
-
+	// Utilities
 	static double squareInput(double input) {
 		return Math.copySign(input * input, input);
 	}
 
-	private void configCommands() {
-		// ------------------- Const -------------------
-		speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
-				?
-				// Red speaker
-				new Translation3d(16.31, 5.55, 2.06)
-				// Blue speaker
-				: new Translation3d(0.24, 5.55, 2.06);
+	private Command rumble(RumbleType type, double strength, double duration, CommandXboxController... controllers) {
+		Command cmd = new Command() {
+			@Override
+			public void initialize() {
+				for (CommandXboxController controller : controllers)
+					controller.getHID().setRumble(type, strength);
+			}
 
-		// LEDS
-		// Rumble
-		// rumble = new Command() {
-		// @Override
-		// public void initialize() {
-		// driver.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-		// operator.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-		// }
+			@Override
+			public void end(boolean interrupted) {
+				for (CommandXboxController controller : controllers)
+					controller.getHID().setRumble(type, 0);
+			}
+		}.withTimeout(duration);
 
-		// @Override
-		// public void end(boolean interrupted) {
-		// driver.getHID().setRumble(RumbleType.kBothRumble, 0);
-		// operator.getHID().setRumble(RumbleType.kBothRumble, 0);
-		// }
-		// };
+		cmd.addRequirements();
+		cmd.setName("Rumble");
 
-		// rumble.withTimeout(.25);
-		// rumble.addRequirements();
-		// rumble.setName("Rumble");
-
-		// Intake
-		intakeNote = pivot.toIntake().andThen(transit.runForwards().alongWith(intake.run())).until(transit::hasNote);
-
-		intakeNote.addRequirements(transit, pivot, intake);
-		intakeNote.setName("intakeNote");
-
-		// Amp
-		primeAmp = pivot.toAmp().alongWith(shooter.shootAmp());
-		primeAmp.addRequirements(pivot, shooter);
-		primeAmp.setName("PrimeAmp");
-
-		// Shoot
-		shootNote = shooter.waitPrimed().alongWith(drivetrain.brake())
-				.andThen(transit.runForwards()).until(() -> !transit.hasNote()).andThen(shooter.stop(), transit.stop());
-		shootNote.addRequirements(transit, shooter); // TODO: woried about this line and the previus
-		shootNote.setName("Shoot");
+		return cmd;
 	}
 
 	private void configButtonBindings() {
-		// ----------- DEFAULT COMMAND -----------
 
-		// transit.hasNoteTrigger.onTrue(rumble);
-		// transit.hasNoteTrigger.onFalse(rumble);
+		// ----------- DEFAULT COMMANDS -----------
 
+		transit.hasNoteTrigger.onTrue(rumble(RumbleType.kBothRumble, 0.5, 0.25));
+		transit.hasNoteTrigger.onFalse(rumble(RumbleType.kBothRumble, 0.5, 0.25));
+
+		// Note: it appears that default commands are immediately rescheduled if they
+		// finish. Looks like we'll have to implement some special logic to go to the
+		// intake by default.
 		// pivot.setDefaultCommand(pivot.toIntake());
-		pivot.setDefaultCommand(pivot.manual(operator::getLeftY));
+		pivot.setDefaultCommand(pivot.velocity(operator::getLeftY));
 
 		// ----------- DRIVER CONTROLS -----------
 
-		drivetrain.setDefaultCommand(
-				drivetrain.controllerDrive(
-						() -> squareInput(driver.getLeftY()),
-						() -> squareInput(driver.getLeftX()),
-						// TODO: ask if driver wants turning squared aswell
-						() -> -driver.getRightX()));
+		drivetrain.setDefaultCommand(drivetrain.controllerDrive(
+				() -> squareInput(driver.getLeftY()),
+				() -> squareInput(driver.getLeftX()),
+				// TODO: ask if driver wants turning squared as well
+				() -> -driver.getRightX()));
 
-		driver.leftBumper().onTrue(
-				drivetrain.zeroGyro());
-		driver.x().whileTrue(
-				drivetrain.brake());
-		driver.leftTrigger().whileTrue(intakeNote);
+		driver.leftBumper().onTrue(drivetrain.zeroGyro());
+		driver.x().whileTrue(drivetrain.brake());
+		driver.leftTrigger().onTrue(pivot.intake().andThen(transit.feedIn().deadlineWith(intake.run())));
 
 		// ---------- OPERATOR CONTROLS ----------
 
-		// TODO: path to the amp
-		operator.leftBumper().whileTrue(pivot.toAmp().alongWith(shooter.shootAmp()));
-
-		operator.leftTrigger().whileTrue(pivot.toSpeaker().alongWith(
-				// drivetrain.faceSpeaker(),
-				shooter.shootSpeaker()));
-
-		// operator.leftBumper().whileTrue(pivot.toIntake());
-		// // operator.b().whileTrue(pivot.goToRadCmd(0.25));
-
-		operator.y().whileTrue(pivot.subwoofer().alongWith(shooter.shootSpeaker()));
-
-		// operator.a().onTrue(new InstantCommand(pivot::configPID));
-		// operator.leftTrigger().whileTrue(shooter.shootSpeaker());
+		// TODO: Pathfind to the amp using a PathfindToPose command
+		operator.leftBumper().whileTrue(pivot.amp().alongWith(shooter.shootAmp()));
+		operator.leftTrigger().whileTrue(new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker()));
 		operator.rightTrigger().whileTrue(transit.runForwards());
-		operator.start().onTrue(new InstantCommand(pivot::atIntake)); // zeros piviot
 
-		// operator.rightBumper().and(operator.leftBumper().or(operator.a())).whileTrue(shootNote);
-		// operator.leftBumper().whileTrue(primeSpeaker);
-		operator.a().whileTrue(// TODO: Chechk this is the right button binding
-				// Commands.either(
-				// drivetrain.DriveToThenPath(PathPlannerPath.fromPathFile("ScoreAmp")), //
-				// Score amp drives to the
-				// amp, this calles
-				// prime
-				// amp and shoot
-				primeAmp
-		// () -> driveToAmp));
-		);
-
+		operator.b().whileTrue(transit.runBackward());
 		operator.x().whileTrue(intake.reverse());
+		operator.y().whileTrue(pivot.subwoofer().alongWith(shooter.shootSpeaker()));
+		// Zeroes the pivot, assuming it is at intaking position.
+		operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
 
-		// operator.b().whileTrue(drivetrain.faceSpeaker());
-
-		drivetrain.zeroGyro();
-
-		// TODO: add climb command
+		// TODO: Add climb command
 	}
 
 	private void configAutos() {
-		// ------------------ Auto ------------------
-		// adds pathplaner paths
+		// ------------------ AUTOS ------------------
+		// Adds pathplaner paths. TODO: fix crash here
 		// autonomousChooser = drivetrain.getAutoPaths();
+
 		autonomousChooser = new SendableChooser<>();
 
-		autonomousChooser.setDefaultOption("Nothing",
-				new Command() {
-				});
+		// TODO: Ensure a default `null` command is available, and remove this option.
+		autonomousChooser.addOption("Nothing", new Command() {
+		});
 
-		autonomousChooser.addOption("Go go go go",
-				drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0)); // TODO: chech speed of back out
+		// TODO: check speed of back-out
+		autonomousChooser.addOption("Back-out", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
 
 		autonomousChooser.addOption("Shoot",
-				pivot.toSpeaker().alongWith(
+				new AimSpeaker(drivetrain, pivot).raceWith(
 						shooter.shootSpeaker(),
-						shooter.waitPrimed().andThen(transit.runForwards()))
-						.until(() -> !transit.hasNote())
-						.andThen(shooter.stop().alongWith(pivot.toIntake())));
-		// autonomousChooser.addOption("Shoot after 5sec",
-		// new WaitCommand(5).andThen(primeSpeaker.andThen(shootNote)));
+						new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
+								.alongWith(shooter.waitPrimed())
+								.andThen(transit.feedOut()))
+						// TODO: configure the next two as default commands (not working)
+						.andThen(shooter.stop().alongWith(pivot.intake())));
+
+		autonomousChooser.addOption("Shoot against subwoofer",
+				new WaitCommand(5).andThen(shooter.shootSpeaker().andThen(
+						shooter.waitPrimed().andThen(transit.runForwards())).until(() -> !transit.hasNote())));
 
 		SmartDashboard.putData("auto", autonomousChooser);
 	}
 
 	private void configNamedCommands() {
+		// TODO: re-add these under static factory functions.
 		// NamedCommands.registerCommand("Intake", intakeNote);
 		// NamedCommands.registerCommand("Shoot", shootNote);
 		// NamedCommands.registerCommand("PrimeAmp", primeAmp);
@@ -221,9 +161,9 @@ public final class Main extends TimedRobot {
 		DataLogManager.start();
 		DriverStation.startDataLog(DataLogManager.getLog());
 
+		// TODO: re-enable vision once the jitter is solved.
 		// new Nt().register(drivetrain);
 
-		configCommands();
 		configAutos();
 		configButtonBindings();
 		configNamedCommands();
