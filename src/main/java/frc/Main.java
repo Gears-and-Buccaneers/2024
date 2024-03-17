@@ -4,6 +4,8 @@
 
 package frc;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -53,33 +55,52 @@ public final class Main extends TimedRobot {
 		return Math.copySign(input * input, input);
 	}
 
-	private Command rumble(RumbleType type, double strength, double duration, CommandXboxController... controllers) {
-		Command cmd = new Command() {
-			@Override
-			public void initialize() {
-				for (CommandXboxController controller : controllers)
-					controller.getHID().setRumble(type, strength);
-			}
+	private class Commands {
+		Command rumble(RumbleType type, double strength, double duration,
+				CommandXboxController... controllers) {
+			return new Command() {
+				@Override
+				public void initialize() {
+					for (CommandXboxController controller : controllers)
+						controller.getHID().setRumble(type, strength);
+				}
 
-			@Override
-			public void end(boolean interrupted) {
-				for (CommandXboxController controller : controllers)
-					controller.getHID().setRumble(type, 0);
-			}
-		}.withTimeout(duration);
+				@Override
+				public void end(boolean interrupted) {
+					for (CommandXboxController controller : controllers)
+						controller.getHID().setRumble(type, 0);
+				}
+			}.withTimeout(duration);
+		}
 
-		cmd.addRequirements();
-		cmd.setName("Rumble");
+		Command intake() {
+			return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.run()));
+		}
 
-		return cmd;
+		Command amp() {
+			return pivot.amp().alongWith(shooter.shootAmp());
+		}
+
+		Command speaker() {
+			return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
+		}
+
+		Command subwoofer() {
+			return pivot.subwoofer().alongWith(shooter.shootSpeaker());
+		}
+
+		Command waitThenFeed() {
+			return shooter.waitPrimed().andThen(transit.feedOut());
+		}
 	}
 
-	private void configButtonBindings() {
+	Commands cmds = new Commands();
 
+	private void configButtonBindings() {
 		// ----------- DEFAULT COMMANDS -----------
 
-		transit.hasNoteTrigger.onTrue(rumble(RumbleType.kBothRumble, 0.5, 0.25));
-		transit.hasNoteTrigger.onFalse(rumble(RumbleType.kBothRumble, 0.5, 0.25));
+		transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
+		transit.hasNoteTrigger.onFalse(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
 
 		// Note: it appears that default commands are immediately rescheduled if they
 		// finish. Looks like we'll have to implement some special logic to go to the
@@ -97,18 +118,18 @@ public final class Main extends TimedRobot {
 
 		driver.leftBumper().onTrue(drivetrain.zeroGyro());
 		driver.x().whileTrue(drivetrain.brake());
-		driver.leftTrigger().onTrue(pivot.intake().andThen(transit.feedIn().deadlineWith(intake.run())));
+		driver.leftTrigger().onTrue(cmds.intake());
 
 		// ---------- OPERATOR CONTROLS ----------
 
 		// TODO: Pathfind to the amp using a PathfindToPose command
-		operator.leftBumper().whileTrue(pivot.amp().alongWith(shooter.shootAmp()));
-		operator.leftTrigger().whileTrue(new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker()));
+		operator.leftBumper().whileTrue(cmds.amp());
+		operator.leftTrigger().whileTrue(cmds.speaker());
 		operator.rightTrigger().whileTrue(transit.runForwards());
 
 		operator.b().whileTrue(transit.runBackward());
 		operator.x().whileTrue(intake.reverse());
-		operator.y().whileTrue(pivot.subwoofer().alongWith(shooter.shootSpeaker()));
+		operator.y().whileTrue(cmds.subwoofer());
 		// Zeroes the pivot, assuming it is at intaking position.
 		operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
 
@@ -130,30 +151,24 @@ public final class Main extends TimedRobot {
 		autonomousChooser.addOption("Back-out", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
 
 		autonomousChooser.addOption("Shoot",
-				new AimSpeaker(drivetrain, pivot).raceWith(
-						shooter.shootSpeaker(),
+				cmds.speaker().raceWith(
 						new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
-								.alongWith(shooter.waitPrimed())
-								.andThen(transit.feedOut()))
+								.andThen(cmds.waitThenFeed()))
 						// TODO: configure the next two as default commands (not working)
 						.andThen(shooter.stop().alongWith(pivot.intake())));
 
 		autonomousChooser.addOption("Shoot against subwoofer",
-				new WaitCommand(5).andThen(shooter.shootSpeaker().andThen(
-						shooter.waitPrimed().andThen(transit.runForwards())).until(() -> !transit.hasNote())));
+				new WaitCommand(5).andThen(cmds.subwoofer().raceWith(cmds.waitThenFeed())));
 
 		SmartDashboard.putData("auto", autonomousChooser);
 	}
 
 	private void configNamedCommands() {
-		// TODO: re-add these under static factory functions.
-		// NamedCommands.registerCommand("Intake", intakeNote);
-		// NamedCommands.registerCommand("Shoot", shootNote);
-		// NamedCommands.registerCommand("PrimeAmp", primeAmp);
-		// NamedCommands.registerCommand("PrimeSpeaker", primeSpeaker);
+		NamedCommands.registerCommand("Intake", cmds.intake());
+		NamedCommands.registerCommand("Shoot", cmds.waitThenFeed());
+		NamedCommands.registerCommand("PrimeAmp", cmds.amp());
+		NamedCommands.registerCommand("PrimeSpeaker", cmds.speaker());
 	}
-
-	// ---------------------------------------------------
 
 	@Override
 	public void robotInit() {
@@ -219,7 +234,7 @@ public final class Main extends TimedRobot {
 
 	@Override
 	public void testInit() {
-		// TODO: run full system check so its easy to do pre and post maches
+		// TODO: Run an automated full systems check
 		CommandScheduler.getInstance().cancelAll();
 	}
 
