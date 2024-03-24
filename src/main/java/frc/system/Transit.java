@@ -3,7 +3,6 @@ package frc.system;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
@@ -13,12 +12,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.hardware.LoggedTalonSRX;
 
 public class Transit implements Subsystem {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
-    private TalonSRX transitMotor;
+    private LoggedTalonSRX transitMotor;
     private final LaserCan laserCan;
     public final Trigger hasNoteTrigger = new Trigger(this::hasNote);
 
@@ -26,6 +26,7 @@ public class Transit implements Subsystem {
     private NetworkTable Table;
     private DoubleSubscriber transitSpeed;
 
+    // vars
     /**
      * @param distanceThreshold The LaserCAN distance threshold, in millimeters,
      *                          after which a game piece is considered to be in the
@@ -33,17 +34,20 @@ public class Transit implements Subsystem {
      */
     private final double threshold;
 
+    private double defaultTransitSpeed = .3; // TODO: mess around with this value
+
     public Transit(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        transitMotor = new TalonSRX(11);
+        transitMotor = new LoggedTalonSRX(11, this.Table, "transitMotor");
 
         transitMotor.setInverted(true);
+
         transitMotor.setNeutralMode(NeutralMode.Coast);
 
         SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
-        currentLimits.currentLimit = 40;
+        currentLimits.currentLimit = 40;// TODO: find/check value for current limit
         currentLimits.enable = true;
         transitMotor.configSupplyCurrentLimit(currentLimits);
 

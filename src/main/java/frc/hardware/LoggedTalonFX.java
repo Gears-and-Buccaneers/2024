@@ -1,13 +1,13 @@
 package frc.hardware;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 // Network tables
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 
-public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
+public class LoggedTalonFX extends TalonFX implements LoggedHardware {
 
     private final NetworkTable Table;
     private String name;
@@ -15,7 +15,7 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
     // Logged Data
     private final StringPublisher ControlMode;
 
-    public LoggedTalonSRX(int deviceNumber, NetworkTable networkTable, String name) {
+    public LoggedTalonFX(int deviceNumber, NetworkTable networkTable, String name) {
         super(deviceNumber);
 
         this.name = name + "" + this.getDeviceID();
@@ -26,12 +26,12 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
     }
 
     @Deprecated
-    public LoggedTalonSRX(int deviceNumber, NetworkTable networkTable) {
+    public LoggedTalonFX(int deviceNumber, NetworkTable networkTable) {
         this(deviceNumber, networkTable, "Motor");
     }
 
     @Deprecated
-    public LoggedTalonSRX(int deviceNumber) {
+    public LoggedTalonFX(int deviceNumber) {
         this(deviceNumber, NetworkTableInstance.getDefault().getTable("Hardware"));
     }
 
@@ -70,8 +70,8 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
          */
     }
 
-    @Override
     public void close() {
+        super.close();
         ControlMode.close();
     }
 

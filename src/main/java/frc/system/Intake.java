@@ -18,10 +18,10 @@ public class Intake implements LoggedSubsystems {
 
     // Network
     private NetworkTable Table;
+    private DoubleSubscriber intakeSpeed;
 
     // vars
     private double defaultIntakeSpeed = .8;
-    private DoubleSubscriber intakeSpeed;
 
     public Intake(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
@@ -37,7 +37,7 @@ public class Intake implements LoggedSubsystems {
         rightMotor.setNeutralMode(NeutralMode.Coast);
 
         SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
-        currentLimits.currentLimit = 40;
+        currentLimits.currentLimit = 40; //TODO: find/check value for current limit
         currentLimits.enable = true;
 
         leftMotor.configSupplyCurrentLimit(currentLimits);
@@ -57,7 +57,7 @@ public class Intake implements LoggedSubsystems {
     }
 
     // ---------- Generic Control ----------
-    // TODO: I think all of Generic Control shuold be private
+    // TODO: I think all of Generic Control should be private
 
     /**
      * runs the intake with PercentOutput control w/ "intakeSpeed" from NT or
@@ -134,7 +134,7 @@ public class Intake implements LoggedSubsystems {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         leftMotor.close();
         rightMotor.close();
     }
