@@ -57,6 +57,7 @@ public final class Main extends TimedRobot {
         return Math.copySign(input * input, input);
     }
 
+    // TODO: add comments
     private class Commands {
         Command rumble(RumbleType type, double strength, double duration,
                 CommandXboxController... controllers) {
@@ -79,26 +80,28 @@ public final class Main extends TimedRobot {
             return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.runIn()));
         }
 
-        Command amp() {
+        Command primeAmp() {
             return pivot.amp().alongWith(shooter.shootAmp());
         }
 
-        Command speaker() {
+        Command primeSpeaker() {
             return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
         }
 
-        Command subwoofer() {
+        Command primeSubwoofer() {
             return pivot.subwoofer().alongWith(shooter.shootSpeaker());
         }
 
         Command waitThenFeed() {
             return shooter.waitPrimed().andThen(transit.feedOut());
+            // TODO: check if pivot is at angle
         }
     }
 
-    Commands cmds = new Commands();
+    private final Commands cmds = new Commands();
 
     private void configButtonBindings() {
+        configNamedCommands();
         // ----------- DEFAULT COMMANDS -----------
 
         transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
@@ -125,13 +128,13 @@ public final class Main extends TimedRobot {
         // ---------- OPERATOR CONTROLS ----------
 
         // TODO: Pathfind to the amp using a PathfindToPose command
-        operator.leftBumper().whileTrue(cmds.amp());
-        operator.leftTrigger().whileTrue(cmds.speaker());
+        operator.leftBumper().whileTrue(cmds.primeAmp());
+        operator.leftTrigger().whileTrue(cmds.primeSpeaker());
         operator.rightTrigger().whileTrue(transit.runForwards());
 
         operator.b().whileTrue(transit.runBackward());
         operator.x().whileTrue(intake.runOut());
-        operator.y().whileTrue(cmds.subwoofer());
+        operator.y().whileTrue(cmds.primeSubwoofer());
         // Zeroes the pivot, assuming it is at intaking position.
         operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
 
@@ -139,6 +142,7 @@ public final class Main extends TimedRobot {
     }
 
     private void configAutos() {
+        configNamedCommands();
         // ------------------ AUTOS ------------------
         // Adds pathplaner paths. TODO: fix crash here
         // autonomousChooser = drivetrain.getAutoPaths();
@@ -146,21 +150,23 @@ public final class Main extends TimedRobot {
         autonomousChooser = new SendableChooser<>();
 
         // TODO: Ensure a default `null` command is available, and remove this option.
-        autonomousChooser.addOption("Nothing", new Command() {
+        autonomousChooser.setDefaultOption("Nothing", new Command() {
         });
 
         // TODO: check speed of back-out
-        autonomousChooser.addOption("Back-out", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
+        autonomousChooser.addOption("Back-out (NO PP)", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
 
         autonomousChooser.addOption("Shoot",
-                cmds.speaker().raceWith(
+                cmds.primeSpeaker().raceWith(
                         new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
                                 .andThen(cmds.waitThenFeed()))
                         // TODO: configure the next two as default commands (not working)
                         .andThen(shooter.stop().alongWith(pivot.intake())));
 
         autonomousChooser.addOption("Shoot against subwoofer",
-                new WaitCommand(5).andThen(cmds.subwoofer().raceWith(cmds.waitThenFeed())));
+                new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
+
+        drivetrain.addPPAutos(autonomousChooser);
 
         SmartDashboard.putData("auto", autonomousChooser);
     }
@@ -168,8 +174,8 @@ public final class Main extends TimedRobot {
     private void configNamedCommands() {
         NamedCommands.registerCommand("Intake", cmds.intakeNote());
         NamedCommands.registerCommand("Shoot", cmds.waitThenFeed());
-        NamedCommands.registerCommand("PrimeAmp", cmds.amp());
-        NamedCommands.registerCommand("PrimeSpeaker", cmds.speaker());
+        NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
+        NamedCommands.registerCommand("PrimeSpeaker", cmds.primeSpeaker());
     }
 
     @Override
@@ -183,7 +189,6 @@ public final class Main extends TimedRobot {
 
         configAutos();
         configButtonBindings();
-        configNamedCommands();
     }
 
     @Override
