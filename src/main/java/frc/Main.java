@@ -4,245 +4,247 @@
 
 package frc;
 
+// pathplanner
 import com.pathplanner.lib.auto.NamedCommands;
 
+// Logging
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//Commands
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.TimedRobot;
+
 import frc.cmd.AimSpeaker;
 import frc.config.SwerveConfig;
-import frc.system.Swerve;
-import frc.system.Intake;
-import frc.system.Pivot;
-import frc.system.Shooter;
-import frc.system.Transit;
+import frc.system.*;
 
 public final class Main extends TimedRobot {
-	public static void main(String... args) {
-		RobotBase.startRobot(Main::new);
-	}
+    public static void main(String... args) {
+        RobotBase.startRobot(Main::new);
+    }
 
-	SendableChooser<Command> autonomousChooser = new SendableChooser<>();
+    private SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 
-	// Controllers
-	private final CommandXboxController driver = new CommandXboxController(0);
-	private final CommandXboxController operator = new CommandXboxController(1);
+    // Controllers
+    private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
 
-	// Subsystems
-	private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
+    // Subsystems
+    private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-	private final Swerve drivetrain = SwerveConfig.swerve;
+    private final Swerve drivetrain = SwerveConfig.swerve;
 
-	private final Transit transit = new Transit(subsystemsTable);
-	private final Intake intake = new Intake(subsystemsTable);
-	private final Shooter shooter = new Shooter(subsystemsTable);
-	private final Pivot pivot = new Pivot(subsystemsTable);
+    private final Transit transit = new Transit(subsystemsTable);
+    private final Intake intake = new Intake(subsystemsTable);
+    private final Shooter shooter = new Shooter(subsystemsTable);
+    private final Pivot pivot = new Pivot(subsystemsTable);
 
-	// Utilities
-	static double squareInput(double input) {
-		return Math.copySign(input * input, input);
-	}
+    // Utilities
+    static double squareInput(double input) {
+        return Math.copySign(input * input, input);
+    }
 
-	private class Commands {
-		Command rumble(RumbleType type, double strength, double duration,
-				CommandXboxController... controllers) {
-			return new Command() {
-				@Override
-				public void initialize() {
-					for (CommandXboxController controller : controllers)
-						controller.getHID().setRumble(type, strength);
-				}
+    private class Commands {
+        Command rumble(RumbleType type, double strength, double duration,
+                CommandXboxController... controllers) {
+            return new Command() {
+                @Override
+                public void initialize() {
+                    for (CommandXboxController controller : controllers)
+                        controller.getHID().setRumble(type, strength);
+                }
 
-				@Override
-				public void end(boolean interrupted) {
-					for (CommandXboxController controller : controllers)
-						controller.getHID().setRumble(type, 0);
-				}
-			}.withTimeout(duration);
-		}
+                @Override
+                public void end(boolean interrupted) {
+                    for (CommandXboxController controller : controllers)
+                        controller.getHID().setRumble(type, 0);
+                }
+            }.withTimeout(duration);
+        }
 
-		Command intake() {
-			return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.run()));
-		}
+        Command intakeNote() {
+            return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.run()));
+        }
 
-		Command amp() {
-			return pivot.amp().alongWith(shooter.shootAmp());
-		}
+        Command amp() {
+            return pivot.amp().alongWith(shooter.shootAmp());
+        }
 
-		Command speaker() {
-			return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
-		}
+        Command speaker() {
+            return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
+        }
 
-		Command subwoofer() {
-			return pivot.subwoofer().alongWith(shooter.shootSpeaker());
-		}
+        Command subwoofer() {
+            return pivot.subwoofer().alongWith(shooter.shootSpeaker());
+        }
 
-		Command waitThenFeed() {
-			return shooter.waitPrimed().andThen(transit.feedOut());
-		}
-	}
+        Command waitThenFeed() {
+            return shooter.waitPrimed().andThen(transit.feedOut());
+        }
+    }
 
-	Commands cmds = new Commands();
+    Commands cmds = new Commands();
 
-	private void configButtonBindings() {
-		// ----------- DEFAULT COMMANDS -----------
+    private void configButtonBindings() {
+        // ----------- DEFAULT COMMANDS -----------
 
-		transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
-		transit.hasNoteTrigger.onFalse(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
+        transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
+        transit.hasNoteTrigger.onFalse(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
 
-		// Note: it appears that default commands are immediately rescheduled if they
-		// finish. Looks like we'll have to implement some special logic to go to the
-		// intake by default.
-		// pivot.setDefaultCommand(pivot.toIntake());
-		pivot.setDefaultCommand(pivot.velocity(operator::getLeftY));
+        // Note: it appears that default commands are immediately rescheduled if they
+        // finish. Looks like we'll have to implement some special logic to go to the
+        // intake by default.
+        // pivot.setDefaultCommand(pivot.toIntake());
+        pivot.setDefaultCommand(pivot.velocity(operator::getLeftY));
 
-		// ----------- DRIVER CONTROLS -----------
+        // ----------- DRIVER CONTROLS -----------
 
-		drivetrain.setDefaultCommand(drivetrain.controllerDrive(
-				() -> squareInput(driver.getLeftY()),
-				() -> squareInput(driver.getLeftX()),
-				// TODO: ask if driver wants turning squared as well
-				() -> -driver.getRightX()));
+        drivetrain.setDefaultCommand(drivetrain.controllerDrive(
+                () -> squareInput(driver.getLeftY()),
+                () -> squareInput(driver.getLeftX()),
+                // TODO: ask if driver wants turning squared as well
+                () -> -driver.getRightX()));
 
-		driver.leftBumper().onTrue(drivetrain.zeroGyro());
-		driver.x().whileTrue(drivetrain.brake());
-		driver.leftTrigger().onTrue(cmds.intake());
+        driver.leftBumper().onTrue(drivetrain.zeroGyro());
+        driver.x().whileTrue(drivetrain.brake());
+        driver.leftTrigger().onTrue(cmds.intakeNote());
 
-		// ---------- OPERATOR CONTROLS ----------
+        // ---------- OPERATOR CONTROLS ----------
 
-		// TODO: Pathfind to the amp using a PathfindToPose command
-		operator.leftBumper().whileTrue(cmds.amp());
-		operator.leftTrigger().whileTrue(cmds.speaker());
-		operator.rightTrigger().whileTrue(transit.runForwards());
+        // TODO: Pathfind to the amp using a PathfindToPose command
+        operator.leftBumper().whileTrue(cmds.amp());
+        operator.leftTrigger().whileTrue(cmds.speaker());
+        operator.rightTrigger().whileTrue(transit.runForwards());
 
-		operator.b().whileTrue(transit.runBackward());
-		operator.x().whileTrue(intake.reverse());
-		operator.y().whileTrue(cmds.subwoofer());
-		// Zeroes the pivot, assuming it is at intaking position.
-		operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
+        operator.b().whileTrue(transit.runBackward());
+        operator.x().whileTrue(intake.reverse());
+        operator.y().whileTrue(cmds.subwoofer());
+        // Zeroes the pivot, assuming it is at intaking position.
+        operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
 
-		// TODO: Add climb command
-	}
+        // TODO: Add climb command
+    }
 
-	private void configAutos() {
-		// ------------------ AUTOS ------------------
-		// Adds pathplaner paths. TODO: fix crash here
-		// autonomousChooser = drivetrain.getAutoPaths();
+    private void configAutos() {
+        // ------------------ AUTOS ------------------
+        // Adds pathplaner paths. TODO: fix crash here
+        // autonomousChooser = drivetrain.getAutoPaths();
 
-		autonomousChooser = new SendableChooser<>();
+        autonomousChooser = new SendableChooser<>();
 
-		// TODO: Ensure a default `null` command is available, and remove this option.
-		autonomousChooser.addOption("Nothing", new Command() {
-		});
+        // TODO: Ensure a default `null` command is available, and remove this option.
+        autonomousChooser.addOption("Nothing", new Command() {
+        });
 
-		// TODO: check speed of back-out
-		autonomousChooser.addOption("Back-out", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
+        // TODO: check speed of back-out
+        autonomousChooser.addOption("Back-out", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
 
-		autonomousChooser.addOption("Shoot",
-				cmds.speaker().raceWith(
-						new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
-								.andThen(cmds.waitThenFeed()))
-						// TODO: configure the next two as default commands (not working)
-						.andThen(shooter.stop().alongWith(pivot.intake())));
+        autonomousChooser.addOption("Shoot",
+                cmds.speaker().raceWith(
+                        new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
+                                .andThen(cmds.waitThenFeed()))
+                        // TODO: configure the next two as default commands (not working)
+                        .andThen(shooter.stop().alongWith(pivot.intake())));
 
-		autonomousChooser.addOption("Shoot against subwoofer",
-				new WaitCommand(5).andThen(cmds.subwoofer().raceWith(cmds.waitThenFeed())));
+        autonomousChooser.addOption("Shoot against subwoofer",
+                new WaitCommand(5).andThen(cmds.subwoofer().raceWith(cmds.waitThenFeed())));
 
-		SmartDashboard.putData("auto", autonomousChooser);
-	}
+        SmartDashboard.putData("auto", autonomousChooser);
+    }
 
-	private void configNamedCommands() {
-		NamedCommands.registerCommand("Intake", cmds.intake());
-		NamedCommands.registerCommand("Shoot", cmds.waitThenFeed());
-		NamedCommands.registerCommand("PrimeAmp", cmds.amp());
-		NamedCommands.registerCommand("PrimeSpeaker", cmds.speaker());
-	}
+    private void configNamedCommands() {
+        NamedCommands.registerCommand("Intake", cmds.intakeNote());
+        NamedCommands.registerCommand("Shoot", cmds.waitThenFeed());
+        NamedCommands.registerCommand("PrimeAmp", cmds.amp());
+        NamedCommands.registerCommand("PrimeSpeaker", cmds.speaker());
+    }
 
-	@Override
-	public void robotInit() {
-		// ------------------- Logging -------------------
-		DataLogManager.start();
-		DriverStation.startDataLog(DataLogManager.getLog());
+    @Override
+    public void robotInit() {
+        // ------------------- Logging -------------------
+        DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
 
-		// TODO: re-enable vision once the jitter is solved.
-		// new Nt().register(drivetrain);
+        // TODO: re-enable vision once the jitter is solved.
+        // new Nt().register(drivetrain);
 
-		configAutos();
-		configButtonBindings();
-		configNamedCommands();
-	}
+        configAutos();
+        configButtonBindings();
+        configNamedCommands();
+    }
 
-	@Override
-	public void robotPeriodic() {
-		CommandScheduler.getInstance().run();
-	}
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
 
-	@Override
-	public void disabledInit() {
-	}
+    @Override
+    public void disabledInit() {
+    }
 
-	@Override
-	public void disabledPeriodic() {
-	}
+    @Override
+    public void disabledPeriodic() {
+    }
 
-	@Override
-	public void disabledExit() {
-	}
+    @Override
+    public void disabledExit() {
+    }
 
-	private Command autonomousCommand;
+    private Command autonomousCommand;
 
-	@Override
-	public void autonomousInit() {
-		autonomousCommand = autonomousChooser.getSelected();
-		if (autonomousCommand != null)
-			autonomousCommand.schedule();
-	}
+    @Override
+    public void autonomousInit() {
+        autonomousCommand = autonomousChooser.getSelected();
+        if (autonomousCommand != null)
+            autonomousCommand.schedule();
+    }
 
-	@Override
-	public void autonomousPeriodic() {
-	}
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-	@Override
-	public void autonomousExit() {
-		if (autonomousCommand != null)
-			autonomousCommand.cancel();
-	}
+    @Override
+    public void autonomousExit() {
+        if (autonomousCommand != null)
+            autonomousCommand.cancel();
+    }
 
-	@Override
-	public void teleopInit() {
-	}
+    @Override
+    public void teleopInit() {
+    }
 
-	@Override
-	public void teleopPeriodic() {
-	}
+    @Override
+    public void teleopPeriodic() {
+    }
 
-	@Override
-	public void teleopExit() {
-	}
+    @Override
+    public void teleopExit() {
+    }
 
-	@Override
-	public void testInit() {
-		// TODO: Run an automated full systems check
-		CommandScheduler.getInstance().cancelAll();
-	}
+    @Override
+    public void testInit() {
+        // TODO: Run an automated full systems check
+        CommandScheduler.getInstance().cancelAll();
+    }
 
-	@Override
-	public void testPeriodic() {
-	}
+    @Override
+    public void testPeriodic() {
+    }
 
-	@Override
-	public void testExit() {
-	}
+    @Override
+    public void testExit() {
+    }
 }
