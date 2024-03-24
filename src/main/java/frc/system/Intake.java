@@ -13,8 +13,8 @@ public class Intake implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
-    private LoggedTalonSRX leftMotor;
-    private LoggedTalonSRX rightMotor;
+    private final LoggedTalonSRX leftMotor;
+    private final LoggedTalonSRX rightMotor;
 
     // Network
     private NetworkTable Table;
@@ -37,11 +37,13 @@ public class Intake implements LoggedSubsystems {
         rightMotor.setNeutralMode(NeutralMode.Coast);
 
         SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
-        currentLimits.currentLimit = 40; //TODO: find/check value for current limit
+        currentLimits.currentLimit = 40; // TODO: find/check value for current limit
         currentLimits.enable = true;
 
         leftMotor.configSupplyCurrentLimit(currentLimits);
         rightMotor.configSupplyCurrentLimit(currentLimits);
+
+        // Sensors
 
         // Vars
         intakeSpeed = Table.getDoubleTopic("intakeSpeed").subscribe(defaultIntakeSpeed);
@@ -57,7 +59,8 @@ public class Intake implements LoggedSubsystems {
     }
 
     // ---------- Generic Control ----------
-    // TODO: I think all of Generic Control should be private
+    // TODO: I think all of Generic Control should be private if they are
+    // controlling hardware but not sure
 
     /**
      * runs the intake with PercentOutput control w/ "intakeSpeed" from NT or
@@ -65,11 +68,22 @@ public class Intake implements LoggedSubsystems {
      * 
      * @param forwards runs the intake forward when true and backwards when false.
      */
-    private void runForward(boolean forwards) {
-        double speed = forwards ? intakeSpeed.get(defaultIntakeSpeed) : -intakeSpeed.get(defaultIntakeSpeed);
+    private Command feed(boolean forwards, double percentMaxSpeed) {
+        Command cmd = new Command() {
+            public void initialize() {
+                double speed = forwards ? intakeSpeed.get(defaultIntakeSpeed) : -intakeSpeed.get(defaultIntakeSpeed);
+                speed *= percentMaxSpeed;
 
-        leftMotor.set(TalonSRXControlMode.PercentOutput, speed);
-        rightMotor.set(TalonSRXControlMode.PercentOutput, -speed);
+                leftMotor.set(TalonSRXControlMode.PercentOutput, speed);
+                rightMotor.set(TalonSRXControlMode.PercentOutput, -speed);
+            }
+
+            public void end(boolean interrupted) {
+                disable();
+            }
+        };
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     /**
@@ -89,19 +103,8 @@ public class Intake implements LoggedSubsystems {
      * intake command requires itself
      * </pre>
      */
-    public Command run() {
-        Command cmd = new Command() {
-            public void initialize() {
-                runForward(true);
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
-
-        cmd.addRequirements(this);
-        return cmd;
+    public Command runIn() {
+        return feed(true, 1);
     }
 
     /**
@@ -111,16 +114,8 @@ public class Intake implements LoggedSubsystems {
      * intake command requires itself
      * </pre>
      */
-    public Command reverse() {
-        return new Command() {
-            public void initialize() {
-                runForward(false);
-            }
-
-            public void end(boolean interrupted) {
-                disable();
-            }
-        };
+    public Command runOut() {
+        return feed(false, 1);
     }
 
     // ---------- Logging ----------

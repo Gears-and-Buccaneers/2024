@@ -76,7 +76,7 @@ public final class Main extends TimedRobot {
         }
 
         Command intakeNote() {
-            return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.run()));
+            return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.runIn()));
         }
 
         Command amp() {
@@ -130,7 +130,7 @@ public final class Main extends TimedRobot {
         operator.rightTrigger().whileTrue(transit.runForwards());
 
         operator.b().whileTrue(transit.runBackward());
-        operator.x().whileTrue(intake.reverse());
+        operator.x().whileTrue(intake.runOut());
         operator.y().whileTrue(cmds.subwoofer());
         // Zeroes the pivot, assuming it is at intaking position.
         operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
