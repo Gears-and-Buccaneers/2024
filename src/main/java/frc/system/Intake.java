@@ -7,10 +7,9 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.hardware.LoggedTalonSRX;
 
-public class Intake implements Subsystem {
+public class Intake implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
@@ -28,8 +27,8 @@ public class Intake implements Subsystem {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        leftMotor = new LoggedTalonSRX(9);
-        rightMotor = new LoggedTalonSRX(10);
+        leftMotor = new LoggedTalonSRX(9, this.Table, "leftMotor");
+        rightMotor = new LoggedTalonSRX(10, this.Table, "rightMotor");
 
         leftMotor.setInverted(true);
         rightMotor.setInverted(true);
@@ -57,7 +56,9 @@ public class Intake implements Subsystem {
         this.log();
     }
 
-    // Generic Control
+    // ---------- Generic Control ----------
+    // TODO: I think all of Generic Control shuold be private
+
     /**
      * runs the intake with PercentOutput control w/ "intakeSpeed" from NT or
      * defaultIntakeSpeed if no val in NT
@@ -71,12 +72,23 @@ public class Intake implements Subsystem {
         rightMotor.set(TalonSRXControlMode.PercentOutput, -speed);
     }
 
-    public void disable() {
+    /**
+     * disables the intake
+     */
+    private void disable() {
         leftMotor.set(TalonSRXControlMode.Disabled, 0);
         rightMotor.set(TalonSRXControlMode.Disabled, 0);
     }
 
     // ---------- Commands ----------
+
+    /**
+     * <pre>
+     * returns a command that runs the intake FORWARD
+     * when it ends it disables the intake
+     * intake command requires itself
+     * </pre>
+     */
     public Command run() {
         Command cmd = new Command() {
             public void initialize() {
@@ -92,6 +104,13 @@ public class Intake implements Subsystem {
         return cmd;
     }
 
+    /**
+     * <pre>
+     * returns a command that runs the intake BACKWARD
+     * when it ends it disables the intake
+     * intake command requires itself
+     * </pre>
+     */
     public Command reverse() {
         return new Command() {
             public void initialize() {
@@ -104,26 +123,20 @@ public class Intake implements Subsystem {
         };
     }
 
-    // Logging
+    // ---------- Logging ----------
+    @Override
     public void log() {
-        Table.getStringArrayTopic("ControlMode").publish()
-                .set(new String[] { leftMotor.getControlMode().toString(), rightMotor.getControlMode().toString() });
-        Table.getIntegerArrayTopic("DeviceID").publish()
-                .set(new long[] { leftMotor.getDeviceID(), rightMotor.getDeviceID() });
+        // Subsystem states
 
-        Table.getDoubleArrayTopic("Temp").publish()
-                .set(new double[] { leftMotor.getTemperature(), rightMotor.getTemperature() });
-        Table.getDoubleArrayTopic("Supply Current").publish()
-                .set(new double[] { leftMotor.getSupplyCurrent(), rightMotor.getSupplyCurrent() });
-        Table.getDoubleArrayTopic("Stator Current").publish()
-                .set(new double[] { leftMotor.getStatorCurrent(), rightMotor.getStatorCurrent() });
-        Table.getDoubleArrayTopic("Output Voltage").publish()
-                .set(new double[] { leftMotor.getMotorOutputVoltage(), rightMotor.getMotorOutputVoltage() });
-        Table.getDoubleArrayTopic("Bus Voltage").publish()
-                .set(new double[] { leftMotor.getBusVoltage(), rightMotor.getBusVoltage() });
+        // Hardware
+        leftMotor.log();
+        rightMotor.log();
     }
 
+    @Override
     public void close() throws Exception {
+        leftMotor.close();
+        rightMotor.close();
     }
 
 }
