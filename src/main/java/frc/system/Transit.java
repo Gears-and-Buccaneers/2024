@@ -4,25 +4,22 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
-import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.DoubleTopic;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.hardware.LoggedTalonSRX;
 
-public class Transit implements Subsystem {
+import frc.hardware.*;
+import edu.wpi.first.networktables.*;
+
+public class Transit implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
     private final LoggedTalonSRX transitMotor;
-    private final LaserCan laserCan;
+    private final LoggedLaserCan laserCan;
 
     // Network
-    private NetworkTable Table;
+    private final NetworkTable Table;
 
     private final DoubleTopic transitSpeedTopic;
 
@@ -36,6 +33,9 @@ public class Transit implements Subsystem {
 
     private double defaultTransitSpeed = .3; // TODO: mess around with this value
     private final DoubleSubscriber transitSpeed;
+
+    // Logging
+    private final BooleanPublisher hasNote;
 
     public Transit(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
@@ -54,14 +54,13 @@ public class Transit implements Subsystem {
         transitMotor.configSupplyCurrentLimit(currentLimits);
 
         // Sensors
-        laserCan = new LaserCan(0);
+        laserCan = new LoggedLaserCan(0);
         // laserCan.setRangingMode(); //TODO: properly config the Laser can
         // laserCan.setRegionOfInterest();
         // laserCan.setTimingBudget(null);
 
         // Vars
-        transitSpeedTopic = Table.getDoubleTopic("transitSpeed"); // TODO: check that this works. i feal its a little
-                                                                  // cleaner
+        transitSpeedTopic = Table.getDoubleTopic("transitSpeed"); // TODO: check that this works. i feal its better
         transitSpeed = transitSpeedTopic.subscribe(defaultTransitSpeed);
         transitSpeedTopic.publish();
         // OLD
@@ -70,6 +69,9 @@ public class Transit implements Subsystem {
          * Table.getDoubleTopic("x").subscribe(defaultX);
          * this.Table.getDoubleTopic("x").publish();
          */
+
+        // init log
+        hasNote = Table.getBooleanTopic("HasNote").publish();
 
         System.out.println("[Init] Creating " + simpleName + " with:");
         System.out.println("\t" + transitMotor.getClass().getSimpleName() + " ID:" + transitMotor.getDeviceID());
@@ -160,22 +162,21 @@ public class Transit implements Subsystem {
 
     public final Trigger hasNoteTrigger = new Trigger(this::hasNote);
 
-    // Logging
+    // ---------- Logging ----------
+    @Override
     public void log() {
-        Table.getStringArrayTopic("ControlMode").publish()
-                .set(new String[] { transitMotor.getControlMode().toString() });
-        Table.getIntegerArrayTopic("DeviceID").publish()
-                .set(new long[] { transitMotor.getDeviceID() });
+        // Subsystem states
+        hasNote.set(hasNote());
 
-        Table.getDoubleArrayTopic("Temp").publish()
-                .set(new double[] { transitMotor.getTemperature() });
-        Table.getDoubleArrayTopic("Supply Current").publish()
-                .set(new double[] { transitMotor.getSupplyCurrent() });
-        Table.getDoubleArrayTopic("Stator Current").publish()
-                .set(new double[] { transitMotor.getStatorCurrent() });
-        Table.getDoubleArrayTopic("Output Voltage").publish()
-                .set(new double[] { transitMotor.getMotorOutputVoltage() });
-        Table.getDoubleArrayTopic("Bus Voltage").publish()
-                .set(new double[] { transitMotor.getBusVoltage() });
+        // Hardware
+        transitMotor.log();
+        // laserCan.log(); //I think this should be called w/ has note
+    }
+
+    @Override
+    public void close() {
+        transitMotor.close();
+
+        hasNote.close();
     }
 }

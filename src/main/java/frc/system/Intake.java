@@ -17,7 +17,7 @@ public class Intake implements LoggedSubsystems {
     private final LoggedTalonSRX rightMotor;
 
     // Network
-    private NetworkTable Table;
+    private final NetworkTable Table;
     private DoubleSubscriber intakeSpeed;
 
     // vars
