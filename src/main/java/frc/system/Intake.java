@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,8 +58,8 @@ public class Intake implements LoggedSubsystems {
 
         // Publish logged data to network table on startup
         this.log();
+        register();
     }
-
     // ---------- Generic Control ----------
     // TODO: I think all of Generic Control should be private if they are
     // controlling hardware but not sure

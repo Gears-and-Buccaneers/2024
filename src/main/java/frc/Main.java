@@ -124,6 +124,9 @@ public final class Main extends TimedRobot {
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.x().whileTrue(drivetrain.brake());
         driver.leftTrigger().onTrue(cmds.intakeNote());
+        driver.leftTrigger().onTrue(new InstantCommand(() -> {
+            System.out.println("Intakeing Note");
+        }));
 
         // ---------- OPERATOR CONTROLS ----------
 
@@ -184,6 +187,9 @@ public final class Main extends TimedRobot {
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
 
+        if (isSimulation()) {
+            DriverStation.silenceJoystickConnectionWarning(true);
+        }
         // TODO: re-enable vision once the jitter is solved.
         // new Nt().register(drivetrain);
 

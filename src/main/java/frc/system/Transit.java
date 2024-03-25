@@ -79,6 +79,7 @@ public class Transit implements LoggedSubsystems {
         System.out.println("\t" + laserCan.getClass().getSimpleName());
 
         this.log();
+        register();
     }
 
     // ---------- Generic Control ----------

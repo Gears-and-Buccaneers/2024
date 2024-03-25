@@ -70,6 +70,7 @@ public class Pivot implements Subsystem {
 		rightMotor = new TalonFX(13);
 
 		configPID();
+        register();
 	}
 
 	public void configPID() {
