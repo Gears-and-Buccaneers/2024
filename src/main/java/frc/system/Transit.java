@@ -31,7 +31,7 @@ public class Transit implements LoggedSubsystems {
      */
     private final double threshold = 250;
 
-    private double defaultTransitSpeed = .3; // TODO: mess around with this value
+    private final double defaultTransitSpeed = .3; // TODO: mess around with this value
     private final DoubleSubscriber transitSpeed;
 
     // Logging
@@ -43,6 +43,7 @@ public class Transit implements LoggedSubsystems {
         // Motors
         transitMotor = new LoggedTalonSRX(11, this.Table, "transitMotor");
 
+        // Configs
         transitMotor.setInverted(true);
 
         transitMotor.setNeutralMode(NeutralMode.Coast);
@@ -70,7 +71,7 @@ public class Transit implements LoggedSubsystems {
          * this.Table.getDoubleTopic("x").publish();
          */
 
-        // init log
+        // log
         hasNote = Table.getBooleanTopic("HasNote").publish();
 
         System.out.println("[Init] Creating " + simpleName + " with:");

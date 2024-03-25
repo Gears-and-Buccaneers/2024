@@ -27,9 +27,10 @@ public class Intake implements LoggedSubsystems {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        leftMotor = new LoggedTalonSRX(9, this.Table, "leftMotor");
-        rightMotor = new LoggedTalonSRX(10, this.Table, "rightMotor");
+        leftMotor = new LoggedTalonSRX(9, this.Table, "leftIntake");
+        rightMotor = new LoggedTalonSRX(10, this.Table, "rightIntake");
 
+        // Configs
         leftMotor.setInverted(true);
         rightMotor.setInverted(true);
 

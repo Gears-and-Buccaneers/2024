@@ -2,195 +2,149 @@ package frc.system;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.hardware.LoggedTalonFX;
 
 public class Shooter implements Subsystem {
-	private final String simpleName = this.getClass().getSimpleName();
+    private final String simpleName = this.getClass().getSimpleName();
 
-	// Hardware
-	private TalonFX leftMotor;
-	private TalonFX rightMotor;
+    // Hardware
+    private final LoggedTalonFX leftMotor;
+    private final LoggedTalonFX rightMotor;
 
-	// Network
-	private NetworkTable Table;
-	/** Units: RPM */
-	private DoubleSubscriber shooterSpeed;
-	private DoubleSubscriber shooterSpeedDeadBand;
+    // Network
+    private final NetworkTable Table;
+    private final DoubleTopic shooterSpeedTopic;
+    private final DoubleTopic shooterSpeedDeadBandTopic;
 
-	final VelocityDutyCycle m_request = new VelocityDutyCycle(0);
+    // Vars
+    /** Units: RPM */
+    private final DoubleSubscriber shooterSpeed;
+    private final double defaultShooterSpeed = 5000;
+    /** Units: RPM error */
+    private final DoubleSubscriber shooterSpeedDeadBand;
+    private final double defaultShooterSpeedDeadBand = 50;
 
-	public Shooter(NetworkTable networkTable) {
-		this.Table = networkTable.getSubTable(simpleName);
+    private final double maxSpeed = 6000;
 
-		// Motors
-		leftMotor = new TalonFX(14);
-		rightMotor = new TalonFX(15);
+    public Shooter(NetworkTable networkTable) {
+        this.Table = networkTable.getSubTable(simpleName);
 
-		// Configs
-		TalonFXConfiguration shooterConf = new TalonFXConfiguration();
-		shooterConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        // Motors
+        leftMotor = new LoggedTalonFX(14, this.Table, "leftShooter");
+        rightMotor = new LoggedTalonFX(15, this.Table, "rightShooter");
 
-		shooterConf.Slot0.kV = 0.18;
-		shooterConf.Slot0.kA = 0.0;
-		shooterConf.Slot0.kP = 0.1;
-		shooterConf.Slot0.kI = 0.0;
-		shooterConf.Slot0.kD = 0.0;
+        // Configs
+        TalonFXConfiguration shooterConf = new TalonFXConfiguration();
+        shooterConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-		// shooterConf.CurrentLimits.StatorCurrentLimit = 80;
-		// shooterConf.CurrentLimits.StatorCurrentLimitEnable = true;
-		shooterConf.CurrentLimits.SupplyCurrentLimit = 80;
-		shooterConf.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooterConf.Slot0.kV = 0.18;
+        shooterConf.Slot0.kA = 0.0;
+        shooterConf.Slot0.kP = 0.1;
+        shooterConf.Slot0.kI = 0.0;
+        shooterConf.Slot0.kD = 0.0;
 
-		leftMotor.getConfigurator().apply(shooterConf);
-		rightMotor.getConfigurator().apply(shooterConf);
+        // shooterConf.CurrentLimits.StatorCurrentLimit = 80;
+        // shooterConf.CurrentLimits.StatorCurrentLimitEnable = true;
+        shooterConf.CurrentLimits.SupplyCurrentLimit = 80;
+        shooterConf.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-		// TODO: CONFIG and CurrentLimit
-		// TODO: make sure that phinox 6 imple is corect
+        leftMotor.getConfigurator().apply(shooterConf);
+        rightMotor.getConfigurator().apply(shooterConf);
 
-		// Vars
-		shooterSpeed = Table.getDoubleTopic("shooterSpeed").subscribe(5000);
-		this.Table.getDoubleTopic("shooterSpeed").publish();
+        // Vars
+        shooterSpeedTopic = Table.getDoubleTopic("shooterSpeed");
+        shooterSpeed = shooterSpeedTopic.subscribe(defaultShooterSpeed);
+        shooterSpeedTopic.publish();
 
-		shooterSpeedDeadBand = Table.getDoubleTopic("shooterSpeedDeadBand").subscribe(5000);
-		this.Table.getDoubleTopic("shooterSpeedDeadBand").publish();
+        shooterSpeedDeadBandTopic = Table.getDoubleTopic("shooterSpeedDeadBand");
+        shooterSpeedDeadBand = shooterSpeedDeadBandTopic.subscribe(defaultShooterSpeedDeadBand);
+        shooterSpeedDeadBandTopic.publish();
 
-		System.out.println("[Init] Creating " + simpleName + " with:");
-		System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
-		System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
+        System.out.println("[Init] Creating " + simpleName + " with:");
+        System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
+        System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
 
-		this.log();
+        this.log();
 
-		register();
+        register();
 
-		setDefaultCommand(stop());
-	}
+        // setDefaultCommand(stop());
+    }
 
-	private void runForward(double speed) {
-		DutyCycleOut output = new DutyCycleOut(speed / 6000);
+    // ---------- Generic Control ----------
+    private Command feed(boolean forwards, double speed) {
+        Command cmd = new Command() {
+            public void initialize() {
+                DutyCycleOut output = new DutyCycleOut((forwards ? speed : -speed) / maxSpeed);
 
-		leftMotor.setControl(output);
-		rightMotor.setControl(output);
-	}
+                leftMotor.setControl(output);
+                rightMotor.setControl(output);
+            }
 
-	public void disable() {
-		leftMotor.disable();
-		rightMotor.disable();
-	}
+            public void end(boolean interrupted) {
+                disable();
+            }
+        };
+        cmd.addRequirements(this);
+        return cmd;
+    }
 
-	// Commands
-	public Command stop() {
-		Command cmd = new Command() {
-			public void initialize() {
-				disable();
-			}
-		};
+    public void disable() {
+        leftMotor.disable();
+        rightMotor.disable();
+    }
 
-		cmd.addRequirements(this);
+    // ---------- Commands ----------
+    public Command stop() {
+        Command cmd = new Command() {
+            public void initialize() {
+                disable();
+            }
+        };
 
-		return cmd;
-	}
+        cmd.addRequirements(this);
+        return cmd;
+    }
 
-	public Command shootSpeaker() {
-		Command cmd = new Command() {
-			public void initialize() {
-				runForward(shooterSpeed.getAsDouble());
-			}
-		};
+    public Command shootSpeaker() {
+        return feed(true, shooterSpeed.getAsDouble());
+    }
 
-		cmd.addRequirements(this);
-		return cmd;
-	}
+    public Command shootAmp() {
+        return feed(true, 1000);
+    }
 
-	public Command shootAmp() {
-		Command cmd = new Command() {
-			public void initialize() {
-				runForward(1000);
-			}
-		};
+    public Command reverse() {
+        return feed(true, -500);
+    }
 
-		cmd.addRequirements(this);
-		return cmd;
-	}
+    public Command waitPrimed() {
+        // TODO: acceleration deadbanding
+        // leftMotor.getAcceleration();
 
-	public Command reverse() {
-		Command cmd = new Command() {
-			public void initialize() {
-				runForward(-100);
-			}
-		};
+        boolean leftMotorAtSpeed = Math.abs(
+                leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
+                        .getAsDouble();
+        boolean rightMotorAtSpeed = Math.abs(
+                rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <= shooterSpeedDeadBand
+                        .getAsDouble();
 
-		cmd.addRequirements(this);
-		return cmd;
-	}
+        return new WaitUntilCommand(() -> {
+            return leftMotorAtSpeed && rightMotorAtSpeed;
+        });
+        // return new WaitCommand(1);
+    }
 
-	public Command waitPrimed() {
-		// TODO: acceleration deadbanding
-		// leftMotor.getAcceleration();
+    // Logging
+    public void log() {
 
-		// boolean leftMotorAtSpeed = Math.abs(
-		// leftMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <=
-		// shooterSpeedDeadBand
-		// .getAsDouble();
-		// boolean rightMotorAtSpeed = Math.abs(
-		// rightMotor.getRotorVelocity().getValue() - shooterSpeed.getAsDouble()) <=
-		// shooterSpeedDeadBand
-		// .getAsDouble();
-
-		// return new WaitUntilCommand(() -> {
-		// return leftMotorAtSpeed && rightMotorAtSpeed;
-		// });
-		return new WaitCommand(1);
-	}
-
-	// Logging
-	public void log() {
-		Table.getStringArrayTopic("ControlMode").publish()
-				.set(new String[] {
-						leftMotor.getControlMode().toString(),
-						rightMotor.getControlMode().toString() });
-		Table.getIntegerArrayTopic("DeviceID").publish()
-				.set(new long[] {
-						leftMotor.getDeviceID(),
-						rightMotor.getDeviceID() });
-
-		Table.getDoubleArrayTopic("set speed").publish()
-				.set(new double[] {
-						leftMotor.get(),
-						rightMotor.get() });
-
-		Table.getDoubleArrayTopic("getVelocity").publish()
-				.set(new double[] {
-						leftMotor.getVelocity().getValueAsDouble(),
-						rightMotor.getVelocity().getValueAsDouble() });
-
-		Table.getDoubleArrayTopic("getDeviceTemp").publish()
-				.set(new double[] {
-						leftMotor.getDeviceTemp().getValueAsDouble(),
-						rightMotor.getDeviceTemp().getValueAsDouble() });
-
-		Table.getDoubleArrayTopic("getMotorVoltage").publish()
-				.set(new double[] {
-						leftMotor.getMotorVoltage().getValueAsDouble(),
-						rightMotor.getMotorVoltage().getValueAsDouble() });
-
-		// Table.getDoubleArrayTopic("Temp").publish()
-		// .set(new double[] { leftMotor.getDeviceTemp(), rightMotor.getDeviceTemp() });
-		// Table.getDoubleArrayTopic("Supply Current").publish()
-		// .set(new double[] { leftMotor.getSupplyCurrent(),
-		// rightMotor.getSupplyCurrent() });
-		// Table.getDoubleArrayTopic("Stator Current").publish()
-		// .set(new double[] { leftMotor.getStatorCurrent(),
-		// rightMotor.getStatorCurrent() });
-		// Table.getDoubleArrayTopic("Motor Voltage").publish()
-		// .set(new double[] { leftMotor.getMotorVoltage(), rightMotor.getMotorVoltage()
-		// });
-	}
+    }
 }

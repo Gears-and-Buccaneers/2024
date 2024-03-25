@@ -44,30 +44,48 @@ public class LoggedTalonFX extends TalonFX implements LoggedHardware {
     public void log() {
         ControlMode.set(this.getControlMode().toString());
 
-        // Name
-        // .set(this.getControlMode().toString()); // Val
-        /**
-         * Table.getStringArrayTopic("ControlMode").publish()
-         * .set(new String[] { leftMotor.getControlMode().toString(),
-         * rightMotor.getControlMode().toString() });
-         * Table.getIntegerArrayTopic("DeviceID").publish()
-         * .set(new long[] { leftMotor.getDeviceID(), rightMotor.getDeviceID() });
-         * 
-         * Table.getDoubleArrayTopic("Temp").publish()
-         * .set(new double[] { leftMotor.getTemperature(), rightMotor.getTemperature()
-         * });
-         * Table.getDoubleArrayTopic("Supply Current").publish()
-         * .set(new double[] { leftMotor.getSupplyCurrent(),
-         * rightMotor.getSupplyCurrent() });
-         * Table.getDoubleArrayTopic("Stator Current").publish()
-         * .set(new double[] { leftMotor.getStatorCurrent(),
-         * rightMotor.getStatorCurrent() });
-         * Table.getDoubleArrayTopic("Output Voltage").publish()
-         * .set(new double[] { leftMotor.getMotorOutputVoltage(),
-         * rightMotor.getMotorOutputVoltage() });
-         * Table.getDoubleArrayTopic("Bus Voltage").publish()
-         * .set(new double[] { leftMotor.getBusVoltage(), rightMotor.getBusVoltage() });
-         */
+        // Table.getStringArrayTopic("ControlMode").publish()
+        // .set(new String[] {
+        // leftMotor.getControlMode().toString(),
+        // rightMotor.getControlMode().toString() });
+        // Table.getIntegerArrayTopic("DeviceID").publish()
+        // .set(new long[] {
+        // leftMotor.getDeviceID(),
+        // rightMotor.getDeviceID() });
+
+        // Table.getDoubleArrayTopic("set speed").publish()
+        // .set(new double[] {
+        // leftMotor.get(),
+        // rightMotor.get() });
+
+        // Table.getDoubleArrayTopic("getVelocity").publish()
+        // .set(new double[] {
+        // leftMotor.getVelocity().getValueAsDouble(),
+        // rightMotor.getVelocity().getValueAsDouble() });
+
+        // Table.getDoubleArrayTopic("getDeviceTemp").publish()
+        // .set(new double[] {
+        // leftMotor.getDeviceTemp().getValueAsDouble(),
+        // rightMotor.getDeviceTemp().getValueAsDouble() });
+
+        // Table.getDoubleArrayTopic("getMotorVoltage").publish()
+        // .set(new double[] {
+        // leftMotor.getMotorVoltage().getValueAsDouble(),
+        // rightMotor.getMotorVoltage().getValueAsDouble() });
+
+        // // Table.getDoubleArrayTopic("Temp").publish()
+        // // .set(new double[] { leftMotor.getDeviceTemp(), rightMotor.getDeviceTemp()
+        // });
+        // // Table.getDoubleArrayTopic("Supply Current").publish()
+        // // .set(new double[] { leftMotor.getSupplyCurrent(),
+        // // rightMotor.getSupplyCurrent() });
+        // // Table.getDoubleArrayTopic("Stator Current").publish()
+        // // .set(new double[] { leftMotor.getStatorCurrent(),
+        // // rightMotor.getStatorCurrent() });
+        // // Table.getDoubleArrayTopic("Motor Voltage").publish()
+        // // .set(new double[] { leftMotor.getMotorVoltage(),
+        // rightMotor.getMotorVoltage()
+        // // });
     }
 
     public void close() {
