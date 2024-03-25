@@ -17,7 +17,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructEntry;
-import frc.system.Vision;
 
 public class Nt implements Vision {
 	Transform3d robotToCamera = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,

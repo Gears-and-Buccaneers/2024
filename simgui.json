@@ -15,11 +15,6 @@
       "/SmartDashboard/auto": "String Chooser"
     },
     "windows": {
-      "/SmartDashboard/MechThingggy": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/auto": {
         "window": {
           "visible": true

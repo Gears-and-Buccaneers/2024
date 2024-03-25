@@ -107,7 +107,7 @@ public final class Main extends TimedRobot {
         transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
         transit.hasNoteTrigger.onFalse(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
 
-        // Note: it appears that default commands are immediately rescheduled if they
+        // NOTE: it appears that default commands are immediately rescheduled if they
         // finish. Looks like we'll have to implement some special logic to go to the
         // intake by default.
         // pivot.setDefaultCommand(pivot.toIntake());
@@ -115,7 +115,7 @@ public final class Main extends TimedRobot {
 
         // ----------- DRIVER CONTROLS -----------
 
-        drivetrain.setDefaultCommand(drivetrain.controllerDrive(
+        drivetrain.setDefaultCommand(drivetrain.drive(
                 () -> squareInput(driver.getLeftY()),
                 () -> squareInput(driver.getLeftX()),
                 // TODO: ask if driver wants turning squared as well
@@ -154,7 +154,7 @@ public final class Main extends TimedRobot {
         });
 
         // TODO: check speed of back-out
-        autonomousChooser.addOption("Back-out (NO PP)", drivetrain.controllerDrive(() -> -0.5, () -> 0, () -> 0));
+        autonomousChooser.addOption("Back-out (NO PP)", drivetrain.drive(() -> -0.5, () -> 0, () -> 0));
 
         autonomousChooser.addOption("Shoot",
                 cmds.primeSpeaker().raceWith(

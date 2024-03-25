@@ -54,7 +54,7 @@ public class Transit implements LoggedSubsystems {
         transitMotor.configSupplyCurrentLimit(currentLimits);
 
         // Sensors
-        laserCan = new LoggedLaserCan(0);
+        laserCan = new LoggedLaserCan(0, Table, "LaserCan");
         // laserCan.setRangingMode(); //TODO: properly config the Laser can
         // laserCan.setRegionOfInterest();
         // laserCan.setTimingBudget(null);

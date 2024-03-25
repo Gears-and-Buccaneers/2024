@@ -7,53 +7,58 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.ctre.phoenix6.mechanisms.swerve.*;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.*;
+import com.pathplanner.lib.auto.*;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.*;
+import com.pathplanner.lib.util.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.struct.Pose2dStruct;
+import edu.wpi.first.math.geometry.struct.Pose3dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.config.SwerveConfig;
-import frc.system.Vision.Measurement;
+import frc.system.vision.Vision;
+import frc.system.vision.Vision.Measurement;
 
-public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Vision.Measurement> {
+public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consumer<Vision.Measurement> {
+    private final String simpleName = this.getClass().getSimpleName();
+
+    // Control Modes
+    private final SwerveDriveBrake cachedBrake = new SwerveDriveBrake();
+    private final FieldCentric cachedFieldCentric = new FieldCentric();
+    private final FieldCentricFacingAngle cachedFieldCentricFacing = new FieldCentricFacingAngle();
+    private final ApplyChassisSpeeds AutoRequest = new ApplyChassisSpeeds();
+
+    // Network
+    private final NetworkTable Table;
+    private final StructPublisher<Pose2d> ntPose2d;
+    private final StructPublisher<Pose3d> ntPose3d;
+    private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleState;
+    private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleTarget;
+
+    // vars
+    private final PathConstraints ppConstraints;
+    private final Rotation2d autoAimDeadband = Rotation2d.fromDegrees(5);
+
     private boolean hasPose = false;
-
-    private final PathConstraints constraints;
-
-    private final double angleDeadbandRadians = Units.degreesToRadians(5);
-
-    private final SwerveRequest.SwerveDriveBrake cachedBrake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.FieldCentric cachedFieldCentric = new SwerveRequest.FieldCentric();
-    private final SwerveRequest.FieldCentricFacingAngle cachedFieldCentricFacing = new SwerveRequest.FieldCentricFacingAngle();
-    private final SwerveRequest.ApplyChassisSpeeds AutoRequest = new SwerveRequest.ApplyChassisSpeeds();
-
-    private final AtomicReference<SwerveDriveState> state = new AtomicReference<>();
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    private StructPublisher<Pose2d> ntPose = NetworkTableInstance.getDefault()
-            .getStructTopic("Subsystems/Drivetrain/Pose", new Pose2dStruct()).publish();
+    private final AtomicReference<SwerveDriveState> state = new AtomicReference<>();
 
     /**
      * The rotation override for the drivetrain. Set to null if there is no
@@ -67,39 +72,40 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
             SwerveDrivetrainConstants driveTrainConstants,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        this.constraints = constraints;
 
-        registerTelemetry((s) -> {
-            ntPose.set(s.Pose);
-            state.set(s);
-        });
+        this.Table = NetworkTableInstance.getDefault().getTable("Subsystems").getSubTable(simpleName);
 
         zeroGyro();
+
+        // Autos
+        this.ppConstraints = constraints;
         configurePathPlanner();
-        register();
+
+        // Logging
+        ntPose2d = Table.getStructTopic("Pose2d", new Pose2dStruct()).publish();
+        ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
+        ntSwerveModuleState = Table.getStructArrayTopic("SwerveModuleState", SwerveModuleState.struct).publish();
+        ntSwerveModuleTarget = Table.getStructArrayTopic("SwerveModuleTarget", SwerveModuleState.struct).publish();
+
+        registerTelemetry((s) -> {
+            ntPose2d.set(s.Pose);
+            state.set(s);
+            ntPose3d.set(new Pose3d(s.Pose));
+            ntSwerveModuleState.set(s.ModuleStates);
+            ntSwerveModuleTarget.set(s.ModuleTargets);
+        });
 
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        register();
     }
 
-    public void accept(Measurement t) {
-        if (hasPose) {
-            if (t.stdDev() != null) {
-                addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
-            } else {
-                addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
-            }
-        } else {
-            seedFieldRelative(t.pose().toPose2d());
-            hasPose = true;
-        }
-    }
+    // ---------- Generic Control ----------
 
-    public void addPPAutos(SendableChooser<Command> autos) {
-        for (String autoName : AutoBuilder.getAllAutoNames()) {
-            autos.addOption(autoName + " PP", AutoBuilder.buildAuto(autoName));
-        }
+    private Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
+        return run(() -> this.setControl(requestSupplier.get()));
     }
 
     public Pose2d pose() {
@@ -114,22 +120,28 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
-    private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
-
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
+    /** Returns whether the drivetrain is facing the stored rotational override. */
+    public boolean isAimed() {
+        if (rotationOverride == null) {
+            return false;
+        }
+        double rotationError = Math.abs(pose().getRotation().minus(rotationOverride).getRadians());
+        // TODO: check logic worried about bounds being [-pi,pi]
+        return rotationError <= autoAimDeadband.getRadians();
     }
 
+    /**
+     * Sets a rotational override. Provide a value of `null` to clear the override.
+     */
+    public void setRotationOverride(Rotation2d rotation) {
+        rotationOverride = rotation;
+    }
+
+    private Optional<Rotation2d> getRotationTargetOverride() {
+        return Optional.ofNullable(rotationOverride);
+    }
+
+    // ---------- PathPlanner/Auto ----------
     private void configurePathPlanner() {
         double driveBaseRadius = 0;
         for (var moduleLocation : m_moduleLocations) {
@@ -156,17 +168,16 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
                     return false;
                 }, // Change this if the path needs to be flipped on red vs blue
                 this); // Subsystem for requirements
-        // PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
+        PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
-    private Optional<Rotation2d> getRotationTargetOverride() {
-        return Optional.ofNullable(rotationOverride);
+    public void addPPAutos(SendableChooser<Command> autos) {
+        for (String autoName : AutoBuilder.getAllAutoNames()) {
+            autos.addOption(autoName + " PP", AutoBuilder.buildAuto(autoName));
+        }
     }
 
-    // Commands
-    private Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
-        return run(() -> this.setControl(requestSupplier.get()));
-    }
+    // ---------- Commands ----------
 
     public Command zeroGyro() {
         return runOnce(() -> {
@@ -184,12 +195,12 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
     }
 
     public Command driveTo(Pose2d target, double velocity) {
-        return AutoBuilder.pathfindToPose(target, constraints, velocity);
+        return AutoBuilder.pathfindToPose(target, ppConstraints, velocity);
     }
 
     public Command DriveToThenPath(PathPlannerPath path) {
 
-        return AutoBuilder.pathfindThenFollowPath(path, constraints, 0);
+        return AutoBuilder.pathfindThenFollowPath(path, ppConstraints, 0);
     }
 
     /**
@@ -200,7 +211,7 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
      * @param rVel [-1, 1] percent angler rate + CC+ // TODO: check this value
      * @return
      */
-    public Command controllerDrive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
+    public Command drive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
         return applyRequest(() -> {
             double x = xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps;
             double y = yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps;
@@ -213,21 +224,52 @@ public class Swerve extends SwerveDrivetrain implements Subsystem, Consumer<Visi
         });
     }
 
-    /**
-     * Sets a rotational override. Provide a value of `null` to clear the override.
-     */
-    public void setOverride(Rotation2d rotation) {
-        rotationOverride = rotation;
-    }
-
-    /** Returns whether the drivetrain is facing the stored rotational override. */
-    public boolean isAimed() {
-        return rotationOverride != null
-                && Math.abs(pose().getRotation().getRadians() - rotationOverride.getRadians()) <= angleDeadbandRadians;
-    }
-
     public Command brake() {
         return applyRequest(
                 () -> cachedBrake);
+    }
+
+    // ---------- Vision ----------
+    public void accept(Measurement t) {
+        if (hasPose) {
+            if (t.stdDev() != null) {
+                addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
+            } else {
+                addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
+            }
+        } else {
+            seedFieldRelative(t.pose().toPose2d());
+            hasPose = true;
+        }
+    }
+
+    // ---------- Sim ----------
+    private void startSimThread() {
+        m_lastSimTime = Utils.getCurrentTimeSeconds();
+
+        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - m_lastSimTime;
+            m_lastSimTime = currentTime;
+
+            /* use the measured time delta, get battery voltage from WPILib */
+            updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+
+        m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    // ---------- Logging ----------
+    @Override
+    public void log() {
+        //TODO: add motor data
+
+    }
+
+    @Override
+    public void close() throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'close'");
     }
 }

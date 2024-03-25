@@ -1,4 +1,4 @@
-package frc.system;
+package frc.system.vision;
 
 import java.util.function.Consumer;
 
