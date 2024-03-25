@@ -2,6 +2,9 @@ package frc.hardware;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.IntegerPublisher;
 // Network tables
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,6 +17,15 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
 
     // Logged Data
     private final StringPublisher ControlMode;
+    private final IntegerPublisher BaseID;
+    private final DoublePublisher BusVoltage;
+    private final IntegerPublisher DeviceID;
+    private final IntegerPublisher FirmwareVersion;
+    private final BooleanPublisher Inverted;
+    private final DoublePublisher MotorOutputPercent;
+    private final DoublePublisher MotorOutputVoltage;
+    private final DoublePublisher StatorCurrent;
+    private final DoublePublisher Temperature;
 
     public LoggedTalonSRX(int deviceNumber, NetworkTable networkTable, String name) {
         super(deviceNumber);
@@ -23,6 +35,15 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
 
         // Logged Data
         ControlMode = Table.getStringTopic("ControlMode").publish();
+        BaseID = Table.getIntegerTopic("BaseID").publish();
+        BusVoltage = Table.getDoubleTopic("BusVoltage").publish();
+        DeviceID = Table.getIntegerTopic("DeviceID").publish();
+        FirmwareVersion = Table.getIntegerTopic("FirmwareVersion").publish();
+        Inverted = Table.getBooleanTopic("Inverted").publish();
+        MotorOutputPercent = Table.getDoubleTopic("MotorOutputPercent").publish();
+        MotorOutputVoltage = Table.getDoubleTopic("MotorOutputVoltage").publish();
+        StatorCurrent = Table.getDoubleTopic("StatorCurrent").publish();
+        Temperature = Table.getDoubleTopic("Temperature").publish();
     }
 
     @Deprecated
@@ -43,31 +64,15 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
     @Override
     public void log() {
         ControlMode.set(this.getControlMode().toString());
-
-        // Name
-        // .set(this.getControlMode().toString()); // Val
-        /**
-         * Table.getStringArrayTopic("ControlMode").publish()
-         * .set(new String[] { leftMotor.getControlMode().toString(),
-         * rightMotor.getControlMode().toString() });
-         * Table.getIntegerArrayTopic("DeviceID").publish()
-         * .set(new long[] { leftMotor.getDeviceID(), rightMotor.getDeviceID() });
-         * 
-         * Table.getDoubleArrayTopic("Temp").publish()
-         * .set(new double[] { leftMotor.getTemperature(), rightMotor.getTemperature()
-         * });
-         * Table.getDoubleArrayTopic("Supply Current").publish()
-         * .set(new double[] { leftMotor.getSupplyCurrent(),
-         * rightMotor.getSupplyCurrent() });
-         * Table.getDoubleArrayTopic("Stator Current").publish()
-         * .set(new double[] { leftMotor.getStatorCurrent(),
-         * rightMotor.getStatorCurrent() });
-         * Table.getDoubleArrayTopic("Output Voltage").publish()
-         * .set(new double[] { leftMotor.getMotorOutputVoltage(),
-         * rightMotor.getMotorOutputVoltage() });
-         * Table.getDoubleArrayTopic("Bus Voltage").publish()
-         * .set(new double[] { leftMotor.getBusVoltage(), rightMotor.getBusVoltage() });
-         */
+        BaseID.set(this.getBaseID());
+        BusVoltage.set(this.getBusVoltage());
+        DeviceID.set(this.getDeviceID());
+        FirmwareVersion.set(this.getFirmwareVersion());
+        Inverted.set(this.getInverted());
+        MotorOutputPercent.set(this.getMotorOutputPercent());
+        MotorOutputVoltage.set(this.getMotorOutputVoltage());
+        StatorCurrent.set(this.getStatorCurrent());
+        Temperature.set(this.getTemperature());
     }
 
     @Override
