@@ -17,6 +17,7 @@ import com.pathplanner.lib.util.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.geometry.struct.Pose3dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -230,9 +231,17 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     }
 
     // ---------- Vision ----------
+    private final double xError = 1;
+    private final double yError = 1;
+
     public void accept(Measurement t) {
         if (hasPose) {
+            Transform2d errorPose = t.pose().toPose2d().minus(this.pose());
+            if (Math.abs(errorPose.getX() - xError) > 1 || Math.abs(errorPose.getY() - yError) > 1) {
+                return;
+            }
             if (t.stdDev() != null) {
+
                 addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
             } else {
                 addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
@@ -263,7 +272,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     // ---------- Logging ----------
     @Override
     public void log() {
-        //TODO: add motor data
+        // TODO: add motor data
 
     }
 
