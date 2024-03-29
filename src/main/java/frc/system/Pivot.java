@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -185,11 +184,22 @@ public class Pivot implements Subsystem {
      * Continuously aims at a point `distance` meters away from the pivot origin,
      * with an angle of elevation of `pitch` radians.
      */
-    public void aimAt(double distance, double pitch) {
-        double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
-        SmartDashboard.putNumber("rotations", rotations);
-        setSetpoint(rotations);
+    public Command aimAt(double distance, double pitch) {
+        Command cmd = new Command() {
+            @Override
+            public void execute() {
+                double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
+                setSetpoint(rotations);
+            }
 
+            @Override
+            public boolean isFinished() {
+                return isAimed();
+            }
+        };
+
+        cmd.addRequirements(this);
+        return cmd;
     }
 
     /**

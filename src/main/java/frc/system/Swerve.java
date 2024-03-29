@@ -2,7 +2,6 @@ package frc.system;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -11,7 +10,6 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.*;
@@ -29,10 +27,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.geometry.struct.Pose3dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -44,17 +39,11 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.config.SwerveConfig;
-import frc.system.vision.Nt;
-import frc.system.vision.Vision;
-import frc.system.vision.Vision.Measurement;
 
-public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consumer<Vision.Measurement> {
+public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Control Modes
@@ -69,6 +58,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     private final StructPublisher<Pose3d> ntPose3d;
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleState;
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleTarget;
+    private final StructPublisher<Pose2d> visionPose2d;
 
     // vars
     private final PathConstraints ppConstraints;
@@ -112,6 +102,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
         ntSwerveModuleState = Table.getStructArrayTopic("SwerveModuleState", SwerveModuleState.struct).publish();
         ntSwerveModuleTarget = Table.getStructArrayTopic("SwerveModuleTarget", SwerveModuleState.struct).publish();
+        visionPose2d = Table.getStructTopic("RobotPose", new Pose2dStruct()).publish();
 
         registerTelemetry((s) -> {
             ntPose2d.set(s.Pose);
@@ -235,7 +226,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     }
 
     public Command DriveToThenPath(PathPlannerPath path) {
-
         return AutoBuilder.pathfindThenFollowPath(path, ppConstraints, 0);
     }
 
@@ -283,72 +273,35 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     }
 
     // ---------- Vision ----------
-    private final double xError = 1.0;
-    private final double yError = 1.0;
-    private boolean trashingTag = false;
 
-    public void accept(Measurement t) {
-        SmartDashboard.putBoolean("trashing Tag", trashingTag);
-        SmartDashboard.putBoolean("hasPose", hasPose);
-        if (hasPose) {
-            SmartDashboard.putNumber("VistionX", t.pose().toPose2d().getX());
-            SmartDashboard.putNumber("VistionY", t.pose().toPose2d().getY());
-            SmartDashboard.putNumber("RobotX", this.pose().getX());
-            SmartDashboard.putNumber("RobotY", this.pose().getY());
-            Translation2d errorPose = t.pose().toPose2d().minus(this.pose()).getTranslation();
-            SmartDashboard.putNumber("errorX", errorPose.getX());
-            SmartDashboard.putNumber("errorY", errorPose.getY());
-            if (Math.abs(errorPose.getX()) > xError || Math.abs(errorPose.getY()) > yError) {
-                trashingTag = true;
-                return;
-            }
-            trashingTag = false;
-            if (t.stdDev() != null) {
-
-                addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
-            } else {
-                addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
-            }
-        } else {
-            seedFieldRelative(t.pose().toPose2d());
-
-            hasPose = true;
-        }
-    }
-
+    // Forward Camera
+    private PhotonCamera cam = new PhotonCamera("cam1");
     private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
             Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
-    // private StructPublisher<Pose2d> publisher =
-    // NetworkTableInstance.getDefault().getTable("Subsystems")
-    // .getStructTopic("MyPose", Pose2d.struct).publish();\
-    // Forward Camera
-    PhotonCamera cam = new PhotonCamera("cam1");
 
-    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // Construct PhotonPoseEstimator
 
-    PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
+    private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
-
-    NetworkTableInstance nt = NetworkTableInstance.getDefault();
-
-    NetworkTable table = nt.getTable("Subsystems");
-
-    StructEntry<Pose2d> ntOut = table.getStructTopic("RobotPose", new Pose2dStruct()).getEntry(new Pose2d());
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return photonPoseEstimator.update();
     }
 
-    public void addPhotonVistion() {
+    public void addPhotonVision() {
         Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
         if (robotPose.isPresent()) {
             addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
                     robotPose.get().timestampSeconds);
-            SmartDashboard.putString("pose", robotPose.get().estimatedPose.toPose2d().toString());
+            visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
         }
-        // ntOut.set();
+    }
+
+    @Override
+    public void periodic() {
+        addPhotonVision();
     }
 
     // ---------- Sim ----------

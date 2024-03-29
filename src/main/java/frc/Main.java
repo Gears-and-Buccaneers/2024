@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.cmd.AimSpeaker;
 import frc.config.SwerveConfig;
 import frc.system.*;
-import frc.system.vision.Nt;
 
 public final class Main extends TimedRobot {
     public static void main(String... args) {
@@ -78,7 +77,8 @@ public final class Main extends TimedRobot {
         }
 
         Command intakeNote() {
-            return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.runIn()));
+            return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.runIn()))
+                    .andThen(rumble(RumbleType.kBothRumble, 0.5, 0.25, driver, operator));
         }
 
         Command primeAmp() {
@@ -95,7 +95,6 @@ public final class Main extends TimedRobot {
 
         Command waitThenFeed() {
             return shooter.waitPrimed().andThen(transit.feedOut());
-            // TODO: check if pivot is at angle
         }
     }
 
@@ -105,31 +104,23 @@ public final class Main extends TimedRobot {
         configNamedCommands();
         // ----------- DEFAULT COMMANDS -----------
 
-        transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
-        transit.hasNoteTrigger.onFalse(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
-
         // NOTE: it appears that default commands are immediately rescheduled if they
         // finish. Looks like we'll have to implement some special logic to go to the
         // intake by default.
         // pivot.setDefaultCommand(pivot.toIntake());
         pivot.setDefaultCommand(pivot.velocity(operator::getLeftY));
-
-        // ----------- DRIVER CONTROLS -----------
-
         drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
                 () -> squareInput(driver.getLeftY()),
                 () -> squareInput(driver.getLeftX()),
                 // TODO: ask if driver wants turning squared as well
                 () -> -driver.getRightX()));
+
+        // ----------- DRIVER CONTROLS -----------
+
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
-        driver.leftTrigger().onTrue(cmds.intakeNote());
-        driver.leftTrigger().onTrue(new InstantCommand(() -> {
-            System.out.println("Intakeing Note");
-        }));
-
-        driver.a().onTrue(transit.feedIn());
+        driver.leftTrigger().onTrue(cmds.intakeNote()); // Intakes untill has note
 
         // ---------- OPERATOR CONTROLS ----------
 
@@ -138,6 +129,7 @@ public final class Main extends TimedRobot {
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
         operator.rightTrigger().whileTrue(transit.runForwards());
 
+        operator.a().onTrue(transit.feedIn());
         operator.b().whileTrue(transit.runBackward());
         operator.x().whileTrue(intake.runOut());
         operator.y().whileTrue(cmds.primeSubwoofer());
@@ -150,8 +142,6 @@ public final class Main extends TimedRobot {
     private void configAutos() {
         configNamedCommands();
         // ------------------ AUTOS ------------------
-        // Adds pathplaner paths. TODO: fix crash here
-        // autonomousChooser = drivetrain.getAutoPaths();
 
         autonomousChooser = new SendableChooser<>();
 
@@ -172,21 +162,28 @@ public final class Main extends TimedRobot {
         autonomousChooser.addOption("Shoot against subwoofer",
                 new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
 
-        autonomousChooser.addOption("Drive 5m",
+        autonomousChooser.addOption("Drive 3m (Red)",
                 drivetrain.driveVelocity(() -> -1, () -> 0, () -> 0)
                         .until(() -> {
                             return drivetrain.pose().getX() < -3.0;
                         }).andThen(drivetrain.brake()));
-        // drivetrain.addPPAutos(autonomousChooser);
+
+        drivetrain.addPPAutos(autonomousChooser);
 
         SmartDashboard.putData("auto", autonomousChooser);
     }
 
     private void configNamedCommands() {
-        NamedCommands.registerCommand("Intake", cmds.intakeNote());
-        NamedCommands.registerCommand("Shoot", cmds.waitThenFeed());
-        NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
-        NamedCommands.registerCommand("PrimeSpeaker", cmds.primeSpeaker());
+
+        NamedCommands.registerCommand("intake",
+                // cmds.intakeNote().alongWith(
+                new InstantCommand(() -> System.out.println("intake")));
+        NamedCommands.registerCommand("feed",
+                // cmds.waitThenFeed().alongWith(
+                new InstantCommand(() -> System.out.println("feed")));
+        // NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
+        NamedCommands.registerCommand("primeSpeaker",
+                cmds.primeSpeaker());
     }
 
     @Override
@@ -209,7 +206,7 @@ public final class Main extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        drivetrain.addPhotonVistion();
+        drivetrain.addPhotonVision();
     }
 
     @Override
