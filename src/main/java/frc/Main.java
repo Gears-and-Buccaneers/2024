@@ -208,7 +208,7 @@ public final class Main extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         // if (drivetrain.isCamConnected()) {
-            drivetrain.addPhotonVision();
+        drivetrain.addPhotonVision();
         // }
 
     }

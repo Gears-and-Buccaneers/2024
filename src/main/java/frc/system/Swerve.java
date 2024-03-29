@@ -60,6 +60,14 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleTarget;
     private final StructPublisher<Pose2d> visionPose2d;
 
+    // ---------- Vision ----------
+
+    // Forward Camera
+    public PhotonCamera cam;
+    Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
+            Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
     // vars
     private final PathConstraints ppConstraints;
     private final Rotation2d autoAimDeadband = Rotation2d.fromDegrees(5);
@@ -97,6 +105,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
 
         // Vistion
         setVisionMeasurementStdDevs(new Matrix<N3, N1>(new SimpleMatrix(new double[] { 1.0, 1.0, 1.0 })));
+        cam = new PhotonCamera("cam1");
         // Logging
         ntPose2d = Table.getStructTopic("Pose2d", new Pose2dStruct()).publish();
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
@@ -272,17 +281,8 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
                 () -> cachedBrake);
     }
 
-    // ---------- Vision ----------
-
-    // Forward Camera
-    private PhotonCamera cam = new PhotonCamera("cam1");
-    private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
-            Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
-
-    private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // Construct PhotonPoseEstimator
-
-    private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
+    PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
@@ -296,7 +296,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
 
     public void addPhotonVision() {
         Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
-        System.out.println(photonPoseEstimator.toString());
+        System.out.println(robotPose.toString());
 
         if (robotPose.isPresent()) {
             System.out.println("thing");
@@ -305,11 +305,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
             // - (cam.getLatestResult().getLatencyMillis() * 1000));
             // visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
         }
-    }
-
-    @Override
-    public void periodic() {
-        addPhotonVision();
     }
 
     // ---------- Sim ----------
