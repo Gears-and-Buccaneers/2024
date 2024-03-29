@@ -7,6 +7,7 @@ package frc;
 // pathplanner
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.net.PortForwarder;
 // Logging
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -126,7 +127,7 @@ public final class Main extends TimedRobot {
 
         // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftBumper().whileTrue(cmds.primeAmp());
-        operator.leftTrigger().whileTrue(cmds.primeSpeaker());
+        operator.leftTrigger().whileTrue(cmds.primeSpeaker()); //
         operator.rightTrigger().whileTrue(transit.runForwards());
 
         operator.a().onTrue(transit.feedIn());
@@ -168,7 +169,7 @@ public final class Main extends TimedRobot {
                             return drivetrain.pose().getX() < -3.0;
                         }).andThen(drivetrain.brake()));
 
-        drivetrain.addPPAutos(autonomousChooser);
+        // drivetrain.addPPAutos(autonomousChooser);
 
         SmartDashboard.putData("auto", autonomousChooser);
     }
@@ -198,7 +199,7 @@ public final class Main extends TimedRobot {
 
         // TODO: re-enable vision once the jitter is solved.
         // new Nt().register(drivetrain);
-
+        PortForwarder.add(5800, "photonvision.local", 5800);
         configAutos();
         configButtonBindings();
     }
@@ -206,7 +207,10 @@ public final class Main extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        drivetrain.addPhotonVision();
+        // if (drivetrain.isCamConnected()) {
+            drivetrain.addPhotonVision();
+        // }
+
     }
 
     @Override

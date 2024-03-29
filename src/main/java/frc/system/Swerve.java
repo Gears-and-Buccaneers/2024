@@ -290,12 +290,20 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         return photonPoseEstimator.update();
     }
 
+    public boolean isCamConnected() {
+        return cam.isConnected();
+    }
+
     public void addPhotonVision() {
         Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
+        System.out.println(photonPoseEstimator.toString());
+
         if (robotPose.isPresent()) {
+            System.out.println("thing");
             addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
                     robotPose.get().timestampSeconds);
-            visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
+            // - (cam.getLatestResult().getLatencyMillis() * 1000));
+            // visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
         }
     }
 

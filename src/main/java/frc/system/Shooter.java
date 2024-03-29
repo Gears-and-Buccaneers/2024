@@ -27,7 +27,7 @@ public class Shooter implements Subsystem {
     // Vars
     /** Units: RPM */
     private final DoubleSubscriber shooterSpeed;
-    private final double defaultShooterSpeed = 5000;
+    private final double defaultShooterSpeed = 6000;
     /** Units: RPM error */
     private final DoubleSubscriber shooterSpeedDeadBand;
     private final double defaultShooterSpeedDeadBand = 50;
@@ -80,10 +80,11 @@ public class Shooter implements Subsystem {
     }
 
     // ---------- Generic Control ----------
-    private Command feed(boolean forwards, double speed) {
+    private Command feed(boolean forwards, double speed1) {
         Command cmd = new Command() {
             public void initialize() {
-                DutyCycleOut output = new DutyCycleOut((forwards ? speed : -speed) / maxSpeed);
+                // double speed = 1;
+                DutyCycleOut output = new DutyCycleOut((forwards ? speed1 : -speed1) / maxSpeed);
 
                 leftMotor.setControl(output);
                 rightMotor.setControl(output);

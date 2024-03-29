@@ -45,6 +45,7 @@ public class Pivot implements Subsystem {
     private NetworkTable table;
 
     private DoubleSubscriber outputMax;
+    private DoubleSubscriber fudge;
 
     private final double subwooferPosition;
 
@@ -76,6 +77,10 @@ public class Pivot implements Subsystem {
     public void configPID() {
         this.table.getDoubleTopic("speed").publish();
         outputMax = table.getDoubleTopic("speed").subscribe(0.3);
+
+        this.table.getDoubleTopic("fudge num").publish();
+        fudge = table.getDoubleTopic("fudge num").subscribe(0);
+
         TalonFXConfiguration pivotConf = new TalonFXConfiguration();
         pivotConf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         pivotConf.Feedback.SensorToMechanismRatio = 100;
@@ -184,22 +189,13 @@ public class Pivot implements Subsystem {
      * Continuously aims at a point `distance` meters away from the pivot origin,
      * with an angle of elevation of `pitch` radians.
      */
-    public Command aimAt(double distance, double pitch) {
-        Command cmd = new Command() {
-            @Override
-            public void execute() {
-                double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
-                setSetpoint(rotations);
-            }
+    private double a;
+    private double b;
 
-            @Override
-            public boolean isFinished() {
-                return isAimed();
-            }
-        };
-
-        cmd.addRequirements(this);
-        return cmd;
+    public void aimAt(double distance, double pitch) {
+        double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
+        rotations += fudge.get(0);
+        setSetpoint(rotations);
     }
 
     /**

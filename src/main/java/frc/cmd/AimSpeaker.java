@@ -32,7 +32,6 @@ public class AimSpeaker extends Command {
 
     @Override
     public void execute() {
-        System.out.println("thing");
         Pose2d mechanismPose = drivetrain.pose()
                 .plus(new Transform2d(pivot.origin.getX(), pivot.origin.getY(),
                         new Rotation2d()));
@@ -47,8 +46,8 @@ public class AimSpeaker extends Command {
         // Pivot pitch
         double distance = vectorToSpeaker.getNorm();
         double pitch = Math.asin(vectorToSpeaker.getZ() / distance);
-
-        alongWith(pivot.aimAt(distance, pitch)); //TODO: changed this needs to be tested
+        pivot.aimAt(distance, pitch);
+        // alongWith(); //TODO: changed this needs to be tested
     }
 
     @Override
