@@ -140,8 +140,8 @@ public class Transit implements LoggedSubsystems {
      * @apiNote DEPENDS on sensors
      */
     public Command feedIn() {
-        return feed(true, 1).until(() -> hasNote())
-                .andThen(feed(false, 0.2).until(() -> !hasNote()));
+        return feed(true, .75).until(() -> hasNote())
+                .andThen(feed(false, 0.5).until(() -> !hasNote()));
         // TODO: check if 20% power backfeeed is to much
     }
 

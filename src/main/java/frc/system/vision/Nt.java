@@ -17,79 +17,83 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructEntry;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Nt implements Vision {
-	Transform3d robotToCamera = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
-			Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
+    Transform3d robotToCamera = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
+            Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
 
-	final Measurement cached = new Measurement();
-	final AprilTagFieldLayout tags = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    final Measurement cached = new Measurement();
+    final AprilTagFieldLayout tags = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-	@Override
-	public void register(Consumer<Measurement> measurement) {
-		NetworkTableInstance nt = NetworkTableInstance.getDefault();
+    @Override
+    public void register(Consumer<Measurement> measurement) {
+        NetworkTableInstance nt = NetworkTableInstance.getDefault();
 
-		NetworkTable table = nt.getTable("Subsystems");
+        NetworkTable table = nt.getTable("Subsystems");
 
-		StructEntry<Pose3d> ntOut = table.getStructTopic("RobotPose", new Pose3dStruct()).getEntry(new Pose3d());
+        StructEntry<Pose3d> ntOut = table.getStructTopic("RobotPose", new Pose3dStruct()).getEntry(new Pose3d());
 
-		nt.addListener(table.getTopic("Detections"), EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-				(event) -> {
-					double[] data = event.valueData.value.getDoubleArray();
+        nt.addListener(table.getTopic("Detections"), EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                (event) -> {
+                    System.out.println("listing");
+                    double[] data = event.valueData.value.getDoubleArray();
 
-					if (data.length % 8 != 0)
-						System.err.println("WARN: Invalid NetworkTables AprilTag vision data array " + data.length);
+                    if (data.length % 8 != 0)
+                        System.err.println("WARN: Invalid NetworkTables AprilTag vision data array " + data.length);
 
-					int n = 0;
-					double pX = 0, pY = 0, pZ = 0, rX = 0, rY = 0, rZ = 0;
+                    int n = 0;
+                    double pX = 0, pY = 0, pZ = 0, rX = 0, rY = 0, rZ = 0;
 
-					for (int i = 0; i + 7 < data.length; i += 8) {
-						int tagId = (int) data[i];
+                    for (int i = 0; i + 7 < data.length; i += 8) {
+                        int tagId = (int) data[i];
+                        System.out.println("tagID: " + tagId);
 
-						double x = data[i + 1], y = data[i + 2], z = data[i + 3];
-						double qw = data[i + 4], qx = data[i + 5], qy = data[i + 6], qz = data[i + 7];
+                        double x = data[i + 1], y = data[i + 2], z = data[i + 3];
+                        double qw = data[i + 4], qx = data[i + 5], qy = data[i + 6], qz = data[i + 7];
 
-						Translation3d translation = new Translation3d(z, -x, -y);
-						Rotation3d rotation = new Rotation3d(new Quaternion(qw, qz, -qx, -qy));
+                        Translation3d translation = new Translation3d(z, -x, -y);
+                        Rotation3d rotation = new Rotation3d(new Quaternion(qw, qz, -qx, -qy));
 
-						Transform3d cameraToTag = new Transform3d(translation, rotation);
+                        Transform3d cameraToTag = new Transform3d(translation, rotation);
 
-						Optional<Pose3d> maybeTagPose = tags.getTagPose(tagId);
+                        Optional<Pose3d> maybeTagPose = tags.getTagPose(tagId);
 
-						if (maybeTagPose.isEmpty()) {
-							System.err.println("WARN: Unknown tag id " + tagId + "detected");
-							break;
-						}
+                        if (maybeTagPose.isEmpty()) {
+                            System.err.println("WARN: Unknown tag id " + tagId + "detected");
+                            break;
+                        }
 
-						Pose3d fieldTagPose = maybeTagPose.get();
-						Pose3d fieldTagPoseFlipped = new Pose3d(fieldTagPose.getTranslation(),
-								fieldTagPose.getRotation().rotateBy(new Rotation3d(0, 0, Math.PI)));
+                        Pose3d fieldTagPose = maybeTagPose.get();
+                        Pose3d fieldTagPoseFlipped = new Pose3d(fieldTagPose.getTranslation(),
+                                fieldTagPose.getRotation().rotateBy(new Rotation3d(0, 0, Math.PI)));
 
-						Transform3d robotToTag = robotToCamera.plus(cameraToTag);
-						Pose3d robotPose = fieldTagPoseFlipped.transformBy(robotToTag.inverse());
+                        Transform3d robotToTag = robotToCamera.plus(cameraToTag);
+                        Pose3d robotPose = fieldTagPoseFlipped.transformBy(robotToTag.inverse());
 
-						n++;
+                        n++;
 
-						pX += robotPose.getX();
-						pY += robotPose.getY();
-						pZ += robotPose.getZ();
+                        pX += robotPose.getX();
+                        pY += robotPose.getY();
+                        pZ += robotPose.getZ();
 
-						rX += robotPose.getRotation().getX();
-						rY += robotPose.getRotation().getY();
-						rZ += robotPose.getRotation().getZ();
-					}
+                        rX += robotPose.getRotation().getX();
+                        rY += robotPose.getRotation().getY();
+                        rZ += robotPose.getRotation().getZ();
+                    }
 
-					if (n != 0) {
+                    if (n != 0) {
 
-						cached.pose = new Pose3d(pX / n, pY / n, pZ / n, new Rotation3d(rX / n, rY / n, rZ / n));
-						cached.timestamp = event.valueData.value.getTime();
-						// TODO: calculate standard deviations of pose measurement.
-						cached.stdDev = null;
+                        cached.pose = new Pose3d(pX / n, pY / n, pZ / n, new Rotation3d(rX / n, rY / n, rZ / n));
+                        cached.timestamp = Timer.getFPGATimestamp();//event.valueData.value.getTime();
+                        
+                        // TODO: calculate standard deviations of pose measurement.
+                        cached.stdDev = null;
 
-						measurement.accept(cached);
+                        measurement.accept(cached);
 
-						ntOut.set(cached.pose);
-					}
-				});
-	}
+                        ntOut.set(cached.pose);
+                    }
+                });
+    }
 }

@@ -6,30 +6,51 @@ import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.ejml.simple.SimpleMatrix;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.*;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.*;
+import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.*;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.*;
 import com.pathplanner.lib.util.*;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.struct.Pose2dStruct;
 import edu.wpi.first.math.geometry.struct.Pose3dStruct;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.config.SwerveConfig;
+import frc.system.vision.Nt;
 import frc.system.vision.Vision;
 import frc.system.vision.Vision.Measurement;
 
@@ -82,6 +103,10 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
         this.ppConstraints = constraints;
         configurePathPlanner();
 
+        cachedFieldCentricFacing.HeadingController = new PhoenixPIDController(8, 0, 0);
+
+        // Vistion
+        setVisionMeasurementStdDevs(new Matrix<N3, N1>(new SimpleMatrix(new double[] { 1.0, 1.0, 1.0 })));
         // Logging
         ntPose2d = Table.getStructTopic("Pose2d", new Pose2dStruct()).publish();
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
@@ -182,9 +207,10 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
 
     public Command zeroGyro() {
         return runOnce(() -> {
-            hasPose = false;
-            seedFieldRelative(
-                    new Pose2d(Units.inchesToMeters(600), Units.inchesToMeters(218), Rotation2d.fromDegrees(0)));
+            // hasPose = false;
+            seedFieldRelative(new Pose2d());
+            // new Pose2d(Units.inchesToMeters(600), Units.inchesToMeters(218),
+            // Rotation2d.fromDegrees(0)));
         });
 
         // return runOnce(() -> {
@@ -193,6 +219,15 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
         // new Pose2d(Units.inchesToMeters(600), Units.inchesToMeters(218),
         // Rotation2d.fromDegrees(270)));
         // });
+    }
+
+    public Command zeroGyroToSubwoofer() {
+        return runOnce(() -> {
+            // hasPose = false;
+            seedFieldRelative(
+                    new Pose2d(Units.inchesToMeters(600), Units.inchesToMeters(218),
+                            Rotation2d.fromDegrees(0)));
+        });
     }
 
     public Command driveTo(Pose2d target, double velocity) {
@@ -207,21 +242,38 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     /**
      * Values are squared!!!! this adds more perdition at low speeds
      *
-     * @param xVel [-1,1] percent speed + is forward
-     * @param yVel [-1,1] percent speed + is Left
-     * @param rVel [-1, 1] percent angler rate + CC+ // TODO: check this value
+     * @param xDutyCycle [-1,1] percent speed + is forward
+     * @param yDutyCycle [-1,1] percent speed + is Left
+     * @param rDutyCycle [-1, 1] percent angler rate + CC+ // TODO: check this value
      * @return
      */
-    public Command drive(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
-        return applyRequest(() -> {
-            double x = xVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps;
-            double y = yVel.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps;
 
-            if (rotationOverride == null)
+    public Command driveDutyCycle(DoubleSupplier xDutyCycle, DoubleSupplier yDutyCycle, DoubleSupplier rDutyCycle) {
+        return applyRequest(() -> {
+            double x = xDutyCycle.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps;
+            double y = yDutyCycle.getAsDouble() * SwerveConfig.kSpeedAt12VoltsMps;
+            double r = rDutyCycle.getAsDouble() * SwerveConfig.kMaxAngularRate;
+
+            if (rotationOverride == null) {
                 return cachedFieldCentric.withVelocityX(x).withVelocityY(y)
-                        .withRotationalRate(rVel.getAsDouble() * SwerveConfig.kMaxAngularRate);
-            else
-                return cachedFieldCentricFacing.withVelocityX(x).withVelocityY(y).withTargetDirection(rotationOverride);
+                        .withRotationalRate(r);
+            } else {
+                System.out.println("fasing angle");
+
+                return cachedFieldCentricFacing.withVelocityX(x).withVelocityY(y)
+                        .withTargetDirection(rotationOverride);
+            }
+
+        });
+    }
+
+    public Command driveVelocity(DoubleSupplier xVel, DoubleSupplier yVel, DoubleSupplier rVel) {
+        return applyRequest(() -> {
+            double x = xVel.getAsDouble();
+            double y = yVel.getAsDouble();
+            double r = rVel.getAsDouble();
+            return cachedFieldCentric.withVelocityX(x).withVelocityY(y)
+                    .withRotationalRate(r);
         });
     }
 
@@ -231,15 +283,26 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     }
 
     // ---------- Vision ----------
-    private final double xError = 1;
-    private final double yError = 1;
+    private final double xError = 1.0;
+    private final double yError = 1.0;
+    private boolean trashingTag = false;
 
     public void accept(Measurement t) {
+        SmartDashboard.putBoolean("trashing Tag", trashingTag);
+        SmartDashboard.putBoolean("hasPose", hasPose);
         if (hasPose) {
-            Transform2d errorPose = t.pose().toPose2d().minus(this.pose());
-            if (Math.abs(errorPose.getX() - xError) > 1 || Math.abs(errorPose.getY() - yError) > 1) {
+            SmartDashboard.putNumber("VistionX", t.pose().toPose2d().getX());
+            SmartDashboard.putNumber("VistionY", t.pose().toPose2d().getY());
+            SmartDashboard.putNumber("RobotX", this.pose().getX());
+            SmartDashboard.putNumber("RobotY", this.pose().getY());
+            Translation2d errorPose = t.pose().toPose2d().minus(this.pose()).getTranslation();
+            SmartDashboard.putNumber("errorX", errorPose.getX());
+            SmartDashboard.putNumber("errorY", errorPose.getY());
+            if (Math.abs(errorPose.getX()) > xError || Math.abs(errorPose.getY()) > yError) {
+                trashingTag = true;
                 return;
             }
+            trashingTag = false;
             if (t.stdDev() != null) {
 
                 addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
@@ -248,8 +311,44 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
             }
         } else {
             seedFieldRelative(t.pose().toPose2d());
+
             hasPose = true;
         }
+    }
+
+    private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
+            Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
+    // private StructPublisher<Pose2d> publisher =
+    // NetworkTableInstance.getDefault().getTable("Subsystems")
+    // .getStructTopic("MyPose", Pose2d.struct).publish();\
+    // Forward Camera
+    PhotonCamera cam = new PhotonCamera("cam1");
+
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    // Construct PhotonPoseEstimator
+
+    PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+
+    NetworkTableInstance nt = NetworkTableInstance.getDefault();
+
+    NetworkTable table = nt.getTable("Subsystems");
+
+    StructEntry<Pose2d> ntOut = table.getStructTopic("RobotPose", new Pose2dStruct()).getEntry(new Pose2d());
+
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return photonPoseEstimator.update();
+    }
+
+    public void addPhotonVistion() {
+        Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
+        if (robotPose.isPresent()) {
+            addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
+                    robotPose.get().timestampSeconds);
+            SmartDashboard.putString("pose", robotPose.get().estimatedPose.toPose2d().toString());
+        }
+        // ntOut.set();
     }
 
     // ---------- Sim ----------

@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.system.Pivot;
 import frc.system.Swerve;
@@ -32,6 +33,7 @@ public class AimSpeaker extends Command {
 
     @Override
     public void execute() {
+        System.out.println("thing");
         Pose2d mechanismPose = drivetrain.pose()
                 .plus(new Transform2d(pivot.origin.getX(), pivot.origin.getY(),
                         new Rotation2d()));
@@ -41,13 +43,14 @@ public class AimSpeaker extends Command {
 
         // Drivetrain yaw
         double yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
-
-        drivetrain.setRotationOverride(new Rotation2d(yaw));
+        SmartDashboard.putNumber("yaw", yaw);
+        drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
 
         // Pivot pitch
         double distance = vectorToSpeaker.getNorm();
         double pitch = Math.asin(vectorToSpeaker.getZ() / distance);
-
+        SmartDashboard.putNumber("distance", distance);
+        SmartDashboard.putNumber("pitch", pitch);
         pivot.aimAt(distance, pitch);
     }
 

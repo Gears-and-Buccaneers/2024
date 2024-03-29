@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.cmd.AimSpeaker;
 import frc.config.SwerveConfig;
 import frc.system.*;
+import frc.system.vision.Nt;
 
 public final class Main extends TimedRobot {
     public static void main(String... args) {
@@ -115,18 +116,20 @@ public final class Main extends TimedRobot {
 
         // ----------- DRIVER CONTROLS -----------
 
-        drivetrain.setDefaultCommand(drivetrain.drive(
+        drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
                 () -> squareInput(driver.getLeftY()),
                 () -> squareInput(driver.getLeftX()),
                 // TODO: ask if driver wants turning squared as well
                 () -> -driver.getRightX()));
-
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
+        driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
         driver.leftTrigger().onTrue(cmds.intakeNote());
         driver.leftTrigger().onTrue(new InstantCommand(() -> {
             System.out.println("Intakeing Note");
         }));
+
+        driver.a().onTrue(transit.feedIn());
 
         // ---------- OPERATOR CONTROLS ----------
 
@@ -157,7 +160,7 @@ public final class Main extends TimedRobot {
         });
 
         // TODO: check speed of back-out
-        autonomousChooser.addOption("Back-out (NO PP)", drivetrain.drive(() -> -0.5, () -> 0, () -> 0));
+        autonomousChooser.addOption("Back-out (NO PP)", drivetrain.driveDutyCycle(() -> -0.5, () -> 0, () -> 0));
 
         autonomousChooser.addOption("Shoot",
                 cmds.primeSpeaker().raceWith(
@@ -169,7 +172,12 @@ public final class Main extends TimedRobot {
         autonomousChooser.addOption("Shoot against subwoofer",
                 new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
 
-        drivetrain.addPPAutos(autonomousChooser);
+        autonomousChooser.addOption("Drive 5m",
+                drivetrain.driveVelocity(() -> -1, () -> 0, () -> 0)
+                        .until(() -> {
+                            return drivetrain.pose().getX() < -3.0;
+                        }).andThen(drivetrain.brake()));
+        // drivetrain.addPPAutos(autonomousChooser);
 
         SmartDashboard.putData("auto", autonomousChooser);
     }
@@ -190,6 +198,7 @@ public final class Main extends TimedRobot {
         if (isSimulation()) {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
+
         // TODO: re-enable vision once the jitter is solved.
         // new Nt().register(drivetrain);
 
@@ -200,6 +209,7 @@ public final class Main extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        drivetrain.addPhotonVistion();
     }
 
     @Override
