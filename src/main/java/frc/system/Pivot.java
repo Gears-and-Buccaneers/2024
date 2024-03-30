@@ -205,7 +205,6 @@ public class Pivot implements LoggedSubsystems {
             }
         };
 
-        cmd.withName(simpleName + "dutyCycleCtrl");
         cmd.addRequirements(this);
         return cmd;
     }
@@ -240,7 +239,6 @@ public class Pivot implements LoggedSubsystems {
             }
         };
 
-        cmd.withName(simpleName + "MMPositionCtrl");
         cmd.addRequirements(this);
         return cmd;
     }
@@ -259,7 +257,6 @@ public class Pivot implements LoggedSubsystems {
             }
         };
 
-        cmd.withName(simpleName + "Stop");
         cmd.addRequirements(this);
         return cmd;
     }
@@ -274,7 +271,6 @@ public class Pivot implements LoggedSubsystems {
      */
     public Command toSubwoofer() {
         Command cmd = MMPositionCtrl(subwooferPosition);
-        cmd.withName(simpleName + "toSubwoofer");
 
         return cmd;
     }
@@ -287,7 +283,6 @@ public class Pivot implements LoggedSubsystems {
      */
     public Command toAmp() {
         Command cmd = MMPositionCtrl(ampPosition);
-        cmd.withName(simpleName + "toAmp");
 
         return cmd;
     }
@@ -300,7 +295,6 @@ public class Pivot implements LoggedSubsystems {
      */
     public Command toIntake() {
         Command cmd = MMPositionCtrl(intakePosition);
-        cmd.withName(simpleName + "toIntake");
 
         return cmd;
     }
@@ -315,7 +309,7 @@ public class Pivot implements LoggedSubsystems {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         // Hardware
         leftMotor.close();
         rightMotor.close();

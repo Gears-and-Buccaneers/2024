@@ -8,6 +8,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.system.Pivot;
 import frc.system.Swerve;
 
-public class AimSpeaker extends Command implements AutoCloseable {
+public class AimSpeaker extends Command {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Subsystems
@@ -39,9 +40,9 @@ public class AimSpeaker extends Command implements AutoCloseable {
     private final Translation3d speakerPosition;
     private DoubleSubscriber fudeFactor;
 
-    public AimSpeaker(Swerve drivetrain, Pivot pivot, NetworkTable networkTable) {
+    public AimSpeaker(Swerve drivetrain, Pivot pivot) {
         // Network tables
-        this.autoAimTable = networkTable.getSubTable(simpleName);
+        this.autoAimTable = NetworkTableInstance.getDefault().getTable("Commands").getSubTable(simpleName);
 
         this.autoAimTable.getDoubleTopic("RotationFudge").publish();
         rotationFudge = autoAimTable.getDoubleTopic("RotationFudge").subscribe(0);
@@ -90,11 +91,6 @@ public class AimSpeaker extends Command implements AutoCloseable {
         rotations1 = Units
                 .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance / distance1) - pitch1);
 
-        SmartDashboard.putNumber("yaw", yaw1);
-        SmartDashboard.putNumber("rotations", rotations1);
-        SmartDashboard.putNumber("distance", distance1);
-        SmartDashboard.putNumber("pitch", pitch1);
-
     }
 
     @Override
@@ -122,8 +118,7 @@ public class AimSpeaker extends Command implements AutoCloseable {
 
     }
 
-    @Override
-    public void close() throws Exception {
+    public void close() {
         // Subsystems
         drivetrain.close();
         pivot.close();

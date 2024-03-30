@@ -130,7 +130,6 @@ public class Shooter implements LoggedSubsystems {
             }
         };
 
-        cmd.withName(simpleName + "feed");
         cmd.addRequirements(this);
         return cmd;
     }
@@ -149,7 +148,6 @@ public class Shooter implements LoggedSubsystems {
             }
         };
 
-        cmd.withName(simpleName + "Stop");
         cmd.addRequirements(this);
         return cmd;
     }
@@ -163,7 +161,6 @@ public class Shooter implements LoggedSubsystems {
      */
     public Command shootSpeaker() {
         Command cmd = VelocityOpenLoop(true, speakerSpeed.get());
-        cmd.withName(simpleName + "ShootSpeaker");
 
         return cmd;
     }
@@ -180,7 +177,6 @@ public class Shooter implements LoggedSubsystems {
      */
     public Command shootSpeaker(double k, double c) {
         Command cmd = VelocityOpenLoop(true, speakerSpeed.get() * k + c);
-        cmd.withName(simpleName + "ShootSpeaker");
 
         return cmd;
     }
@@ -193,7 +189,6 @@ public class Shooter implements LoggedSubsystems {
      */
     public Command shootAmp() {
         Command cmd = VelocityOpenLoop(true, 1000);
-        cmd.withName(simpleName + "ShootAmp");
 
         return cmd;
     }
@@ -206,7 +201,6 @@ public class Shooter implements LoggedSubsystems {
      */
     public Command reverse() {
         Command cmd = VelocityOpenLoop(false, 500);
-        cmd.withName(simpleName + "Reverse");
 
         return cmd;
     }
@@ -217,7 +211,6 @@ public class Shooter implements LoggedSubsystems {
      *         at the desired velocity
      */
     public Command waitPrimed() {// TODO: not quite sure if this will work
-
         double leftMotorError = Math
                 .abs(leftMotor.getRotorVelocity().getValue() - DutyCycleCtrlMode.Output * maxShooterSpeed);
         double rightMotorError = Math

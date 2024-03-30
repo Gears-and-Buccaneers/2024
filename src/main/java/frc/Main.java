@@ -54,9 +54,6 @@ public final class Main extends TimedRobot {
     private final Pivot pivot = new Pivot(subsystemsTable);
 
     // Commands
-    private final NetworkTable commandsTable = NetworkTableInstance.getDefault().getTable("Commands");
-
-    private final Command aimAtSpeaker = new AimSpeaker(drivetrain, pivot, commandsTable);
 
     // Utilities
     static double squareInput(double input) {
@@ -91,7 +88,7 @@ public final class Main extends TimedRobot {
         }
 
         Command primeSpeaker() {
-            return aimAtSpeaker.alongWith(shooter.shootSpeaker());
+            return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
         }
 
         Command primeSubwoofer() {
@@ -128,11 +125,12 @@ public final class Main extends TimedRobot {
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
-        driver.leftTrigger().onTrue(cmds.intakeNote());
+        // driver.leftTrigger().onTrue(cmds.intakeNote());
 
-        // driver.a().onTrue(transit.feedIn());
-        // driver.leftTrigger().whileTrue(cmds.primeSpeaker());
-        // driver.rightTrigger().whileTrue(transit.runForwards());
+        driver.a().onTrue(transit.feedIn());
+        driver.leftTrigger().whileTrue(cmds.primeSpeaker());
+        driver.rightTrigger().whileTrue(transit.runForwards());
+        driver.y().whileTrue(shooter.shootSpeaker());
         // ---------- OPERATOR CONTROLS ----------
 
         // TODO: Pathfind to the amp using a PathfindToPose command
@@ -186,15 +184,15 @@ public final class Main extends TimedRobot {
 
     private void configNamedCommands() {
 
-        NamedCommands.registerCommand("intake",
-                // cmds.intakeNote().alongWith(
-                new InstantCommand(() -> System.out.println("intake")));
-        NamedCommands.registerCommand("feed",
-                // cmds.waitThenFeed().alongWith(
-                new InstantCommand(() -> System.out.println("feed")));
-        // NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
-        NamedCommands.registerCommand("primeSpeaker",
-                cmds.primeSpeaker());
+        // NamedCommands.registerCommand("intake",
+        //         // cmds.intakeNote().alongWith(
+        //         new InstantCommand(() -> System.out.println("intake")));
+        // NamedCommands.registerCommand("feed",
+        //         // cmds.waitThenFeed().alongWith(
+        //         new InstantCommand(() -> System.out.println("feed")));
+        // // NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
+        // NamedCommands.registerCommand("primeSpeaker",
+        //         cmds.primeSpeaker());
     }
 
     @Override
