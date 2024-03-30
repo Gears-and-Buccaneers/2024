@@ -73,14 +73,16 @@ public class Pivot implements LoggedSubsystems {
     /** The position for shooting into the amp, in rotations. */
     public final double ampPosition = 0.25;
 
+    /** the default max value for the dutyCycle ctrl mode */
+    private final double dutyCycleMaxDefault = .3;
+
     // ---------- Config ----------
     public Pivot(NetworkTable networkTable) {
-
         // Network tables
-        pivotTable = networkTable.getSubTable(simpleName);
+        this.pivotTable = networkTable.getSubTable(simpleName);
 
         this.pivotTable.getDoubleTopic("speed").publish();
-        dutyCycleMax = pivotTable.getDoubleTopic("speed").subscribe(0.3);
+        dutyCycleMax = pivotTable.getDoubleTopic("speed").subscribe(dutyCycleMaxDefault);
 
         setpoint = this.pivotTable.getDoubleTopic("setpoint").publish();
         actualRotation = this.pivotTable.getDoubleTopic("actualRotation").publish();
@@ -102,12 +104,15 @@ public class Pivot implements LoggedSubsystems {
     }
 
     /**
-     * configs both of the motors with the
+     * configs both of the talonFX with the
      * <ol>
+     * <li>NeutralMode</li>
+     * <li>gearRatio</li>
+     * <li>SoftwareLimitSwitch</li>
      * <li>motion magic values/PID values</li>
-     * <li>adds a curet limit</li>
-     * <li>invert the motor</li>
-     * <li>zeros to the intake pose</li>
+     * <li>curet limit</li>
+     * <li>inversion</li>
+     * <li>and zeros to the intake pose</li>
      * </ol>
      */
     public void configMotor() {
@@ -169,7 +174,7 @@ public class Pivot implements LoggedSubsystems {
         rightMotor.setPosition(intakePosition);
     }
 
-    // ---------- different Command CtrlModes ----------
+    // ---------- Command CtrlModes ----------
     /**
      * Controls the pivot based on a DutyCycle supplier. Used for manual
      * controller-based override control.
@@ -184,6 +189,10 @@ public class Pivot implements LoggedSubsystems {
     public Command dutyCycleCtrl(DoubleSupplier dutyCycle) {
         Command cmd = new Command() {
             public void execute() {
+                if (dutyCycle.getAsDouble() > 1 || dutyCycle.getAsDouble() < -1) {
+                    DriverStation.reportWarning(
+                            "setting pivot dutyCycle outside of controllable range", true);
+                }
                 DutyCycleCtrlMode.Output = -dutyCycle.getAsDouble() * dutyCycleMax.getAsDouble();
 
                 leftMotor.setControl(DutyCycleCtrlMode);
@@ -217,7 +226,7 @@ public class Pivot implements LoggedSubsystems {
             public void initialize() {
                 if (rotations > ampPosition || rotations < intakePosition) {
                     DriverStation.reportWarning(
-                            "setting intake position outside of reachable range, THIS COULD DAMAGE THE ROBOT", true);
+                            "setting pivot position outside of reachable range, THIS COULD DAMAGE THE ROBOT", true);
                 }
                 MotionMagicCtrlMode.Position = rotations;
 
@@ -232,6 +241,25 @@ public class Pivot implements LoggedSubsystems {
         };
 
         cmd.withName(simpleName + "MMPositionCtrl");
+        cmd.addRequirements(this);
+        return cmd;
+    }
+
+    /**
+     * stops/disable the shooter motors
+     * 
+     * @return a command that requires the shooter and when on ends the motors are
+     *         disabled
+     */
+    public Command stop() {
+        Command cmd = new Command() {
+            public void initialize() {
+                leftMotor.disable();
+                rightMotor.disable();
+            }
+        };
+
+        cmd.withName(simpleName + "Stop");
         cmd.addRequirements(this);
         return cmd;
     }
