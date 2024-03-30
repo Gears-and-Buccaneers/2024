@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -40,6 +39,11 @@ public class AimSpeaker extends Command {
         addRequirements(pivot);
     }
 
+    private double yaw;
+    private double distance;
+    private double pitch;
+    private double rotations;
+
     public void doMath() {
         Pose2d mechanismPose = drivetrain.pose()
                 .plus(new Transform2d(pivot.origin.getX(), pivot.origin.getY(),
@@ -49,13 +53,14 @@ public class AimSpeaker extends Command {
         Translation3d vectorToSpeaker = speakerPosition.minus(mechanism);
 
         // Drivetrain yaw
-        double yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
+        yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
         yaw += fudeFactor.get(0);
         SmartDashboard.putNumber("yaw", yaw);
 
-        double distance = vectorToSpeaker.getNorm();
-        double pitch = Math.asin(vectorToSpeaker.getZ() / distance);
-        double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
+        distance = vectorToSpeaker.getNorm();
+        pitch = Math.asin(vectorToSpeaker.getZ() / distance);
+        rotations = Units
+                .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance / distance) - pitch);
 
         SmartDashboard.putNumber("rotations", rotations);
         SmartDashboard.putNumber("distance", distance);
@@ -65,6 +70,8 @@ public class AimSpeaker extends Command {
 
     @Override
     public void execute() {
+        doMath();
+
         drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
         // pivot.setSetpoint(rotations);
         alongWith(pivot.MMPositionCtrl(rotations)); // Testing this is this does not work the above line works
