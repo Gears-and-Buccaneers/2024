@@ -103,7 +103,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
         this.ppConstraints = constraints;
         configurePathPlanner();
 
-        cachedFieldCentricFacing.HeadingController = new PhoenixPIDController(8, 0, 0);
+        cachedFieldCentricFacing.HeadingController = new PhoenixPIDController(4, 0, 0);
 
         // Vistion
         setVisionMeasurementStdDevs(new Matrix<N3, N1>(new SimpleMatrix(new double[] { 1.0, 1.0, 1.0 })));
@@ -316,8 +316,8 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
         }
     }
 
-    private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
-            Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
+    private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 2.250), 0,
+            Units.inchesToMeters(7.5 + 0.768), new Rotation3d(0, Units.degreesToRadians(-37.125), 0));
     // private StructPublisher<Pose2d> publisher =
     // NetworkTableInstance.getDefault().getTable("Subsystems")
     // .getStructTopic("MyPose", Pose2d.struct).publish();\

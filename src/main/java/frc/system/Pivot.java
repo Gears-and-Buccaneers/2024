@@ -14,49 +14,54 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class Pivot implements Subsystem {
-    public final Translation3d origin = new Translation3d(Units.inchesToMeters(27 / 2 - 4), 0,
-            Units.inchesToMeters(21.75));
-
-    /**
-     * The shooter degree offset from being perpendicular to the arm, in radians.
-     */
-    private final double armOffsetRad;
-    private final double exitDistance;
-
-    private final MotionMagicDutyCycle positionCtrl = new MotionMagicDutyCycle(0);
-
-    private final double defaultDeadband;
-    /** The position for intaking, in rotations. */
-    private final double intakePosition;
-    /** The position for shooting into the amp, in rotations. */
-    private final double ampPosition;
-
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
     private TalonFX leftMotor;
     private TalonFX rightMotor;
+    private final MotionMagicDutyCycle positionCtrl = new MotionMagicDutyCycle(0);
 
     // Network
     private NetworkTable table;
 
     private DoubleSubscriber outputMax;
 
-    private final double subwooferPosition;
+    // Vars ------------
+    /** The position for scoring in the speaker from the subwoofer, in rotations. */
+    public final double subwooferPosition;
+    /** The position for intaking, in rotations. */
+    public final double intakePosition;
+    /** The position for shooting into the amp, in rotations. */
+    public final double ampPosition;
+    /**
+     * the center of the pivot bar relative to the center of the robot on the ground
+     */
+    public final Translation3d origin = new Translation3d(Units.inchesToMeters(27 / 2 - 4), 0,
+            Units.inchesToMeters(21.75));
+    /**
+     * The shooter degree offset from being perpendicular to the arm, Radians.
+     */
+    public final double armOffsetRad;
+    /** i have know idea what this is */
+    public final double exitDistance;
+    /**
+     * the length from the center of the pivot to the center of the transit Meters
+     */
+    public final double armLength = 0.43;
+    /** the deadband for the pivot setpoint Rotations */
+    public final double defaultDeadband;
 
     /**
      * Assumes 90 degree angle is 0 and the intake position has negative rotational
      * sign.
      */
     public Pivot(NetworkTable networkTable) {
-        double armLength = 0.43;
+        // Vars
         armOffsetRad = Units.degreesToRadians(52);
-
         exitDistance = armLength * Math.sin(armOffsetRad);
 
         defaultDeadband = 0.01;
@@ -65,19 +70,24 @@ public class Pivot implements Subsystem {
         ampPosition = 0.25;
         subwooferPosition = -0.0530455469;
 
+        // Network tables
         table = networkTable.getSubTable(simpleName);
 
+        this.table.getDoubleTopic("speed").publish();
+        outputMax = table.getDoubleTopic("speed").subscribe(0.3);
+
+        // Hardware
         leftMotor = new TalonFX(12);
         rightMotor = new TalonFX(13);
 
         configPID();
+
         register();
     }
 
     public void configPID() {
-        this.table.getDoubleTopic("speed").publish();
-        outputMax = table.getDoubleTopic("speed").subscribe(0.3);
         TalonFXConfiguration pivotConf = new TalonFXConfiguration();
+
         pivotConf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         pivotConf.Feedback.SensorToMechanismRatio = 100;
         pivotConf.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
@@ -102,6 +112,7 @@ public class Pivot implements Subsystem {
 
         pivotConf.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         leftMotor.getConfigurator().apply(pivotConf);
+
         pivotConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         rightMotor.getConfigurator().apply(pivotConf);
 
@@ -182,17 +193,6 @@ public class Pivot implements Subsystem {
     }
 
     /**
-     * Continuously aims at a point `distance` meters away from the pivot origin,
-     * with an angle of elevation of `pitch` radians.
-     */
-    public void aimAt(double distance, double pitch) {
-        double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
-        SmartDashboard.putNumber("rotations", rotations);
-        setSetpoint(rotations);
-
-    }
-
-    /**
      * Returns true if the pivot is aimed, within deadband, to the last set rotation
      * setpoint.
      */
@@ -207,5 +207,10 @@ public class Pivot implements Subsystem {
     public void zeroToIntake() {
         leftMotor.setPosition(intakePosition);
         rightMotor.setPosition(intakePosition);
+    }
+
+    @Override
+    public void periodic() {
+
     }
 }

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -87,6 +88,9 @@ public class Shooter implements Subsystem {
 
                 leftMotor.setControl(output);
                 rightMotor.setControl(output);
+                double speed = leftMotor.getVelocity().getValue() + rightMotor.getVelocity().getValue();
+                speed /= 2;
+                SmartDashboard.putNumber("ShooterSppeddd", speed);
             }
 
             public void end(boolean interrupted) {

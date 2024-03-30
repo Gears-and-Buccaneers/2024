@@ -86,7 +86,7 @@ public final class Main extends TimedRobot {
         }
 
         Command primeSpeaker() {
-            return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
+            return new AimSpeaker(drivetrain, pivot);//.alongWith(shooter.shootSpeaker());
         }
 
         Command primeSubwoofer() {
@@ -124,13 +124,13 @@ public final class Main extends TimedRobot {
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
-        driver.leftTrigger().onTrue(cmds.intakeNote());
-        driver.leftTrigger().onTrue(new InstantCommand(() -> {
-            System.out.println("Intakeing Note");
-        }));
+        // driver.leftTrigger().onTrue(cmds.intakeNote());
 
         driver.a().onTrue(transit.feedIn());
-
+        driver.y().onTrue(shooter.shootSpeaker());
+        driver.y().onFalse(shooter.stop());
+        driver.leftTrigger().whileTrue(cmds.primeSpeaker());
+        driver.rightTrigger().whileTrue(transit.runForwards());
         // ---------- OPERATOR CONTROLS ----------
 
         // TODO: Pathfind to the amp using a PathfindToPose command
@@ -138,6 +138,7 @@ public final class Main extends TimedRobot {
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
         operator.rightTrigger().whileTrue(transit.runForwards());
 
+        operator.a().onTrue(transit.feedIn());
         operator.b().whileTrue(transit.runBackward());
         operator.x().whileTrue(intake.runOut());
         operator.y().whileTrue(cmds.primeSubwoofer());
