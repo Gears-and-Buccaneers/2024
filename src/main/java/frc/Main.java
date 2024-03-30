@@ -27,10 +27,9 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-import frc.cmd.AimSpeaker;
 import frc.config.SwerveConfig;
 import frc.system.*;
-import frc.system.vision.Nt;
+import frc.cmd.*;
 
 public final class Main extends TimedRobot {
     public static void main(String... args) {
@@ -52,6 +51,11 @@ public final class Main extends TimedRobot {
     private final Intake intake = new Intake(subsystemsTable);
     private final Shooter shooter = new Shooter(subsystemsTable);
     private final Pivot pivot = new Pivot(subsystemsTable);
+
+    // Commands
+    private final NetworkTable commandsTable = NetworkTableInstance.getDefault().getTable("Commands");
+
+    private final Command aimAtSpeaker = new AimSpeaker(drivetrain, pivot, commandsTable);
 
     // Utilities
     static double squareInput(double input) {
@@ -86,7 +90,7 @@ public final class Main extends TimedRobot {
         }
 
         Command primeSpeaker() {
-            return new AimSpeaker(drivetrain, pivot);// .alongWith(shooter.shootSpeaker());
+            return aimAtSpeaker.alongWith(shooter.shootSpeaker());
         }
 
         Command primeSubwoofer() {
@@ -124,13 +128,11 @@ public final class Main extends TimedRobot {
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
-        // driver.leftTrigger().onTrue(cmds.intakeNote());
+        driver.leftTrigger().onTrue(cmds.intakeNote());
 
-        driver.a().onTrue(transit.feedIn());
-        driver.y().onTrue(shooter.shootSpeaker());
-        driver.y().onFalse(shooter.stop());
-        driver.leftTrigger().whileTrue(cmds.primeSpeaker());
-        driver.rightTrigger().whileTrue(transit.runForwards());
+        // driver.a().onTrue(transit.feedIn());
+        // driver.leftTrigger().whileTrue(cmds.primeSpeaker());
+        // driver.rightTrigger().whileTrue(transit.runForwards());
         // ---------- OPERATOR CONTROLS ----------
 
         // TODO: Pathfind to the amp using a PathfindToPose command

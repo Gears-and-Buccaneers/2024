@@ -23,7 +23,7 @@ public class Transit implements LoggedSubsystems {
 
     private final DoubleTopic transitSpeedTopic;
 
-    // vars
+    // Vars
     /**
      * @param distanceThreshold The LaserCAN distance threshold, in millimeters,
      *                          after which a game piece is considered to be in the
