@@ -38,8 +38,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.config.SwerveConfig;
-import frc.system.vision.Vision;
-import frc.system.vision.Vision.Measurement;
 
 public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
@@ -56,7 +54,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     private final StructPublisher<Pose3d> ntPose3d;
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleState;
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleTarget;
-    private final StructPublisher<Pose2d> visionPose2d;
 
     // ---------- Vision ----------
 
@@ -109,7 +106,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
         ntSwerveModuleState = Table.getStructArrayTopic("SwerveModuleState", SwerveModuleState.struct).publish();
         ntSwerveModuleTarget = Table.getStructArrayTopic("SwerveModuleTarget", SwerveModuleState.struct).publish();
-        visionPose2d = Table.getStructTopic("RobotPose", new Pose2dStruct()).publish();
 
         registerTelemetry((s) -> {
             ntPose2d.set(s.Pose);
@@ -280,49 +276,20 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     }
 
     // ---------- Vision ----------
-    private final double xError = 1.0;
-    private final double yError = 1.0;
-    private boolean trashingTag = false;
 
-    public void accept(Measurement t) {
-        SmartDashboard.putBoolean("trashing Tag", trashingTag);
-        SmartDashboard.putBoolean("hasPose", hasPose);
-        if (hasPose) {
-            SmartDashboard.putNumber("VistionX", t.pose().toPose2d().getX());
-            SmartDashboard.putNumber("VistionY", t.pose().toPose2d().getY());
-            SmartDashboard.putNumber("RobotX", this.pose().getX());
-            SmartDashboard.putNumber("RobotY", this.pose().getY());
-            Translation2d errorPose = t.pose().toPose2d().minus(this.pose()).getTranslation();
-            SmartDashboard.putNumber("errorX", errorPose.getX());
-            SmartDashboard.putNumber("errorY", errorPose.getY());
-            if (Math.abs(errorPose.getX()) > xError || Math.abs(errorPose.getY()) > yError) {
-                trashingTag = true;
-                return;
-            }
-            trashingTag = false;
-            if (t.stdDev() != null) {
+    // private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 -
+    // 2.250), 0,
+    // Units.inchesToMeters(7.5 + 0.768), new Rotation3d(0,
+    // Units.degreesToRadians(-37.125), 0));
+    // // private StructPublisher<Pose2d> publisher =
+    // // NetworkTableInstance.getDefault().getTable("Subsystems")
+    // // .getStructTopic("MyPose", Pose2d.struct).publish();\
+    // // Forward Camera
+    // PhotonCamera cam = new PhotonCamera("cam1");
 
-                addVisionMeasurement(t.pose().toPose2d(), t.timestamp(), t.stdDev());
-            } else {
-                addVisionMeasurement(t.pose().toPose2d(), t.timestamp());
-            }
-        } else {
-            seedFieldRelative(t.pose().toPose2d());
-
-            hasPose = true;
-        }
-    }
-
-    private Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 2.250), 0,
-            Units.inchesToMeters(7.5 + 0.768), new Rotation3d(0, Units.degreesToRadians(-37.125), 0));
-    // private StructPublisher<Pose2d> publisher =
-    // NetworkTableInstance.getDefault().getTable("Subsystems")
-    // .getStructTopic("MyPose", Pose2d.struct).publish();\
-    // Forward Camera
-    PhotonCamera cam = new PhotonCamera("cam1");
-
-    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    // Construct PhotonPoseEstimator
+    // AprilTagFieldLayout aprilTagFieldLayout =
+    // AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    // // Construct PhotonPoseEstimator
     PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
 
