@@ -2,67 +2,32 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7419585748262406,
-      "y": 4.41249682499365
+      "x": 2,
+      "y": 2
     },
-    "rotation": 121.75948008481282
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Note3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ScoreSpeaker"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ScoreSpeaker"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Note6"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ScoreSpeaker"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "primeSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "feed"
+                }
+              }
+            ]
           }
         }
       ]

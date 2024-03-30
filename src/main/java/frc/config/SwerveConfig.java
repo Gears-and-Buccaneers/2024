@@ -9,7 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
 import edu.wpi.first.math.util.Units;
-import frc.system.CtreSwerve;
+import frc.system.Swerve;
 
 public class SwerveConfig {
 
@@ -34,7 +34,7 @@ public class SwerveConfig {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final double kSlipCurrentA = 300.0;
+    private static final double kSlipCurrentA = 172.32;
 
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
@@ -46,7 +46,7 @@ public class SwerveConfig {
 
     private static final double kDriveGearRatio = 7.125;
     private static final double kSteerGearRatio = 21.428571428571427;
-    private static final double kWheelRadiusInches = 2;
+    private static final double kWheelRadiusInches = 1.94;
 
     private static final boolean kSteerMotorReversed = true;
     private static final boolean kInvertLeftSide = false;
@@ -136,7 +136,7 @@ public class SwerveConfig {
             Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches),
             kInvertRightSide);
 
-    public static final CtreSwerve swerve = new CtreSwerve(
+    public static final Swerve swerve = new Swerve(
             new PathConstraints(kSpeedAt12VoltsMps, 4, Units.degreesToRadians(520),
                     Units.degreesToRadians(720)),
             kSpeedAt12VoltsMps, DrivetrainConstants, FrontLeft, FrontRight, BackLeft,

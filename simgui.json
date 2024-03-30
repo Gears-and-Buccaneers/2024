@@ -1,4 +1,13 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX (v6)[1]/Rotor Sensor": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -6,11 +15,6 @@
       "/SmartDashboard/auto": "String Chooser"
     },
     "windows": {
-      "/SmartDashboard/MechThingggy": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/auto": {
         "window": {
           "visible": true

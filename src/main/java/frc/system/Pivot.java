@@ -1,13 +1,10 @@
 package frc.system;
 
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -17,26 +14,26 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class Pivot implements Subsystem {
+    public final Translation3d origin = new Translation3d(Units.inchesToMeters(27 / 2 - 4), 0,
+            Units.inchesToMeters(21.75));
+
     /**
      * The shooter degree offset from being perpendicular to the arm, in radians.
      */
-    final double o;
-    final double a;
+    private final double armOffsetRad;
+    private final double exitDistance;
+
+    private final MotionMagicDutyCycle positionCtrl = new MotionMagicDutyCycle(0);
 
     private final double defaultDeadband;
     /** The position for intaking, in rotations. */
     private final double intakePosition;
     /** The position for shooting into the amp, in rotations. */
     private final double ampPosition;
-    private final double armLength;
 
     private final String simpleName = this.getClass().getSimpleName();
 
@@ -45,74 +42,44 @@ public class Pivot implements Subsystem {
     private TalonFX rightMotor;
 
     // Network
-    private NetworkTable Table;
+    private NetworkTable table;
 
-    private DoubleSubscriber ka;
-    private DoubleSubscriber kd;
-    private DoubleSubscriber kg;
-    private DoubleSubscriber ki;
-    private DoubleSubscriber kp;
-    private DoubleSubscriber ks;
-    private DoubleSubscriber kv;
+    private DoubleSubscriber outputMax;
+    private DoubleSubscriber fudge;
 
-    private DoubleSubscriber speed;
-    private DoubleSubscriber speed3;
-
-    private final Supplier<Translation3d> vectorToSpeaker;
+    private final double subwooferPosition;
 
     /**
      * Assumes 90 degree angle is 0 and the intake position has negative rotational
      * sign.
      */
-    public Pivot(NetworkTable networkTable, Supplier<Translation3d> vectorToSpeaker) {
-        // TODO: the pivot
-        this.defaultDeadband = 0.01;
+    public Pivot(NetworkTable networkTable) {
+        double armLength = 0.43;
+        armOffsetRad = Units.degreesToRadians(52);
 
-        this.intakePosition = -7.161 / 100;
-        this.ampPosition = 0.25;
-        this.armLength = 0.4318;
-        this.vectorToSpeaker = vectorToSpeaker;
+        exitDistance = armLength * Math.sin(armOffsetRad);
 
-        // 11 in
+        defaultDeadband = 0.01;
 
-        o = Units.degreesToRadians(52);
-        a = armLength * Math.sin(o);
+        intakePosition = -7.161 / 100;
+        ampPosition = 0.25;
+        subwooferPosition = -0.0530455469;
 
-        // Motors
-        this.Table = networkTable.getSubTable(simpleName);
+        table = networkTable.getSubTable(simpleName);
 
-        // Motors
         leftMotor = new TalonFX(12);
         rightMotor = new TalonFX(13);
 
         configPID();
-    }
-
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        setDefaultCommand(toIntake());
+        register();
     }
 
     public void configPID() {
-        ka = Table.getDoubleTopic("a").subscribe(0);
-        this.Table.getDoubleTopic("a").publish();
-        kd = Table.getDoubleTopic("d").subscribe(0);
-        this.Table.getDoubleTopic("d").publish();
-        kg = Table.getDoubleTopic("g").subscribe(0);
-        this.Table.getDoubleTopic("g").publish();
-        ki = Table.getDoubleTopic("i").subscribe(0);
-        this.Table.getDoubleTopic("i").publish();
-        kp = Table.getDoubleTopic("p").subscribe(0);
-        this.Table.getDoubleTopic("p").publish();
-        ks = Table.getDoubleTopic("s").subscribe(0);
-        this.Table.getDoubleTopic("s").publish();
-        kv = Table.getDoubleTopic("v").subscribe(0);
-        this.Table.getDoubleTopic("v").publish();
+        this.table.getDoubleTopic("speed").publish();
+        outputMax = table.getDoubleTopic("speed").subscribe(0.3);
 
-        this.Table.getDoubleTopic("speed").publish();
-        speed = Table.getDoubleTopic("speed").subscribe(0.3);
-        this.Table.getDoubleTopic("speed2").publish();
-        speed3 = Table.getDoubleTopic("speed2").subscribe(0.3);
+        this.table.getDoubleTopic("fudge num").publish();
+        fudge = table.getDoubleTopic("fudge num").subscribe(0);
 
         TalonFXConfiguration pivotConf = new TalonFXConfiguration();
         pivotConf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -122,21 +89,17 @@ public class Pivot implements Subsystem {
         pivotConf.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         pivotConf.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.25;
 
+        // pivotConf.Slot0.kP = 13;
+        // pivotConf.Slot0.kG = 0.27;
+        // pivotConf.Slot0.kV = 1.88;
+        // pivotConf.Slot0.kA = 0.01;
+
         pivotConf.Slot0.kP = 13;
-        pivotConf.Slot0.kG = 0.07;
+        pivotConf.Slot0.kG = 0.07; // TODO: check this val
 
-
-        // pivotConf.CurrentLimits.StatorCurrentLimit = 75;
-        // pivotConf.CurrentLimits.StatorCurrentLimitEnable = true;
-        // pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
-        // pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
-        
-        // pivotConf.Slot0.kA = ka.getAsDouble();
-        // pivotConf.Slot0.kD = kd.getAsDouble();
-        // pivotConf.Slot0.kI = ki.getAsDouble();
-        // pivotConf.Slot0.kP = kp.getAsDouble();
-        // pivotConf.Slot0.kS = 70.0;
-        // pivotConf.Slot0.kV = kv.getAsDouble();
+        // TODO: pick a number
+        pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
+        pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         pivotConf.MotionMagic.MotionMagicAcceleration = 0.5;
         pivotConf.MotionMagic.MotionMagicCruiseVelocity = 1;
@@ -146,114 +109,109 @@ public class Pivot implements Subsystem {
         pivotConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         rightMotor.getConfigurator().apply(pivotConf);
 
-        atIntake();
-
-        // startMech();
+        zeroToIntake();
     }
 
-    private double rotationsToSpeaker() {
-        Translation3d vector = vectorToSpeaker.get();
-        double distance = vector.getNorm();
-        double pitch = Math.asin(vector.getZ() / distance);
-        return Units.radiansToRotations(Math.PI - o - Math.asin(a / distance) + pitch);
+    /**
+     * Controls the pivot based on position closed-loop to the specified number of
+     * rotations.
+     */
+    private void setSetpoint(double rotations) {
+        positionCtrl.Position = rotations;
+
+        leftMotor.setControl(positionCtrl);
+        rightMotor.setControl(positionCtrl);
     }
 
-    public Command toSpeaker() {
-        return new Command() {
-            @Override
-            public void execute() {
-                goTo(rotationsToSpeaker());
-            }
-        };
-    }
-
-    public Command manual2(DoubleSupplier speed1) {
-        return new Command() {
-            public void execute() {
-                double s = Math.round(speed1.getAsDouble()) * speed3.getAsDouble();
-                SmartDashboard.putNumber("SetVal", s);
-                leftMotor.setControl(new DutyCycleOut(s));
-                rightMotor.setControl(new DutyCycleOut(s));
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                leftMotor.setControl(new DutyCycleOut(0));
-                rightMotor.setControl(new DutyCycleOut(0));
-            }
-        };
-    }
-
-    public Command manual(DoubleSupplier speed1) {
+    /**
+     * Controls the pivot based on a velocity supplier. Used for manual
+     * controller-based override control.
+     */
+    public Command velocity(DoubleSupplier output) {
         Command cmd = new Command() {
             public void execute() {
-                double s = -speed1.getAsDouble() * speed.getAsDouble();
+                DutyCycleOut ctrl = new DutyCycleOut(-output.getAsDouble() * outputMax.getAsDouble());
 
-                leftMotor.setControl(new DutyCycleOut(s));
-                rightMotor.setControl(new DutyCycleOut(s));
+                leftMotor.setControl(ctrl);
+                rightMotor.setControl(ctrl);
             }
 
             @Override
             public void end(boolean interrupted) {
-                leftMotor.setControl(new DutyCycleOut(0));
-                rightMotor.setControl(new DutyCycleOut(0));
+                leftMotor.disable();
+                rightMotor.disable();
             }
         };
+
         cmd.addRequirements(this);
         return cmd;
     }
 
-    public Command toAmp() {
-        return goToCmd(ampPosition);
-    }
-
-    public Command toIntake() {
-        return goToCmd(intakePosition);
-    }
-
-    public void goTo(double rotations) {
-        leftMotor.setControl(new MotionMagicDutyCycle(rotations));
-        rightMotor.setControl(new MotionMagicDutyCycle(rotations));
-        // arm.setAngle(rotations);
-    }
-
-    public Command goToCmd(double rotations) {
+    /** Returns a command which goes to the specified position, then completes. */
+    public Command toPosition(double rotations) {
         Command cmd = new Command() {
             @Override
             public void initialize() {
-                goTo(rotations);
+                setSetpoint(rotations);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return isAimed();
             }
         };
+
         cmd.addRequirements(this);
         return cmd;
     }
 
-    public boolean isAimedSpeaker() {
-        return isAimedTo(rotationsToSpeaker());
+    /**
+     * Moves the pivot to the position required to shoot into the speaker from the
+     * subwoofer.
+     */
+    public Command subwoofer() {
+        return toPosition(subwooferPosition);
     }
 
-    public boolean isAimedAmp() {
-        return isAimedTo(ampPosition);
+    /**
+     * Moves the pivot to the position required to shoot into the amp.
+     */
+    public Command amp() {
+        return toPosition(ampPosition);
     }
 
-    private boolean isAimedTo(double rotations) {
-        return Math.abs(leftMotor.getPosition().getValueAsDouble() - rotations) < defaultDeadband;
+    /** Moves the pivot to intaking position. */
+    public Command intake() {
+        return toPosition(intakePosition);
     }
 
-    public void atIntake() {
+    /**
+     * Continuously aims at a point `distance` meters away from the pivot origin,
+     * with an angle of elevation of `pitch` radians.
+     */
+    private double a;
+    private double b;
+
+    public void aimAt(double distance, double pitch) {
+        double rotations = Units.radiansToRotations(armOffsetRad + Math.asin(exitDistance / distance) - pitch);
+        rotations += fudge.get(0);
+        setSetpoint(rotations);
+    }
+
+    /**
+     * Returns true if the pivot is aimed, within deadband, to the last set rotation
+     * setpoint.
+     */
+    public boolean isAimed() {
+        return Math.abs(leftMotor.getPosition().getValueAsDouble() - positionCtrl.Position) < defaultDeadband;
+    }
+
+    /**
+     * Zeroes the current pivot position to the value it should be at if it is at
+     * intake position.
+     */
+    public void zeroToIntake() {
         leftMotor.setPosition(intakePosition);
         rightMotor.setPosition(intakePosition);
-    }
-
-    public Mechanism2d mec = new Mechanism2d(33, 4 * 12, new Color8Bit(0, 10, 100));
-
-    public MechanismLigament2d arm;
-
-    private void startMech() {
-        arm = new MechanismLigament2d("Arm", Units.metersToInches(armLength),
-                0, 8,
-                new Color8Bit(100, 10, 200));
-        mec.getRoot("MechThing", 4, 17).append(arm);
-        SmartDashboard.putData("MechThingggy", mec);
     }
 }

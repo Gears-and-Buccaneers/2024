@@ -1,29 +1,27 @@
 package frc.system;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.LaserCan.Measurement;
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class Transit implements Subsystem {
+import frc.hardware.*;
+import edu.wpi.first.networktables.*;
+
+public class Transit implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
-    private TalonSRX transitMotor;
-    private final LaserCan laserCan;
-    public final Trigger hasNoteTrigger = new Trigger(this::hasNote);
+    private final LoggedTalonSRX transitMotor;
+    private final LoggedLaserCan laserCan;
 
     // Network
-    private NetworkTable Table;
-    private DoubleSubscriber transitSpeed;
+    private final NetworkTable Table;
+
+    private final DoubleTopic transitSpeedTopic;
 
     // vars
     /**
@@ -31,99 +29,156 @@ public class Transit implements Subsystem {
      *                          after which a game piece is considered to be in the
      *                          transit.
      */
-    private final double threshold;
+    private final double threshold = 250;
+
+    private final double defaultTransitSpeed = .3; // TODO: mess around with this value
+    private final DoubleSubscriber transitSpeed;
+
+    // Logging
+    private final BooleanPublisher hasNote;
 
     public Transit(NetworkTable networkTable) {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        transitMotor = new TalonSRX(11);
+        transitMotor = new LoggedTalonSRX(11, this.Table, "transitMotor");
 
+        // Configs
         transitMotor.setInverted(true);
 
         transitMotor.setNeutralMode(NeutralMode.Coast);
-        // TODO: CurrentLimit
 
-        // LaserCan
-        laserCan = new LaserCan(0);
-        this.threshold = 250;
+        SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
+        currentLimits.currentLimit = 40;// TODO: find/check value for current limit
+        currentLimits.enable = true;
+
+        transitMotor.configSupplyCurrentLimit(currentLimits);
+
+        // Sensors
+        laserCan = new LoggedLaserCan(0, Table, "LaserCan");
+        // laserCan.setRangingMode(); //TODO: properly config the Laser can
+        // laserCan.setRegionOfInterest();
+        // laserCan.setTimingBudget(null);
 
         // Vars
-        transitSpeed = Table.getDoubleTopic("transitSpeed").subscribe(.4);
-        this.Table.getDoubleTopic("transitSpeed").publish();
+        transitSpeedTopic = Table.getDoubleTopic("transitSpeed"); // TODO: check that this works. i feal its better
+        transitSpeed = transitSpeedTopic.subscribe(defaultTransitSpeed);
+        transitSpeedTopic.publish();
+        // OLD
+        /**
+         * x =
+         * Table.getDoubleTopic("x").subscribe(defaultX);
+         * this.Table.getDoubleTopic("x").publish();
+         */
+
+        // log
+        hasNote = Table.getBooleanTopic("HasNote").publish();
 
         System.out.println("[Init] Creating " + simpleName + " with:");
         System.out.println("\t" + transitMotor.getClass().getSimpleName() + " ID:" + transitMotor.getDeviceID());
         System.out.println("\t" + laserCan.getClass().getSimpleName());
 
         this.log();
+        register();
     }
 
-    public boolean hasNote() {
+    // ---------- Generic Control ----------
+
+    /**
+     * runs the transit with PercentOutput control w/ "transitSpeed" from NT or
+     * defaultTransitSpeed if no val in NT
+     * 
+     * @param forwards        runs the transit forward when true and backwards when
+     *                        false.
+     * @param percentMaxSpeed the percent of max speed the transit should be ran at
+     */
+    private Command feed(boolean forwards, double percentMaxSpeed) {
+        Command cmd = new Command() {
+            public void initialize() {
+                double speed = forwards ? transitSpeed.get(defaultTransitSpeed)
+                        : -transitSpeed.get(defaultTransitSpeed);
+                speed *= percentMaxSpeed;
+
+                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            }
+
+            public void end(boolean interrupted) {
+                disable();
+            }
+        };
+        cmd.addRequirements(this);
+        return cmd;
+    }
+
+    /**
+     * disables the transit
+     */
+    private void disable() {
+        transitMotor.set(TalonSRXControlMode.Disabled, 0);
+    }
+
+    /**
+     * 
+     * @return true if the transit has a note and false if the transit does not have
+     *         a note
+     */
+    private boolean hasNote() {
         Measurement measurement = laserCan.getMeasurement();
-        return measurement != null && measurement.distance_mm < threshold;
+        // NOTE: expanded logic so easer to understand
+        if (measurement == null) {
+            return false;
+        }
+        return measurement.distance_mm < threshold;
     }
 
-    public Command runSlow() {
-        return new Command() {
-            @Override
-            public void initialize() {
-                double speed = transitSpeed.get() * 0.25;
-                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
-            }
+    // ---------- Commands ----------
 
-            @Override
-            public void end(boolean interrupted) {
-                transitMotor.set(TalonSRXControlMode.Disabled, 0);
-            }
-        };
+    /**
+     * Feeds a note into the transit until it hits the sensor, then backfeeds at
+     * 20%(scaled from max power) power until it is no longer detected.
+     * 
+     * @apiNote DEPENDS on sensors
+     */
+    public Command feedIn() {
+        return feed(true, .75).until(() -> hasNote())
+                .andThen(feed(false, 0.5).until(() -> !hasNote()));
+        // TODO: check if 20% power backfeeed is to much
     }
 
-    public Command run(boolean forwards) {
-        return new Command() {
-            @Override
-            public void initialize() {
-                double speed = forwards ? transitSpeed.get() : -transitSpeed.get();
-                transitMotor.set(TalonSRXControlMode.PercentOutput, speed);
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                transitMotor.set(TalonSRXControlMode.Disabled, 0);
-            }
-        };
+    /**
+     * Feeds the transit until a note is no longer detected.
+     * 
+     * @apiNote DEPENDS on sensors
+     */
+    public Command feedOut() {
+        return feed(false, 1).until(() -> !hasNote());
     }
 
-    // Commands
-
-    public Command autoShoot() {
-        return run(true)
-                .raceWith(new WaitUntilCommand(this::hasNote).andThen(new WaitUntilCommand(() -> !hasNote())));
+    public Command runForwards() {
+        return feed(true, 1);
     }
 
-    public Command reverse() {
-        return run(false);
+    public Command runBackward() {
+        return feed(false, 1);
     }
 
-    // Logging
+    public final Trigger hasNoteTrigger = new Trigger(this::hasNote);
+
+    // ---------- Logging ----------
+    @Override
     public void log() {
-        Table.getStringArrayTopic("ControlMode").publish()
-                .set(new String[] { transitMotor.getControlMode().toString() });
-        Table.getIntegerArrayTopic("DeviceID").publish()
-                .set(new long[] { transitMotor.getDeviceID() });
+        // Subsystem states
+        hasNote.set(hasNote());
 
-        Table.getDoubleArrayTopic("Temp").publish()
-                .set(new double[] { transitMotor.getTemperature() });
-        Table.getDoubleArrayTopic("Supply Current").publish()
-                .set(new double[] { transitMotor.getSupplyCurrent() });
-        Table.getDoubleArrayTopic("Stator Current").publish()
-                .set(new double[] { transitMotor.getStatorCurrent() });
-        Table.getDoubleArrayTopic("Output Voltage").publish()
-                .set(new double[] { transitMotor.getMotorOutputVoltage() });
-        Table.getDoubleArrayTopic("Bus Voltage").publish()
-                .set(new double[] { transitMotor.getBusVoltage() });
+        // Hardware
+        transitMotor.log();
+        // laserCan.log(); //I think this should be called w/ has note
     }
 
-    public void close() throws Exception {
+    @Override
+    public void close() {
+        transitMotor.close();
+
+        hasNote.close();
     }
 }
