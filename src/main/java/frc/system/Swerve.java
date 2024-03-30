@@ -2,7 +2,6 @@ package frc.system;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -37,13 +36,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.config.SwerveConfig;
 import frc.system.vision.Vision;
 import frc.system.vision.Vision.Measurement;
 
-public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consumer<Vision.Measurement> {
+public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Control Modes
@@ -58,6 +56,15 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     private final StructPublisher<Pose3d> ntPose3d;
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleState;
     private final StructArrayPublisher<SwerveModuleState> ntSwerveModuleTarget;
+    private final StructPublisher<Pose2d> visionPose2d;
+
+    // ---------- Vision ----------
+
+    // Forward Camera
+    public PhotonCamera cam;
+    Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
+            Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     // vars
     private final PathConstraints ppConstraints;
@@ -96,11 +103,13 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
 
         // Vistion
         setVisionMeasurementStdDevs(new Matrix<N3, N1>(new SimpleMatrix(new double[] { 1.0, 1.0, 1.0 })));
+        cam = new PhotonCamera("cam1");
         // Logging
         ntPose2d = Table.getStructTopic("Pose2d", new Pose2dStruct()).publish();
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
         ntSwerveModuleState = Table.getStructArrayTopic("SwerveModuleState", SwerveModuleState.struct).publish();
         ntSwerveModuleTarget = Table.getStructArrayTopic("SwerveModuleTarget", SwerveModuleState.struct).publish();
+        visionPose2d = Table.getStructTopic("RobotPose", new Pose2dStruct()).publish();
 
         registerTelemetry((s) -> {
             ntPose2d.set(s.Pose);
@@ -224,7 +233,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
     }
 
     public Command DriveToThenPath(PathPlannerPath path) {
-
         return AutoBuilder.pathfindThenFollowPath(path, ppConstraints, 0);
     }
 
@@ -315,29 +323,29 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems, Consum
 
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // Construct PhotonPoseEstimator
-
     PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
-
-    NetworkTableInstance nt = NetworkTableInstance.getDefault();
-
-    NetworkTable table = nt.getTable("Subsystems");
-
-    StructEntry<Pose2d> ntOut = table.getStructTopic("RobotPose", new Pose2dStruct()).getEntry(new Pose2d());
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return photonPoseEstimator.update();
     }
 
-    public void addPhotonVistion() {
+    public boolean isCamConnected() {
+        return cam.isConnected();
+    }
+
+    public void addPhotonVision() {
         Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
+        System.out.println(robotPose.toString());
+
         if (robotPose.isPresent()) {
+            System.out.println("thing");
             addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
                     robotPose.get().timestampSeconds);
-            SmartDashboard.putString("pose", robotPose.get().estimatedPose.toPose2d().toString());
+            // - (cam.getLatestResult().getLatencyMillis() * 1000));
+            // visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
         }
-        // ntOut.set();
     }
 
     // ---------- Sim ----------

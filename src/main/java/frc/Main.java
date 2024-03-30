@@ -7,6 +7,7 @@ package frc;
 // pathplanner
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.net.PortForwarder;
 // Logging
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -99,7 +100,6 @@ public final class Main extends TimedRobot {
 
         Command waitThenFeed() {
             return shooter.waitPrimed().andThen(transit.feedOut());
-            // TODO: check if pivot is at angle
         }
     }
 
@@ -108,9 +108,6 @@ public final class Main extends TimedRobot {
     private void configButtonBindings() {
         configNamedCommands();
         // ----------- DEFAULT COMMANDS -----------
-
-        transit.hasNoteTrigger.onTrue(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
-        transit.hasNoteTrigger.onFalse(cmds.rumble(RumbleType.kBothRumble, 0.5, 0.25));
 
         // NOTE: it appears that default commands are immediately rescheduled if they
         // finish. Looks like we'll have to implement some special logic to go to the
@@ -125,6 +122,9 @@ public final class Main extends TimedRobot {
                 () -> squareInput(driver.getLeftX()),
                 // TODO: ask if driver wants turning squared as well
                 () -> -driver.getRightX()));
+
+        // ----------- DRIVER CONTROLS -----------
+
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
@@ -137,7 +137,7 @@ public final class Main extends TimedRobot {
 
         // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftBumper().whileTrue(cmds.primeAmp());
-        operator.leftTrigger().whileTrue(cmds.primeSpeaker());
+        operator.leftTrigger().whileTrue(cmds.primeSpeaker()); //
         operator.rightTrigger().whileTrue(transit.runForwards());
 
         operator.a().onTrue(transit.feedIn());
@@ -153,8 +153,6 @@ public final class Main extends TimedRobot {
     private void configAutos() {
         configNamedCommands();
         // ------------------ AUTOS ------------------
-        // Adds pathplaner paths. TODO: fix crash here
-        // autonomousChooser = drivetrain.getAutoPaths();
 
         autonomousChooser = new SendableChooser<>();
 
@@ -175,21 +173,28 @@ public final class Main extends TimedRobot {
         autonomousChooser.addOption("Shoot against subwoofer",
                 new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
 
-        autonomousChooser.addOption("Drive 5m",
+        autonomousChooser.addOption("Drive 3m (Red)",
                 drivetrain.driveVelocity(() -> -1, () -> 0, () -> 0)
                         .until(() -> {
                             return drivetrain.pose().getX() < -3.0;
                         }).andThen(drivetrain.brake()));
+
         // drivetrain.addPPAutos(autonomousChooser);
 
         SmartDashboard.putData("auto", autonomousChooser);
     }
 
     private void configNamedCommands() {
-        NamedCommands.registerCommand("Intake", cmds.intakeNote());
-        NamedCommands.registerCommand("Shoot", cmds.waitThenFeed());
-        NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
-        NamedCommands.registerCommand("PrimeSpeaker", cmds.primeSpeaker());
+
+        NamedCommands.registerCommand("intake",
+                // cmds.intakeNote().alongWith(
+                new InstantCommand(() -> System.out.println("intake")));
+        NamedCommands.registerCommand("feed",
+                // cmds.waitThenFeed().alongWith(
+                new InstantCommand(() -> System.out.println("feed")));
+        // NamedCommands.registerCommand("PrimeAmp", cmds.primeAmp());
+        NamedCommands.registerCommand("primeSpeaker",
+                cmds.primeSpeaker());
     }
 
     @Override
@@ -204,7 +209,7 @@ public final class Main extends TimedRobot {
 
         // TODO: re-enable vision once the jitter is solved.
         // new Nt().register(drivetrain);
-
+        PortForwarder.add(5800, "photonvision.local", 5800);
         configAutos();
         configButtonBindings();
     }
@@ -212,7 +217,10 @@ public final class Main extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        drivetrain.addPhotonVistion();
+        // if (drivetrain.isCamConnected()) {
+        drivetrain.addPhotonVision();
+        // }
+
     }
 
     @Override
