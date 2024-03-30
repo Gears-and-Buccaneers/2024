@@ -67,12 +67,12 @@ public class AimSpeaker extends Command {
     public void execute() {
         drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
         // pivot.setSetpoint(rotations);
-        alongWith(pivot.toPosition(rotations)); //Testing this is this does not work the above line works
+        alongWith(pivot.MMPositionCtrl(rotations)); // Testing this is this does not work the above line works
     }
 
     @Override
     public void end(boolean interrupted) {
         drivetrain.setRotationOverride(null);
-        pivot.intake();// TODO: do we want this here
+        pivot.toIntake();// TODO: do we want this here
     }
 }

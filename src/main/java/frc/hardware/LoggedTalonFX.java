@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.StringPublisher;
 public class LoggedTalonFX extends TalonFX implements LoggedHardware {
 
     private final NetworkTable Table;
-    private String name;
+    private final String name;
 
     // Logged Data
     private final StringPublisher ControlMode;

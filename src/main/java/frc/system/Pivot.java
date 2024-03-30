@@ -5,87 +5,112 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.hardware.LoggedTalonFX;
 
-public class Pivot implements Subsystem {
+/**
+ * 90 degree angle of pivot bar is 0 for setpoint
+ * <p>
+ * the intake position has negative rotational sign.
+ * </p>
+ */
+public class Pivot implements LoggedSubsystems {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
-    private TalonFX leftMotor;
-    private TalonFX rightMotor;
-    private final MotionMagicDutyCycle positionCtrl = new MotionMagicDutyCycle(0);
+    private final LoggedTalonFX leftMotor;
+    private final LoggedTalonFX rightMotor;
+    private MotionMagicDutyCycle MotionMagicCtrlMode = new MotionMagicDutyCycle(0);
+    private DutyCycleOut DutyCycleCtrlMode = new DutyCycleOut(0);
 
     // Network
-    private NetworkTable table;
+    /** the sub table where all logging for pivot should go */
+    private final NetworkTable pivotTable;
 
-    private DoubleSubscriber outputMax;
+    /** the max speed to manual control the robot */
+    private final DoubleSubscriber dutyCycleMax;
 
-    // Vars ------------
-    /** The position for scoring in the speaker from the subwoofer, in rotations. */
-    public final double subwooferPosition;
-    /** The position for intaking, in rotations. */
-    public final double intakePosition;
-    /** The position for shooting into the amp, in rotations. */
-    public final double ampPosition;
+    private final DoublePublisher setpoint;
+    private final DoublePublisher actualRotation;
+
+    // Vars
     /**
      * the center of the pivot bar relative to the center of the robot on the ground
      */
     public final Translation3d origin = new Translation3d(Units.inchesToMeters(27 / 2 - 4), 0,
             Units.inchesToMeters(21.75));
     /**
-     * The shooter degree offset from being perpendicular to the arm, Radians.
-     */
-    public final double armOffsetRad;
-    /** i have know idea what this is */
-    public final double exitDistance;
-    /**
      * the length from the center of the pivot to the center of the transit Meters
      */
     public final double armLength = 0.43;
-    /** the deadband for the pivot setpoint Rotations */
-    public final double defaultDeadband;
-
     /**
-     * Assumes 90 degree angle is 0 and the intake position has negative rotational
-     * sign.
+     * The shooter degree offset from being perpendicular to the arm, Radians.
      */
+    public final double armOffsetRad = Units.degreesToRadians(52);
+    /** i have know idea what this is */
+    public final double exitDistance = armLength * Math.sin(armOffsetRad);
+    /** the deadband for the pivot setpoint Rotations */
+    public final double defaultDeadband = .01;
+    /**
+     * this is the stall current when the robot is pushing into the swerve covers
+     */// TODO: tune this value
+    public final double zeroStallCurrent = 60;
+
+    /** The position for scoring in the speaker from the subwoofer, in rotations. */
+    public final double subwooferPosition = -0.0530455469;
+    /** The position for intaking, in rotations. */
+    public final double intakePosition = -.07161;
+    /** The position for shooting into the amp, in rotations. */
+    public final double ampPosition = 0.25;
+
+    // ---------- Config ----------
     public Pivot(NetworkTable networkTable) {
-        // Vars
-        armOffsetRad = Units.degreesToRadians(52);
-        exitDistance = armLength * Math.sin(armOffsetRad);
-
-        defaultDeadband = 0.01;
-
-        intakePosition = -7.161 / 100;
-        ampPosition = 0.25;
-        subwooferPosition = -0.0530455469;
 
         // Network tables
-        table = networkTable.getSubTable(simpleName);
+        pivotTable = networkTable.getSubTable(simpleName);
 
-        this.table.getDoubleTopic("speed").publish();
-        outputMax = table.getDoubleTopic("speed").subscribe(0.3);
+        this.pivotTable.getDoubleTopic("speed").publish();
+        dutyCycleMax = pivotTable.getDoubleTopic("speed").subscribe(0.3);
+
+        setpoint = this.pivotTable.getDoubleTopic("setpoint").publish();
+        actualRotation = this.pivotTable.getDoubleTopic("actualRotation").publish();
 
         // Hardware
-        leftMotor = new TalonFX(12);
-        rightMotor = new TalonFX(13);
+        leftMotor = new LoggedTalonFX(12, pivotTable, "PivotLeft");
+        rightMotor = new LoggedTalonFX(13, pivotTable, "PivotRight");
 
-        configPID();
+        configMotor();
+
+        // Logging
+        System.out.println("[Init] Creating " + simpleName + " with:");
+        System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
+        System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
+
+        this.log();
 
         register();
     }
 
-    public void configPID() {
+    /**
+     * configs both of the motors with the
+     * <ol>
+     * <li>motion magic values/PID values</li>
+     * <li>adds a curet limit</li>
+     * <li>invert the motor</li>
+     * <li>zeros to the intake pose</li>
+     * </ol>
+     */
+    public void configMotor() {
         TalonFXConfiguration pivotConf = new TalonFXConfiguration();
 
         pivotConf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -101,14 +126,14 @@ public class Pivot implements Subsystem {
         // pivotConf.Slot0.kA = 0.01;
 
         pivotConf.Slot0.kP = 13;
-        pivotConf.Slot0.kG = 0.07; // TODO: check this val
-
-        // TODO: pick a number
-        pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
-        pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConf.Slot0.kG = 0.07; // TODO: tune PID
 
         pivotConf.MotionMagic.MotionMagicAcceleration = 0.5;
         pivotConf.MotionMagic.MotionMagicCruiseVelocity = 1;
+
+        // TODO: Do the math for the current limiting
+        pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
+        pivotConf.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         pivotConf.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         leftMotor.getConfigurator().apply(pivotConf);
@@ -116,50 +141,88 @@ public class Pivot implements Subsystem {
         pivotConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         rightMotor.getConfigurator().apply(pivotConf);
 
-        zeroToIntake();
+        zeroToIntakePose();
     }
 
+    // ---------- Generic Functions ----------
     /**
-     * Controls the pivot based on position closed-loop to the specified number of
-     * rotations.
+     * @return true if the pivot is aimed, within deadband, to the last set rotation
+     *         setpoint.
      */
-    private void setSetpoint(double rotations) {
-        positionCtrl.Position = rotations;
+    public boolean isAimed() {
+        double error = leftMotor.getPosition().getValueAsDouble() - MotionMagicCtrlMode.Position;
+        return Math.abs(error) < defaultDeadband;
+    }
 
-        leftMotor.setControl(positionCtrl);
-        rightMotor.setControl(positionCtrl);
+    public void currentZeroingSequence() {
+        // TODO: make currentZeroingSequence
     }
 
     /**
-     * Controls the pivot based on a velocity supplier. Used for manual
+     * Zeroes the current pivot position to the value it should be at if it is at
+     * intake position.
+     * <p>
+     * THE INTAKE MUST BE IN ITS INTAKE POSITION
+     */
+    public void zeroToIntakePose() {
+        leftMotor.setPosition(intakePosition);
+        rightMotor.setPosition(intakePosition);
+    }
+
+    // ---------- different Command CtrlModes ----------
+    /**
+     * Controls the pivot based on a DutyCycle supplier. Used for manual
      * controller-based override control.
+     * 
+     * @param dutyCycle [-1, 1] the speed to control the pivot at,
+     *                  max speed based on outputMax,
+     *                  positive moves in the direction of amp pose
+     * 
+     * @return a command that requires the pivot and when on ends the motors are
+     *         disabled
      */
-    public Command velocity(DoubleSupplier output) {
+    public Command dutyCycleCtrl(DoubleSupplier dutyCycle) {
         Command cmd = new Command() {
             public void execute() {
-                DutyCycleOut ctrl = new DutyCycleOut(-output.getAsDouble() * outputMax.getAsDouble());
+                DutyCycleCtrlMode.Output = -dutyCycle.getAsDouble() * dutyCycleMax.getAsDouble();
 
-                leftMotor.setControl(ctrl);
-                rightMotor.setControl(ctrl);
+                leftMotor.setControl(DutyCycleCtrlMode);
+                rightMotor.setControl(DutyCycleCtrlMode);
             }
 
-            @Override
             public void end(boolean interrupted) {
                 leftMotor.disable();
                 rightMotor.disable();
             }
         };
 
+        cmd.withName(simpleName + "dutyCycleCtrl");
         cmd.addRequirements(this);
         return cmd;
     }
 
-    /** Returns a command which goes to the specified position, then completes. */
-    public Command toPosition(double rotations) {
+    /**
+     * Controls the pivot based on a Rotation. Used for automated
+     * control of setting angles
+     * 
+     * @param rotations [-0.07161, .25] the rotation to set the pivot at
+     *                  positive moves in the direction of amp pose
+     * 
+     * @return a command that requires the pivot and when on ends the motors are
+     *         disabled
+     */
+    public Command MMPositionCtrl(double rotations) {
         Command cmd = new Command() {
             @Override
             public void initialize() {
-                setSetpoint(rotations);
+                if (rotations > ampPosition || rotations < intakePosition) {
+                    DriverStation.reportWarning(
+                            "setting intake position outside of reachable range, THIS COULD DAMAGE THE ROBOT", true);
+                }
+                MotionMagicCtrlMode.Position = rotations;
+
+                leftMotor.setControl(MotionMagicCtrlMode);
+                rightMotor.setControl(MotionMagicCtrlMode);
             }
 
             @Override
@@ -168,49 +231,71 @@ public class Pivot implements Subsystem {
             }
         };
 
+        cmd.withName(simpleName + "MMPositionCtrl");
         cmd.addRequirements(this);
         return cmd;
     }
 
+    // ---------- Commands ----------
     /**
      * Moves the pivot to the position required to shoot into the speaker from the
      * subwoofer.
+     * 
+     * @return a command that requires the pivot and when on ends the motors are
+     *         disabled
      */
-    public Command subwoofer() {
-        return toPosition(subwooferPosition);
+    public Command toSubwoofer() {
+        Command cmd = MMPositionCtrl(subwooferPosition);
+        cmd.withName(simpleName + "toSubwoofer");
+
+        return cmd;
     }
 
     /**
      * Moves the pivot to the position required to shoot into the amp.
+     * 
+     * @return a command that requires the pivot and when it ends the motors are
+     *         disabled
      */
-    public Command amp() {
-        return toPosition(ampPosition);
-    }
+    public Command toAmp() {
+        Command cmd = MMPositionCtrl(ampPosition);
+        cmd.withName(simpleName + "toAmp");
 
-    /** Moves the pivot to intaking position. */
-    public Command intake() {
-        return toPosition(intakePosition);
-    }
-
-    /**
-     * Returns true if the pivot is aimed, within deadband, to the last set rotation
-     * setpoint.
-     */
-    public boolean isAimed() {
-        return Math.abs(leftMotor.getPosition().getValueAsDouble() - positionCtrl.Position) < defaultDeadband;
+        return cmd;
     }
 
     /**
-     * Zeroes the current pivot position to the value it should be at if it is at
-     * intake position.
+     * Moves the pivot to the position required to Intake a note
+     * 
+     * @return a command that requires the pivot and when it ends the motors are
+     *         disabled
      */
-    public void zeroToIntake() {
-        leftMotor.setPosition(intakePosition);
-        rightMotor.setPosition(intakePosition);
+    public Command toIntake() {
+        Command cmd = MMPositionCtrl(intakePosition);
+        cmd.withName(simpleName + "toIntake");
+
+        return cmd;
+    }
+
+    // ---------- Logging ----------
+    public void log() {
+        leftMotor.log();
+        rightMotor.log();
+
+        setpoint.set(MotionMagicCtrlMode.Position);
+        actualRotation.set(leftMotor.getPosition().getValueAsDouble());
     }
 
     @Override
-    public void periodic() {
+    public void close() throws Exception {
+        // Hardware
+        leftMotor.close();
+        rightMotor.close();
 
+        // Network Table
+        dutyCycleMax.close();
+
+        setpoint.close();
+        actualRotation.close();
     }
 }

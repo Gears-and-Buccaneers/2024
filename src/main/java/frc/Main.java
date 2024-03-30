@@ -78,19 +78,19 @@ public final class Main extends TimedRobot {
         }
 
         Command intakeNote() {
-            return pivot.intake().andThen(transit.feedIn().deadlineWith(intake.runIn()));
+            return pivot.toIntake().andThen(transit.feedIn().deadlineWith(intake.runIn()));
         }
 
         Command primeAmp() {
-            return pivot.amp().alongWith(shooter.shootAmp());
+            return pivot.toAmp().alongWith(shooter.shootAmp());
         }
 
         Command primeSpeaker() {
-            return new AimSpeaker(drivetrain, pivot);//.alongWith(shooter.shootSpeaker());
+            return new AimSpeaker(drivetrain, pivot);// .alongWith(shooter.shootSpeaker());
         }
 
         Command primeSubwoofer() {
-            return pivot.subwoofer().alongWith(shooter.shootSpeaker());
+            return pivot.toSubwoofer().alongWith(shooter.shootSpeaker());
         }
 
         Command waitThenFeed() {
@@ -112,7 +112,7 @@ public final class Main extends TimedRobot {
         // finish. Looks like we'll have to implement some special logic to go to the
         // intake by default.
         // pivot.setDefaultCommand(pivot.toIntake());
-        pivot.setDefaultCommand(pivot.velocity(operator::getLeftY));
+        pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
 
         // ----------- DRIVER CONTROLS -----------
 
@@ -143,7 +143,7 @@ public final class Main extends TimedRobot {
         operator.x().whileTrue(intake.runOut());
         operator.y().whileTrue(cmds.primeSubwoofer());
         // Zeroes the pivot, assuming it is at intaking position.
-        operator.start().onTrue(new InstantCommand(pivot::zeroToIntake));
+        operator.start().onTrue(new InstantCommand(pivot::zeroToIntakePose));
 
         // TODO: Add climb command
     }
@@ -168,7 +168,7 @@ public final class Main extends TimedRobot {
                         new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
                                 .andThen(cmds.waitThenFeed()))
                         // TODO: configure the next two as default commands (not working)
-                        .andThen(shooter.stop().alongWith(pivot.intake())));
+                        .andThen(shooter.stop().alongWith(pivot.toIntake())));
 
         autonomousChooser.addOption("Shoot against subwoofer",
                 new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
