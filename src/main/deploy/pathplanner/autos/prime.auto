@@ -6,9 +6,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "feedIn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Go Backward"
+            "pathName": "Note1toNote2"
           }
         }
       ]

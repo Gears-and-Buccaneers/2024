@@ -35,7 +35,6 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.config.SwerveConfig;
 
@@ -58,7 +57,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     // ---------- Vision ----------
 
     // Forward Camera
-    public PhotonCamera cam;
+    public PhotonCamera cam = new PhotonCamera("cam1");
     Transform3d robotToCam = new Transform3d(Units.inchesToMeters(13.5 - 0.744844), 0,
             Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -96,11 +95,13 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         this.ppConstraints = constraints;
         configurePathPlanner();
 
-        cachedFieldCentricFacing.HeadingController = new PhoenixPIDController(4, 0, 0);
+        cachedFieldCentricFacing.HeadingController = new PhoenixPIDController(8, 0, 0);
+        // cuerently the robot is overshooting its target jsut a smidge.
+        // might want to make p 10 and d 1 ish
 
         // Vistion
         setVisionMeasurementStdDevs(new Matrix<N3, N1>(new SimpleMatrix(new double[] { 1.0, 1.0, 1.0 })));
-        cam = new PhotonCamera("cam1");
+
         // Logging
         ntPose2d = Table.getStructTopic("Pose2d", new Pose2dStruct()).publish();
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
@@ -191,11 +192,9 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     }
 
-    public void addPPAutos(SendableChooser<Command> autos) {
-        for (String autoName : AutoBuilder.getAllAutoNames()) {
-            autos.addOption(autoName + " PP", AutoBuilder.buildAuto(autoName));
-        }
-    }
+    // public SendableChooser<Command> addPPAutos() {
+    // return AutoBuilder.buildAutoChooser();
+    // }
 
     // ---------- Commands ----------
 
@@ -224,13 +223,13 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         });
     }
 
-    public Command driveTo(Pose2d target, double velocity) {
-        return AutoBuilder.pathfindToPose(target, ppConstraints, velocity);
-    }
+    // public Command driveTo(Pose2d target, double velocity) {
+    // return AutoBuilder.pathfindToPose(target, ppConstraints, velocity);
+    // }
 
-    public Command DriveToThenPath(PathPlannerPath path) {
-        return AutoBuilder.pathfindThenFollowPath(path, ppConstraints, 0);
-    }
+    // public Command DriveToThenPath(PathPlannerPath path) {
+    // return AutoBuilder.pathfindThenFollowPath(path, ppConstraints, 0);
+    // }
 
     /**
      * Values are squared!!!! this adds more perdition at low speeds
@@ -304,10 +303,10 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
 
     public void addPhotonVision() {
         Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
-        System.out.println(robotPose.toString());
+        // System.out.println(robotPose.toString());
 
         if (robotPose.isPresent()) {
-            System.out.println("thing");
+            // System.out.println("thing");
             addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
                     robotPose.get().timestampSeconds);
             // - (cam.getLatestResult().getLatencyMillis() * 1000));
@@ -341,6 +340,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
 
     @Override
     public void close() {
-        
+
     }
 }

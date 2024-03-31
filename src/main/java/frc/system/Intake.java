@@ -31,7 +31,7 @@ public class Intake implements LoggedSubsystems {
         rightMotor = new LoggedTalonSRX(10, this.Table, "rightIntake");
 
         // Configs
-        leftMotor.setInverted(true);
+        leftMotor.setInverted(false);
         rightMotor.setInverted(true);
 
         leftMotor.setNeutralMode(NeutralMode.Coast);
@@ -76,7 +76,7 @@ public class Intake implements LoggedSubsystems {
                 speed *= percentMaxSpeed;
 
                 leftMotor.set(TalonSRXControlMode.PercentOutput, speed);
-                rightMotor.set(TalonSRXControlMode.PercentOutput, -speed);
+                rightMotor.set(TalonSRXControlMode.PercentOutput, speed);
             }
 
             public void end(boolean interrupted) {

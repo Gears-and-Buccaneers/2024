@@ -174,6 +174,24 @@ public class Pivot implements LoggedSubsystems {
         rightMotor.setPosition(intakePosition);
     }
 
+    /**
+     * Controls the pivot based on a Rotation. Used for automated
+     * control of setting angles
+     * 
+     * @param rotations [-0.07161, .25] the rotation to set the pivot at
+     *                  positive moves in the direction of amp pose
+     */
+    public void setPosition(double rotations) {
+        if (rotations > ampPosition || rotations < intakePosition) {
+            DriverStation.reportWarning(
+                    "setting pivot position outside of reachable range, THIS COULD DAMAGE THE ROBOT", true);
+        }
+        MotionMagicCtrlMode.Position = rotations;
+
+        leftMotor.setControl(MotionMagicCtrlMode);
+        rightMotor.setControl(MotionMagicCtrlMode);
+    }
+
     // ---------- Command CtrlModes ----------
     /**
      * Controls the pivot based on a DutyCycle supplier. Used for manual

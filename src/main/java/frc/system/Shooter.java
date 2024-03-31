@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -118,7 +119,7 @@ public class Shooter implements LoggedSubsystems {
                     DriverStation.reportWarning(
                             "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
                 }
-                DutyCycleCtrlMode.Output = (forwards ? RPM : -RPM) / maxShooterSpeed;
+                DutyCycleCtrlMode.Output = (forwards ? speakerSpeed.get(5000) : -speakerSpeed.get(5000)) / maxShooterSpeed;
 
                 leftMotor.setControl(DutyCycleCtrlMode);
                 rightMotor.setControl(DutyCycleCtrlMode);
@@ -211,14 +212,17 @@ public class Shooter implements LoggedSubsystems {
      *         at the desired velocity
      */
     public Command waitPrimed() {// TODO: not quite sure if this will work
-        double leftMotorError = Math
-                .abs(leftMotor.getRotorVelocity().getValue() - DutyCycleCtrlMode.Output * maxShooterSpeed);
-        double rightMotorError = Math
-                .abs(rightMotor.getRotorVelocity().getValue() - DutyCycleCtrlMode.Output * maxShooterSpeed);
+        // double leftMotorError = Math
+        // .abs(leftMotor.getRotorVelocity().getValue() - DutyCycleCtrlMode.Output *
+        // maxShooterSpeed);
+        // double rightMotorError = Math
+        // .abs(rightMotor.getRotorVelocity().getValue() - DutyCycleCtrlMode.Output *
+        // maxShooterSpeed);
 
-        return new WaitUntilCommand(() -> {
-            return leftMotorError < deadBand && rightMotorError < deadBand;
-        });
+        // return new WaitUntilCommand(() -> {
+        // return leftMotorError < deadBand && rightMotorError < deadBand;
+        // });
+        return new WaitUntilCommand(1);
     }
 
     // ---------- Logging ----------

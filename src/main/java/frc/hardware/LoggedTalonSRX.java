@@ -18,7 +18,6 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
     // Logged Data
     private final StringPublisher ControlMode;
     private final IntegerPublisher BaseID;
-    private final DoublePublisher BusVoltage;
     private final IntegerPublisher DeviceID;
     private final IntegerPublisher FirmwareVersion;
     private final BooleanPublisher Inverted;
@@ -36,7 +35,6 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
         // Logged Data
         ControlMode = Table.getStringTopic("ControlMode").publish();
         BaseID = Table.getIntegerTopic("BaseID").publish();
-        BusVoltage = Table.getDoubleTopic("BusVoltage").publish();
         DeviceID = Table.getIntegerTopic("DeviceID").publish();
         FirmwareVersion = Table.getIntegerTopic("FirmwareVersion").publish();
         Inverted = Table.getBooleanTopic("Inverted").publish();
@@ -65,7 +63,6 @@ public class LoggedTalonSRX extends TalonSRX implements LoggedHardware {
     public void log() {
         ControlMode.set(this.getControlMode().toString());
         BaseID.set(this.getBaseID());
-        BusVoltage.set(this.getBusVoltage());
         DeviceID.set(this.getDeviceID());
         FirmwareVersion.set(this.getFirmwareVersion());
         Inverted.set(this.getInverted());

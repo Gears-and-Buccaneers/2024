@@ -122,7 +122,7 @@ public class Transit implements LoggedSubsystems {
      * @return true if the transit has a note and false if the transit does not have
      *         a note
      */
-    private boolean hasNote() {
+    public boolean hasNote() {
         Measurement measurement = laserCan.getMeasurement();
         // NOTE: expanded logic so easer to understand
         if (measurement == null) {
@@ -140,8 +140,9 @@ public class Transit implements LoggedSubsystems {
      * @apiNote DEPENDS on sensors
      */
     public Command feedIn() {
-        return feed(true, .75).until(() -> hasNote())
-                .andThen(feed(false, 0.5).until(() -> !hasNote()));
+        return feed(true, 1).until(() -> hasNote())
+                .andThen(feed(false, .8).until(() -> !hasNote()))
+                .andThen(feed(true, 0.8).until(() -> hasNote()));
         // TODO: check if 20% power backfeeed is to much
     }
 
@@ -151,7 +152,7 @@ public class Transit implements LoggedSubsystems {
      * @apiNote DEPENDS on sensors
      */
     public Command feedOut() {
-        return feed(false, 1).until(() -> !hasNote());
+        return feed(true, 1).until(() -> hasNote()).until(() -> !hasNote());
     }
 
     public Command runForwards() {

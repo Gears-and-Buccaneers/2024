@@ -11,7 +11,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.system.Pivot;
 import frc.system.Swerve;
@@ -27,7 +26,9 @@ public class AimSpeaker extends Command {
     /** the sub table where all logging for Shooter should go */
     private final NetworkTable autoAimTable;
 
-    /** the offset for the rotation of the pivot positive shoots higher/lower */// TODO: check
+    /**
+     * the offset for the rotation of the pivot positive shoots higher/lower
+     */// TODO: check
     private final DoubleSubscriber rotationFudge;
     /** offest the rotation of the robot RADS Positive rottes x */
     private final DoubleSubscriber yawFudge;
@@ -38,7 +39,7 @@ public class AimSpeaker extends Command {
 
     // Vars
     private final Translation3d speakerPosition;
-    private DoubleSubscriber fudeFactor;
+    // private DoubleSubscriber fudeFactor;
 
     public AimSpeaker(Swerve drivetrain, Pivot pivot) {
         // Network tables
@@ -65,7 +66,6 @@ public class AimSpeaker extends Command {
                 // Blue speaker
                 : new Translation3d(0.24, 5.55, 3.06);
 
-        this.log();
         addRequirements(pivot);
     }
 
@@ -73,6 +73,9 @@ public class AimSpeaker extends Command {
     private double distance1;
     private double pitch1;
     private double rotations1;
+
+    private final double a = -0.260927;
+    private final double b = 0.242026;
 
     public void doMath() {
         Pose2d mechanismPose = drivetrain.pose()
@@ -84,22 +87,28 @@ public class AimSpeaker extends Command {
 
         // Drivetrain yaw
         yaw1 = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
-        yaw1 += fudeFactor.get(0);
+        yaw1 += yawFudge.get(0) + .2;
 
         distance1 = vectorToSpeaker.getNorm();
         pitch1 = Math.asin(vectorToSpeaker.getZ() / distance1);
         rotations1 = Units
-                .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance / distance1) - pitch1);
+                .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance /
+                        distance1) - pitch1)
+                + rotationFudge.get(0);
+        // rotations1 = rotationFudge.get(0);
+        // rotations1 = a + b * Math.log(distance1) + rotationFudge.get(0);
 
     }
 
     @Override
     public void execute() {
         doMath();
+        log();
 
         drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw1));
-        // pivot.setSetpoint(rotations);
-        alongWith(pivot.MMPositionCtrl(rotations1)); // Testing this is this does not work the above line works
+        pivot.setPosition(rotations1);
+        // alongWith(pivot.MMPositionCtrl(rotations1)); // Testing this is this does not
+        // work the above line works
     }
 
     @Override
@@ -109,8 +118,8 @@ public class AimSpeaker extends Command {
     }
 
     public void log() {
-        // drivetrain.log();
-        // pivot.log();
+        drivetrain.log();
+        pivot.log();
 
         yaw.set(yaw1);
         rotations.set(distance1);
@@ -118,17 +127,17 @@ public class AimSpeaker extends Command {
 
     }
 
-    public void close() {
-        // Subsystems
-        drivetrain.close();
-        pivot.close();
+    // public void close() {
+    // // Subsystems
+    // drivetrain.close();
+    // pivot.close();
 
-        // Network Table
-        rotationFudge.close();
-        yawFudge.close();
+    // // // Network Table
+    // // rotationFudge.close();
+    // // yawFudge.close();
 
-        yaw.close();
-        rotations.close();
-        distance.close();
-    }
+    // // yaw.close();
+    // // rotations.close();
+    // // distance.close();
+    // }
 }
