@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.system.Pivot;
+import frc.system.Shooter;
 import frc.system.Swerve;
 
 public class AimSpeaker extends Command {
@@ -21,6 +22,7 @@ public class AimSpeaker extends Command {
     // Subsystems
     private final Swerve drivetrain;
     private final Pivot pivot;
+    private final Shooter shooter;
 
     // Network
     /** the sub table where all logging for Shooter should go */
@@ -32,16 +34,25 @@ public class AimSpeaker extends Command {
     private final DoubleSubscriber rotationFudge;
     /** offest the rotation of the robot RADS Positive rottes x */
     private final DoubleSubscriber yawFudge;
+    /** the offset for rpm of the shooter speed */
+    private final DoubleSubscriber shooterFudge;
 
-    private final DoublePublisher yaw;
-    private final DoublePublisher distance;
-    private final DoublePublisher rotations;
+    private double yaw;
+    private double distance;
+    private double pitch;
+    private double rotations;
+    private double shooterSpeed;
+
+    private final DoublePublisher yawPub;
+    private final DoublePublisher distancePub;
+    private final DoublePublisher rotationsPub;
+    private final DoublePublisher shooterSpeedPub;
 
     // Vars
     private final Translation3d speakerPosition;
     // private DoubleSubscriber fudeFactor;
 
-    public AimSpeaker(Swerve drivetrain, Pivot pivot) {
+    public AimSpeaker(Swerve drivetrain, Pivot pivot, Shooter shooter) {
         // Network tables
         this.autoAimTable = NetworkTableInstance.getDefault().getTable("Commands").getSubTable(simpleName);
 
@@ -49,14 +60,18 @@ public class AimSpeaker extends Command {
         rotationFudge = autoAimTable.getDoubleTopic("RotationFudge").subscribe(0);
         this.autoAimTable.getDoubleTopic("yawFudge").publish();
         yawFudge = autoAimTable.getDoubleTopic("yawFudge").subscribe(0);
+        this.autoAimTable.getDoubleTopic("ShooterFudge").publish();
+        shooterFudge = autoAimTable.getDoubleTopic("ShooterFudge").subscribe(0);
 
-        yaw = this.autoAimTable.getDoubleTopic("yaw").publish();
-        distance = this.autoAimTable.getDoubleTopic("distance").publish();
-        rotations = this.autoAimTable.getDoubleTopic("rotations").publish();
+        yawPub = this.autoAimTable.getDoubleTopic("yaw").publish();
+        distancePub = this.autoAimTable.getDoubleTopic("distance").publish();
+        rotationsPub = this.autoAimTable.getDoubleTopic("rotations").publish();
+        shooterSpeedPub = this.autoAimTable.getDoubleTopic("shooterSpeed").publish();
 
         // Subsystems
         this.drivetrain = drivetrain;
         this.pivot = pivot;
+        this.shooter = shooter;
 
         // Vars
         speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
@@ -69,15 +84,8 @@ public class AimSpeaker extends Command {
         addRequirements(pivot);
     }
 
-    private double yaw1;
-    private double distance1;
-    private double pitch1;
-    private double rotations1;
-
-    private final double a = -0.260927;
-    private final double b = 0.242026;
-
     public void doMath() {
+        // Rose to speaker
         Pose2d mechanismPose = drivetrain.pose()
                 .plus(new Transform2d(pivot.origin.getX(), pivot.origin.getY(),
                         new Rotation2d()));
@@ -86,17 +94,21 @@ public class AimSpeaker extends Command {
         Translation3d vectorToSpeaker = speakerPosition.minus(mechanism);
 
         // Drivetrain yaw
-        yaw1 = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
-        yaw1 += yawFudge.get(0) + .2;
+        yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
+        yaw += yawFudge.get(0) + .2;
 
-        distance1 = vectorToSpeaker.getNorm();
-        pitch1 = Math.asin(vectorToSpeaker.getZ() / distance1);
-        rotations1 = Units
+        // pivot Angle
+        distance = vectorToSpeaker.getNorm();
+        pitch = Math.asin(vectorToSpeaker.getZ() / distance);
+        rotations = Units
                 .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance /
-                        distance1) - pitch1)
+                        distance) - pitch)
                 + rotationFudge.get(0);
         // rotations1 = rotationFudge.get(0);
-        // rotations1 = a + b * Math.log(distance1) + rotationFudge.get(0);
+
+        // Shooter Speed
+        shooterSpeed = 5000;
+        shooterSpeed += shooterFudge.get(0);
 
     }
 
@@ -105,25 +117,26 @@ public class AimSpeaker extends Command {
         doMath();
         log();
 
-        drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw1));
-        pivot.setPosition(rotations1);
+        drivetrain.rotationOverride = Rotation2d.fromRadians(yaw);
+        pivot.speakerPosition = rotations;
+        shooter.speakerSpeed = shooterSpeed;
         // alongWith(pivot.MMPositionCtrl(rotations1)); // Testing this is this does not
         // work the above line works
     }
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.setRotationOverride(null);
-        pivot.toIntake();// TODO: do we want this here
+        drivetrain.rotationOverride = null;
     }
 
     public void log() {
-        drivetrain.log();
-        pivot.log();
+        // drivetrain.log();
+        // pivot.log();
 
-        yaw.set(yaw1);
-        rotations.set(distance1);
-        distance.set(distance1);
+        yawPub.set(yaw);
+        rotationsPub.set(rotations);
+        distancePub.set(distance);
+        shooterSpeedPub.set(shooterSpeed);
 
     }
 

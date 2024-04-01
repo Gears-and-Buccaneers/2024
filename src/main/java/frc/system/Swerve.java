@@ -78,7 +78,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
      * The rotation override for the drivetrain. Set to null if there is no
      * override.
      */
-    private Rotation2d rotationOverride;
+    public Rotation2d rotationOverride;
 
     public Swerve(
             PathConstraints constraints,

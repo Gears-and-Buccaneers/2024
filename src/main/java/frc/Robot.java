@@ -95,7 +95,11 @@ public class Robot extends TimedRobot {
         }
 
         Command intakeNote() {
-            return pivot.toIntake().alongWith(intake.runIn().until(() -> transit.hasNote()), transit.feedIn());
+            return pivot.toIntake()
+                    .alongWith(
+                            intake.runIn().until(() -> transit.hasNote())
+                                    .andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)),
+                            transit.feedIn());
         }
 
         Command primeAmp() {
@@ -103,7 +107,9 @@ public class Robot extends TimedRobot {
         }
 
         Command primeSpeaker() {
-            return new AimSpeaker(drivetrain, pivot).alongWith(shooter.shootSpeaker());
+            return new AimSpeaker(drivetrain, pivot, shooter).alongWith(
+                    shooter.shootSpeaker(),
+                    pivot.toSpeaker());
         }
 
         Command primeSubwoofer() {
@@ -114,12 +120,40 @@ public class Robot extends TimedRobot {
             return new WaitCommand(2).andThen(transit.feedOut());
         }
 
-        Command shootSpeaker() {
-            return primeSpeaker()
-                    .raceWith(
-                            drivetrain.driveDutyCycle(() -> 0, () -> 0, () -> 0),
-                            new WaitCommand(2).andThen(transit.runForwards().until((() -> !transit.hasNote()))));
+        Command shoot() {
+            return transit.feedOut().andThen(
+                    rumble(RumbleType.kBothRumble, .75, .5, driver, operator),
+                    pivot.toIntake());
+        }
 
+        // Auto Commands
+        Command intakeNoteAuto() {
+            return pivot.toIntake()
+                    .alongWith(
+                            intake.runIn(),
+                            transit.runForwards())
+                    .until(() -> transit.hasNote());
+        }
+
+        Command primeSpeakerAuto() {
+            return new AimSpeaker(drivetrain, pivot, shooter).alongWith(
+                    shooter.shootSpeaker(),
+                    pivot.toSpeaker(),
+                    drivetrain.driveDutyCycle(() -> 0, () -> 0, () -> 0));
+        }
+
+        Command shootSpeakerAuto() {
+            return primeSpeakerAuto()
+                    .raceWith(
+                            new WaitUntilCommand(2)
+                                    .andThen(transit.runForwards().until((() -> !transit.hasNote()))));
+        }
+
+        Command shootSpeakerAuto2() {
+            return primeSpeakerAuto()
+                    .raceWith(
+                            new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
+                                    .andThen(transit.runForwards().until((() -> !transit.hasNote()))));
         }
     }
 
@@ -146,25 +180,26 @@ public class Robot extends TimedRobot {
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
 
+        driver.leftTrigger().onTrue(cmds.intakeNote());
+
+        driver.y().onTrue(cmds.shootSpeakerAuto2());
         // ---------- OPERATOR CONTROLS ----------
 
         // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftBumper().whileTrue(cmds.primeAmp());
-
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
-        driver.leftTrigger().whileTrue(cmds.primeSpeaker());
 
-        operator.rightTrigger().whileTrue(transit.runForwards());
-        driver.rightTrigger().whileTrue(transit.runForwards());
+        operator.rightTrigger().whileTrue(cmds.shoot());
+        operator.rightBumper().whileTrue(transit.runForwards());
 
         operator.a().onTrue(transit.feedIn());
-        driver.a().onTrue(transit.feedIn());
+        operator.y().whileTrue(cmds.primeSubwoofer());
 
         operator.b().whileTrue(transit.runBackward());
         operator.x().whileTrue(intake.runOut());
-        operator.y().whileTrue(cmds.primeSubwoofer());
+
         // Zeroes the pivot, assuming it is at intaking position.
-        operator.start().onTrue(new InstantCommand(pivot::zeroToIntakePose));
+        operator.start().onTrue(new InstantCommand(pivot::currentZeroingSequence));
 
         // TODO: Add climb command
     }
@@ -172,13 +207,6 @@ public class Robot extends TimedRobot {
     private void configAutos() {
         configNamedCommands();
         // ------------------ AUTOS ------------------
-
-        // TODO: Ensure a default `null` command is available, and remove this option.
-        autonomousChooser.setDefaultOption("Nothing", new Command() {
-        });
-
-        // TODO: check speed of back-out
-        autonomousChooser.addOption("Back-out (NO PP)", drivetrain.driveDutyCycle(() -> -0.5, () -> 0, () -> 0));
 
         autonomousChooser.addOption("Shoot",
                 cmds.primeSpeaker().raceWith(
@@ -200,14 +228,9 @@ public class Robot extends TimedRobot {
     }
 
     private void configNamedCommands() {
-
-        NamedCommands.registerCommand("intake", cmds.intakeNote());
-        // new InstantCommand(() -> System.out.println("intake")));
-        NamedCommands.registerCommand("wait", new WaitCommand(2));
-        NamedCommands.registerCommand("feed", transit.feedOut());
+        NamedCommands.registerCommand("intake", cmds.intakeNoteAuto());
         NamedCommands.registerCommand("feedIn", transit.feedIn());
-        NamedCommands.registerCommand("shoot",
-                cmds.shootSpeaker());
+        NamedCommands.registerCommand("shoot", cmds.shootSpeakerAuto());
     }
 
     @Override

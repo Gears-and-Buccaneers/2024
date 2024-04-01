@@ -27,7 +27,7 @@ public class Shooter implements LoggedSubsystems {
     private final NetworkTable shooterTable;
 
     /** the speed for shooting in Speaker */
-    private final DoubleSubscriber speakerSpeed;
+    public double speakerSpeed;
 
     private final DoublePublisher setShooterSpeed;
     // Vars
@@ -42,9 +42,6 @@ public class Shooter implements LoggedSubsystems {
     public Shooter(NetworkTable networkTable) {
         // Network tables
         this.shooterTable = networkTable.getSubTable(simpleName);
-
-        this.shooterTable.getDoubleTopic("speakerSpeed").publish();
-        speakerSpeed = shooterTable.getDoubleTopic("speakerSpeed").subscribe(defaultSpeakerSpeed);
 
         setShooterSpeed = this.shooterTable.getDoubleTopic("setShooterSpeed").publish();
 
@@ -119,7 +116,8 @@ public class Shooter implements LoggedSubsystems {
                     DriverStation.reportWarning(
                             "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
                 }
-                DutyCycleCtrlMode.Output = (forwards ? speakerSpeed.get(5000) : -speakerSpeed.get(5000)) / maxShooterSpeed;
+                DutyCycleCtrlMode.Output = (forwards ? RPM : -RPM)
+                        / maxShooterSpeed;
 
                 leftMotor.setControl(DutyCycleCtrlMode);
                 rightMotor.setControl(DutyCycleCtrlMode);
@@ -161,24 +159,27 @@ public class Shooter implements LoggedSubsystems {
      *         disabled
      */
     public Command shootSpeaker() {
-        Command cmd = VelocityOpenLoop(true, speakerSpeed.get());
+        Command cmd = VelocityOpenLoop(true, speakerSpeed);
 
         return cmd;
     }
 
-    /**
-     * spins the shooter wheals based at speakerSpeed with fudge factors for when
-     * robot is close to subwoofer.
-     * 
-     * @param k velocity multiplier
-     * @param c added to velocity
-     * @return a command that requires the piShootervot and when on ends the motors
-     *         are
-     *         disabled
-     */
-    public Command shootSpeaker(double k, double c) {
-        Command cmd = VelocityOpenLoop(true, speakerSpeed.get() * k + c);
+    public Command shootSpeakerAuto() {
+        Command cmd = new Command() {
+            public void initialize() {
+                if (speakerSpeed > maxShooterSpeed || speakerSpeed < -maxShooterSpeed) {
+                    DriverStation.reportWarning(
+                            "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
+                }
+                DutyCycleCtrlMode.Output = speakerSpeed
+                        / maxShooterSpeed;
 
+                leftMotor.setControl(DutyCycleCtrlMode);
+                rightMotor.setControl(DutyCycleCtrlMode);
+            }
+        };
+
+        cmd.addRequirements(this);
         return cmd;
     }
 
@@ -240,8 +241,6 @@ public class Shooter implements LoggedSubsystems {
         rightMotor.close();
 
         // Network Table
-        speakerSpeed.close();
-
         setShooterSpeed.close();
     }
 }
