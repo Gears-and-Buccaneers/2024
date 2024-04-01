@@ -107,9 +107,7 @@ public class Robot extends TimedRobot {
         }
 
         Command primeSpeaker() {
-            return new AimSpeaker(drivetrain, pivot, shooter).alongWith(
-                    shooter.shootSpeaker(),
-                    pivot.toSpeaker());
+            return new AimSpeaker(drivetrain, pivot, shooter);
         }
 
         Command primeSubwoofer() {
@@ -137,8 +135,6 @@ public class Robot extends TimedRobot {
 
         Command primeSpeakerAuto() {
             return new AimSpeaker(drivetrain, pivot, shooter).alongWith(
-                    shooter.shootSpeaker(),
-                    pivot.toSpeaker(),
                     drivetrain.driveDutyCycle(() -> 0, () -> 0, () -> 0));
         }
 

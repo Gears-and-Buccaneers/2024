@@ -81,7 +81,7 @@ public class AimSpeaker extends Command {
                 // Blue speaker
                 : new Translation3d(0.24, 5.55, 3.06);
 
-        addRequirements(pivot);
+        addRequirements(pivot, shooter);
     }
 
     public void doMath() {
@@ -117,9 +117,9 @@ public class AimSpeaker extends Command {
         doMath();
         log();
 
-        drivetrain.rotationOverride = Rotation2d.fromRadians(yaw);
-        pivot.speakerPosition = rotations;
-        shooter.speakerSpeed = shooterSpeed;
+        drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
+        pivot.MMPositionCtrl(rotations);
+        shooter.VelocityOpenLoop(true, shooterSpeed);
         // alongWith(pivot.MMPositionCtrl(rotations1)); // Testing this is this does not
         // work the above line works
     }
@@ -127,6 +127,7 @@ public class AimSpeaker extends Command {
     @Override
     public void end(boolean interrupted) {
         drivetrain.rotationOverride = null;
+        shooter.disable();
     }
 
     public void log() {

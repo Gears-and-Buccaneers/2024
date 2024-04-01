@@ -72,7 +72,6 @@ public class Pivot implements LoggedSubsystems {
     public final double intakePosition = -.07161;
     /** The position for shooting into the amp, in rotations. */
     public final double ampPosition = 0.25;
-    public double speakerPosition = subwooferPosition;
 
     /** the default max value for the dutyCycle ctrl mode */
     private final double dutyCycleMaxDefault = .3;
@@ -230,6 +229,18 @@ public class Pivot implements LoggedSubsystems {
         return cmd;
     }
 
+    public void MMPositionCtrl(double rotations) {
+        if (rotations > ampPosition || rotations < intakePosition) {
+            DriverStation.reportWarning(
+                    "setting pivot position outside of reachable range, THIS COULD DAMAGE THE ROBOT", true);
+        }
+        MotionMagicCtrlMode.Position = rotations;
+
+        leftMotor.setControl(MotionMagicCtrlMode);
+        rightMotor.setControl(MotionMagicCtrlMode);
+
+    }
+
     /**
      * Controls the pivot based on a Rotation. Used for automated
      * control of setting angles
@@ -240,18 +251,11 @@ public class Pivot implements LoggedSubsystems {
      * @return a command that requires the pivot and when on ends the motors are
      *         disabled
      */
-    public Command MMPositionCtrl(double rotations) {
+    public Command MMPositionCmd(double rotations) {
         Command cmd = new Command() {
             @Override
             public void initialize() {
-                if (rotations > ampPosition || rotations < intakePosition) {
-                    DriverStation.reportWarning(
-                            "setting pivot position outside of reachable range, THIS COULD DAMAGE THE ROBOT", true);
-                }
-                MotionMagicCtrlMode.Position = rotations;
-
-                leftMotor.setControl(MotionMagicCtrlMode);
-                rightMotor.setControl(MotionMagicCtrlMode);
+                MMPositionCtrl(rotations);
             }
         };
 
@@ -278,18 +282,6 @@ public class Pivot implements LoggedSubsystems {
     }
 
     // ---------- Commands ----------
-    /**
-     * Moves the pivot to the position required to shoot into the speaker from the
-     * subwoofer.
-     * 
-     * @return a command that requires the pivot and when on ends the motors are
-     *         disabled
-     */
-    public Command toSpeaker() {
-        Command cmd = MMPositionCtrl(speakerPosition);
-
-        return cmd;
-    }
 
     /**
      * Moves the pivot to the position required to shoot into the speaker from the
@@ -299,7 +291,7 @@ public class Pivot implements LoggedSubsystems {
      *         disabled
      */
     public Command toSubwoofer() {
-        Command cmd = MMPositionCtrl(subwooferPosition);
+        Command cmd = MMPositionCmd(subwooferPosition);
 
         return cmd;
     }
@@ -311,7 +303,7 @@ public class Pivot implements LoggedSubsystems {
      *         disabled
      */
     public Command toAmp() {
-        Command cmd = MMPositionCtrl(ampPosition);
+        Command cmd = MMPositionCmd(ampPosition);
 
         return cmd;
     }
@@ -323,7 +315,7 @@ public class Pivot implements LoggedSubsystems {
      *         disabled
      */
     public Command toIntake() {
-        Command cmd = MMPositionCtrl(intakePosition);
+        Command cmd = MMPositionCmd(intakePosition);
 
         return cmd;
     }

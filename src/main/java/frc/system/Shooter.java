@@ -5,9 +5,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -96,6 +94,23 @@ public class Shooter implements LoggedSubsystems {
     // ---------- Generic Functions ----------
 
     // ---------- Command CtrlModes ----------
+    public void VelocityOpenLoop(boolean forwards, double RPM) {
+        if (RPM > maxShooterSpeed || RPM < -maxShooterSpeed) {
+            DriverStation.reportWarning(
+                    "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
+        }
+        DutyCycleCtrlMode.Output = (forwards ? RPM : -RPM)
+                / maxShooterSpeed;
+
+        leftMotor.setControl(DutyCycleCtrlMode);
+        rightMotor.setControl(DutyCycleCtrlMode);
+    }
+
+    public void disable() {
+        leftMotor.disable();
+        rightMotor.disable();
+    }
+
     /**
      * Controls the shooter based on a direction and speed.
      * Used for open loop control of the shooter
@@ -109,23 +124,14 @@ public class Shooter implements LoggedSubsystems {
      * @return a command that requires the shooter and when on ends the motors are
      *         disabled
      */
-    private Command VelocityOpenLoop(boolean forwards, double RPM) {
+    private Command VelocityOpenLoopCmd(boolean forwards, double RPM) {
         Command cmd = new Command() {
             public void initialize() {
-                if (RPM > maxShooterSpeed || RPM < -maxShooterSpeed) {
-                    DriverStation.reportWarning(
-                            "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
-                }
-                DutyCycleCtrlMode.Output = (forwards ? RPM : -RPM)
-                        / maxShooterSpeed;
-
-                leftMotor.setControl(DutyCycleCtrlMode);
-                rightMotor.setControl(DutyCycleCtrlMode);
+                VelocityOpenLoop(forwards, RPM);
             }
 
             public void end(boolean interrupted) {
-                leftMotor.disable();
-                rightMotor.disable();
+                disable();
             }
         };
 
@@ -159,7 +165,7 @@ public class Shooter implements LoggedSubsystems {
      *         disabled
      */
     public Command shootSpeaker() {
-        Command cmd = VelocityOpenLoop(true, speakerSpeed);
+        Command cmd = VelocityOpenLoopCmd(true, speakerSpeed);
 
         return cmd;
     }
@@ -190,7 +196,7 @@ public class Shooter implements LoggedSubsystems {
      *         disabled
      */
     public Command shootAmp() {
-        Command cmd = VelocityOpenLoop(true, 1000);
+        Command cmd = VelocityOpenLoopCmd(true, 1000);
 
         return cmd;
     }
@@ -202,7 +208,7 @@ public class Shooter implements LoggedSubsystems {
      *         disabled
      */
     public Command reverse() {
-        Command cmd = VelocityOpenLoop(false, 500);
+        Command cmd = VelocityOpenLoopCmd(false, 500);
 
         return cmd;
     }
