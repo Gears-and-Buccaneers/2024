@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.769944812616898,
-      "y": 6.670053340106681
+      "x": 0.8393012850426425,
+      "y": 6.60855704537885
     },
-    "rotation": -119.7911652153944
+    "rotation": -122.38987316932868
   },
   "command": {
     "type": "sequential",
@@ -40,7 +40,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 5.0
                       }
                     }
                   ]
@@ -78,7 +78,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 5.0
                       }
                     }
                   ]
@@ -116,7 +116,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 5.0
                       }
                     }
                   ]

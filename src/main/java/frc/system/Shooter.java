@@ -106,10 +106,8 @@ public class Shooter implements LoggedSubsystems {
         rightMotor.setControl(DutyCycleCtrlMode);
     }
 
-    public void disable() {
-        leftMotor.disable();
-        rightMotor.disable();
-    }
+
+    
 
     /**
      * Controls the shooter based on a direction and speed.
@@ -124,14 +122,10 @@ public class Shooter implements LoggedSubsystems {
      * @return a command that requires the shooter and when on ends the motors are
      *         disabled
      */
-    private Command VelocityOpenLoopCmd(boolean forwards, double RPM) {
+    public Command VelocityOpenLoopCmd(boolean forwards, double RPM) {
         Command cmd = new Command() {
             public void initialize() {
                 VelocityOpenLoop(forwards, RPM);
-            }
-
-            public void end(boolean interrupted) {
-                disable();
             }
         };
 

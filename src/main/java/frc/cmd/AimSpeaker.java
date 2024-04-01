@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.Robot;
 import frc.system.Pivot;
 import frc.system.Shooter;
 import frc.system.Swerve;
@@ -74,12 +75,12 @@ public class AimSpeaker extends Command {
         this.shooter = shooter;
 
         // Vars
-        speakerPosition = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent()
+        speakerPosition = Robot.isRedAlliance
                 ?
                 // Red speaker
-                new Translation3d(16.31, 5.55, 3.06)
+                new Translation3d(16.31, 5.55, 2.06)
                 // Blue speaker
-                : new Translation3d(0.24, 5.55, 3.06);
+                : new Translation3d(0.24, 5.55, 2.06);
 
         addRequirements(pivot, shooter);
     }
@@ -95,21 +96,24 @@ public class AimSpeaker extends Command {
 
         // Drivetrain yaw
         yaw = Math.atan2(vectorToSpeaker.getY(), vectorToSpeaker.getX());
-        yaw += yawFudge.get(0) + .2;
+        yaw += 0.175;
+        yaw += yawFudge.get(0);
 
         // pivot Angle
         distance = vectorToSpeaker.getNorm();
         pitch = Math.asin(vectorToSpeaker.getZ() / distance);
         rotations = Units
                 .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance /
-                        distance) - pitch)
-                + rotationFudge.get(0);
-        // rotations1 = rotationFudge.get(0);
-
+                        distance) - pitch);
+        rotations -= rotationFudge.get(0) + .015;
+        // rotations -= 0.03415 / distance;
         // Shooter Speed
-        shooterSpeed = 5000;
+        shooterSpeed = 4000;
+        shooterSpeed += 100 * distance;
         shooterSpeed += shooterFudge.get(0);
 
+        if (shooterSpeed > 5000)
+            shooterSpeed = 5000;
     }
 
     @Override
@@ -117,8 +121,8 @@ public class AimSpeaker extends Command {
         doMath();
         log();
 
-        drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
         pivot.MMPositionCtrl(rotations);
+        drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
         shooter.VelocityOpenLoop(true, shooterSpeed);
         // alongWith(pivot.MMPositionCtrl(rotations1)); // Testing this is this does not
         // work the above line works
@@ -127,7 +131,7 @@ public class AimSpeaker extends Command {
     @Override
     public void end(boolean interrupted) {
         drivetrain.rotationOverride = null;
-        shooter.disable();
+        // shooter.disable();
     }
 
     public void log() {

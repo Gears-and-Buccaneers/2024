@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,6 +34,7 @@ import frc.system.*;
 import frc.cmd.*;
 
 public class Robot extends TimedRobot {
+    public static boolean isRedAlliance;
 
     SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 
@@ -58,6 +60,12 @@ public class Robot extends TimedRobot {
     }
 
     public Robot() {
+        // Register alliance
+        isRedAlliance = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent();
+        configButtonBindings();
+        // Add to NetworkTables for verification
+        SmartDashboard.putBoolean("isRedAlliance", isRedAlliance);
+
         // ------------------- Logging -------------------
         DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
@@ -95,11 +103,11 @@ public class Robot extends TimedRobot {
         }
 
         Command intakeNote() {
-            return pivot.toIntake()
-                    .alongWith(
+            return pivot.toIntakeUntilAimed()
+                    .andThen(
                             intake.runIn().until(() -> transit.hasNote())
-                                    .andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)),
-                            transit.feedIn());
+                                    .andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)).alongWith(
+                                            transit.feedIn()));
         }
 
         Command primeAmp() {
@@ -121,28 +129,26 @@ public class Robot extends TimedRobot {
         Command shoot() {
             return transit.feedOut().andThen(
                     rumble(RumbleType.kBothRumble, .75, .5, driver, operator),
-                    pivot.toIntake());
+                    pivot.toIntakeUntilAimed());
         }
 
         // Auto Commands
         Command intakeNoteAuto() {
-            return pivot.toIntake()
-                    .alongWith(
-                            intake.runIn(),
-                            transit.runForwards())
+            return pivot.toIntakeUntilAimed()
+                    .andThen(
+                            intake.runIn().alongWith(transit.runForwards()))
                     .until(() -> transit.hasNote());
         }
 
         Command primeSpeakerAuto() {
-            return new AimSpeaker(drivetrain, pivot, shooter).alongWith(
+            return primeSpeaker().alongWith(
                     drivetrain.driveDutyCycle(() -> 0, () -> 0, () -> 0));
         }
 
         Command shootSpeakerAuto() {
             return primeSpeakerAuto()
-                    .raceWith(
-                            new WaitUntilCommand(2)
-                                    .andThen(transit.runForwards().until((() -> !transit.hasNote()))));
+                    .alongWith(new WaitCommand(1).andThen(transit.runForwards()))
+                    .until((() -> !transit.hasNote()));
         }
 
         Command shootSpeakerAuto2() {
@@ -163,14 +169,15 @@ public class Robot extends TimedRobot {
         // intake by default.
         // pivot.setDefaultCommand(pivot.toIntake());
         pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
+        shooter.setDefaultCommand(shooter.VelocityOpenLoopCmd(true, 500));
 
         // ----------- DRIVER CONTROLS -----------
 
         drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
-                () -> squareInput(driver.getLeftY()),
-                () -> squareInput(driver.getLeftX()),
+                isRedAlliance ? () -> squareInput(driver.getLeftY()) : () -> squareInput(-driver.getLeftY()),
+                isRedAlliance ? () -> squareInput(driver.getLeftX()) : () -> squareInput(-driver.getLeftX()),
                 // TODO: ask if driver wants turning squared as well
-                () -> -driver.getRightX()));
+                isRedAlliance ? () -> squareInput(driver.getRightX()) : () -> squareInput(-driver.getRightX())));
 
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
         driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
@@ -209,7 +216,7 @@ public class Robot extends TimedRobot {
                         new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
                                 .andThen(cmds.waitThenFeed()))
                         // TODO: configure the next two as default commands (not working)
-                        .andThen(shooter.stop().alongWith(pivot.toIntake())));
+                        .andThen(shooter.stop().alongWith(pivot.toIntakeUntilAimed())));
 
         autonomousChooser.addOption("Shoot against subwoofer",
                 new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
@@ -231,8 +238,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-
-        configButtonBindings();
     }
 
     @Override

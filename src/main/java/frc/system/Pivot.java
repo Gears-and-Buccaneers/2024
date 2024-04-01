@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.hardware.LoggedTalonFX;
 
@@ -56,7 +57,7 @@ public class Pivot implements LoggedSubsystems {
     /**
      * The shooter degree offset from being perpendicular to the arm, Radians.
      */
-    public final double armOffsetRad = Units.degreesToRadians(52);
+    public final double armOffsetRad = Units.degreesToRadians(38);
     /** i have know idea what this is */
     public final double exitDistance = armLength * Math.sin(armOffsetRad);
     /** the deadband for the pivot setpoint Rotations */
@@ -69,7 +70,7 @@ public class Pivot implements LoggedSubsystems {
     /** The position for scoring in the speaker from the subwoofer, in rotations. */
     public final double subwooferPosition = -0.0530455469;
     /** The position for intaking, in rotations. */
-    public final double intakePosition = -.07161;
+    public final double intakePosition = -0.071;
     /** The position for shooting into the amp, in rotations. */
     public final double ampPosition = 0.25;
 
@@ -130,11 +131,12 @@ public class Pivot implements LoggedSubsystems {
         // pivotConf.Slot0.kV = 1.88;
         // pivotConf.Slot0.kA = 0.01;
 
-        pivotConf.Slot0.kP = 13;
+        pivotConf.Slot0.kP = 163;
+        pivotConf.Slot0.kD = 10;
         pivotConf.Slot0.kG = 0.07; // TODO: tune PID
 
-        pivotConf.MotionMagic.MotionMagicAcceleration = 0.5;
-        pivotConf.MotionMagic.MotionMagicCruiseVelocity = 1;
+        pivotConf.MotionMagic.MotionMagicAcceleration = 0.75;
+        pivotConf.MotionMagic.MotionMagicCruiseVelocity = 2;
 
         // TODO: Do the math for the current limiting
         pivotConf.CurrentLimits.SupplyCurrentLimit = 75;
@@ -146,6 +148,8 @@ public class Pivot implements LoggedSubsystems {
         pivotConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         rightMotor.getConfigurator().apply(pivotConf);
 
+        MotionMagicCtrlMode.FeedForward = 0;
+
         zeroToIntakePose();
     }
 
@@ -155,7 +159,11 @@ public class Pivot implements LoggedSubsystems {
      *         setpoint.
      */
     public boolean isAimed() {
-        double error = leftMotor.getPosition().getValueAsDouble() - MotionMagicCtrlMode.Position;
+        return isAimedTo(MotionMagicCtrlMode.Position);
+    }
+
+    public boolean isAimedTo(double rotations) {
+        double error = leftMotor.getPosition().getValueAsDouble() - rotations;
         return Math.abs(error) < defaultDeadband;
     }
 
@@ -173,6 +181,11 @@ public class Pivot implements LoggedSubsystems {
     public void zeroToIntakePose() {
         leftMotor.setPosition(intakePosition);
         rightMotor.setPosition(intakePosition);
+    }
+
+    private void disableMotors() {
+        leftMotor.disable();
+        rightMotor.disable();
     }
 
     /**
@@ -238,7 +251,6 @@ public class Pivot implements LoggedSubsystems {
 
         leftMotor.setControl(MotionMagicCtrlMode);
         rightMotor.setControl(MotionMagicCtrlMode);
-
     }
 
     /**
@@ -256,6 +268,11 @@ public class Pivot implements LoggedSubsystems {
             @Override
             public void initialize() {
                 MMPositionCtrl(rotations);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return isAimed();
             }
         };
 
@@ -314,17 +331,14 @@ public class Pivot implements LoggedSubsystems {
      * @return a command that requires the pivot and when it ends the motors are
      *         disabled
      */
-    public Command toIntake() {
-        Command cmd = MMPositionCmd(intakePosition);
-
-        return cmd;
+    public Command toIntakeUntilAimed() {
+        return MMPositionCmd(intakePosition);
     }
 
     // ---------- Logging ----------
     public void log() {
         leftMotor.log();
         rightMotor.log();
-
         setpoint.set(MotionMagicCtrlMode.Position);
         actualRotation.set(leftMotor.getPosition().getValueAsDouble());
     }

@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 
 import au.grapplerobotics.LaserCan.Measurement;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.hardware.*;
@@ -152,7 +153,7 @@ public class Transit implements LoggedSubsystems {
      * @apiNote DEPENDS on sensors
      */
     public Command feedOut() {
-        return feed(true, 1).until(() -> hasNote()).until(() -> !hasNote());
+        return feed(true, 0.8).until(() -> !hasNote());
     }
 
     public Command runForwards() {
