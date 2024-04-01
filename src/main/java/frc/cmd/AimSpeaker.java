@@ -104,9 +104,11 @@ public class AimSpeaker extends Command {
         pitch = Math.asin(vectorToSpeaker.getZ() / distance);
         rotations = Units
                 .radiansToRotations(pivot.armOffsetRad + Math.asin(pivot.exitDistance /
-                        distance) - pitch);
-        rotations -= rotationFudge.get(0) + .015;
-        // rotations -= 0.03415 / distance;
+                        distance) - pitch)
+                + rotationFudge.get(0);
+        rotations += -0.005;
+        rotations += -0.00125 * distance;
+
         // Shooter Speed
         shooterSpeed = 4000;
         shooterSpeed += 100 * distance;
