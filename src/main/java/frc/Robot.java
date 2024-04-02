@@ -74,8 +74,6 @@ public class Robot extends TimedRobot {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        // TODO: re-enable vision once the jitter is solved.
-        // new Nt().register(drivetrain);
         PortForwarder.add(5800, "photonvision.local", 5800);
         configNamedCommands();
         autonomousChooser = AutoBuilder.buildAutoChooser();
@@ -206,12 +204,12 @@ public class Robot extends TimedRobot {
         driver.y().onTrue(cmds.shootSpeakerAuto2());
         // ---------- OPERATOR CONTROLS ----------
 
+        // TODO: make button map printout for operator
         // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftBumper().whileTrue(cmds.primeAmp());
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
 
-        // operator.rightTrigger().whileTrue(cmds.shoot()); // this crashes the robot
-        // code DO NOT USE UNTILL FIDED
+        // operator.rightTrigger().whileTrue(cmds.shoot());
         operator.rightTrigger().whileTrue(transit.runForwards());
 
         operator.a().onTrue(transit.feedIn());
