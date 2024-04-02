@@ -102,12 +102,24 @@ public class Robot extends TimedRobot {
             }.withTimeout(duration);
         }
 
+        /**
+         * <ol>
+         * <li>Runs both the intake and the transit in.</li>
+         * <li>the intake will stop once the note is in the transit and then it will
+         * rumble the driver and operator</li>
+         * <li>the transit will stop when it has finished its feed in procedure (runs
+         * it in till it seas a note than backs it out and then runs it back in until
+         * it sees the note)</li>
+         * </ol>
+         * 
+         * @return Command that requires PIVOT, INTAKE and TRANSIT
+         */
         Command intakeNote() {
             return pivot.toIntakeUntilAimed()
-                    .andThen(
+                    .alongWith(
                             intake.runIn().until(() -> transit.hasNote())
-                                    .andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)).alongWith(
-                                            transit.feedIn()));
+                                    .andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)),
+                            transit.feedIn());
         }
 
         Command primeAmp() {
@@ -126,6 +138,12 @@ public class Robot extends TimedRobot {
             return new WaitCommand(2).andThen(transit.feedOut());
         }
 
+        /**
+         * curently crases the robt code do not use
+         * 
+         * @return
+         */
+        @Deprecated
         Command shoot() {
             return transit.feedOut().andThen(
                     rumble(RumbleType.kBothRumble, .75, .5, driver, operator),
@@ -180,7 +198,7 @@ public class Robot extends TimedRobot {
                 isRedAlliance ? () -> squareInput(driver.getRightX()) : () -> squareInput(-driver.getRightX())));
 
         driver.leftBumper().onTrue(drivetrain.zeroGyro());
-        driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
+        // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         driver.x().whileTrue(drivetrain.brake());
 
         driver.leftTrigger().onTrue(cmds.intakeNote());
@@ -192,8 +210,9 @@ public class Robot extends TimedRobot {
         operator.leftBumper().whileTrue(cmds.primeAmp());
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
 
-        operator.rightTrigger().whileTrue(cmds.shoot());
-        operator.rightBumper().whileTrue(transit.runForwards());
+        // operator.rightTrigger().whileTrue(cmds.shoot()); // this crashes the robot
+        // code DO NOT USE UNTILL FIDED
+        operator.rightTrigger().whileTrue(transit.runForwards());
 
         operator.a().onTrue(transit.feedIn());
         operator.y().whileTrue(cmds.primeSubwoofer());
