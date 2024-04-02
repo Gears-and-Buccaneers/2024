@@ -64,6 +64,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
             Units.inchesToMeters(7.5 + 1.993), new Rotation3d(0, Units.degreesToRadians(-37.5), 0));
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
+    PhotonPoseEstimator photonPoseEstimator;
     // vars
     private final PathConstraints ppConstraints;
     private final Rotation2d autoAimDeadband = Rotation2d.fromDegrees(5);
@@ -92,6 +93,10 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         this.Table = NetworkTableInstance.getDefault().getTable("Subsystems").getSubTable(simpleName);
 
         zeroGyro();
+        if (cam.isConnected()) {
+            photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
+                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+        }
 
         // Autos
         this.ppConstraints = constraints;
@@ -286,8 +291,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     // AprilTagFieldLayout aprilTagFieldLayout =
     // AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // // Construct PhotonPoseEstimator
-    PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
@@ -299,15 +302,17 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     }
 
     public void addPhotonVision() {
-        Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
-        // System.out.println(robotPose.toString());
+        if (cam.isConnected()) {
+            Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
+            // System.out.println(robotPose.toString());
 
-        if (robotPose.isPresent()) {
-            // System.out.println("thing");
-            addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
-                    robotPose.get().timestampSeconds);
-            // - (cam.getLatestResult().getLatencyMillis() * 1000));
-            // visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
+            if (robotPose.isPresent()) {
+                // System.out.println("thing");
+                addVisionMeasurement(robotPose.get().estimatedPose.toPose2d(),
+                        robotPose.get().timestampSeconds);
+                // - (cam.getLatestResult().getLatencyMillis() * 1000));
+                // visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
+            }
         }
     }
 
