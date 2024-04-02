@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8393012850426425,
-      "y": 6.60855704537885
+      "x": 0.898044014334899,
+      "y": 4.288219238334721
     },
-    "rotation": -122.38987316932868
+    "rotation": 124.11447294534125
   },
   "command": {
     "type": "sequential",
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SubToNote1"
+                  "pathName": "Note8"
                 }
               },
               {
@@ -50,9 +50,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shoot"
+            "pathName": "CloserToSpeaker"
           }
         },
         {
@@ -62,7 +62,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note1toNote2"
+                  "pathName": "Note7"
                 }
               },
               {
@@ -88,47 +88,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Note2toNote3"
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 5.0
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "pathName": "CloserToSpeaker"
           }
         }
       ]
