@@ -108,6 +108,7 @@ public class AimSpeaker extends Command {
                 + rotationFudge.get(0);
         rotations += -0.005;
         rotations += -0.00125 * distance;
+        //might want to add + .02
 
         // Shooter Speed
         shooterSpeed = 4000;
