@@ -184,41 +184,45 @@ public class Robot extends TimedRobot {
         // finish. Looks like we'll have to implement some special logic to go to the
         // intake by default.
         // pivot.setDefaultCommand(pivot.toIntake());
-        pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
+    
         shooter.setDefaultCommand(shooter.VelocityOpenLoopCmd(true, 500));
-
+        
         // ----------- DRIVER CONTROLS -----------
-
+        
         drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
-                isRedAlliance ? () -> squareInput(driver.getLeftY()) : () -> squareInput(-driver.getLeftY()),
-                isRedAlliance ? () -> squareInput(driver.getLeftX()) : () -> squareInput(-driver.getLeftX()),
-                // TODO: ask if driver wants turning squared as well
-                isRedAlliance ? () -> squareInput(driver.getRightX()) : () -> squareInput(-driver.getRightX())));
-
-        driver.leftBumper().onTrue(drivetrain.zeroGyro());
-        // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
-        driver.x().whileTrue(drivetrain.brake());
-
-        driver.leftTrigger().onTrue(cmds.intakeNote());
-
-        driver.y().onTrue(cmds.shootSpeakerAuto2());
-        // ---------- OPERATOR CONTROLS ----------
-
+            isRedAlliance ? () -> squareInput(driver.getLeftY()) : () -> squareInput(-driver.getLeftY()),
+            isRedAlliance ? () -> squareInput(driver.getLeftX()) : () -> squareInput(-driver.getLeftX()),
+            // Note: rotation does not need to be inverted based on alliance side, since rotational direction is not orientation-dependent.
+            () -> -driver.getRightX()));
+            
+            driver.leftTrigger().whileTrue(cmds.intakeNote());
+            driver.leftBumper().onTrue(drivetrain.zeroGyro());
+            
+            // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
+            
+            driver.x().whileTrue(drivetrain.brake());
+            // TODO: Is this a test control? Should it be removed?
+            driver.y().onTrue(cmds.shootSpeakerAuto2());
+            
+            // ---------- OPERATOR CONTROLS ----------
+            
+        pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
+        
         // TODO: make button map printout for operator
         // TODO: Pathfind to the amp using a PathfindToPose command
-        operator.leftBumper().whileTrue(cmds.primeAmp());
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
+        operator.leftBumper().whileTrue(cmds.primeAmp());
 
         // operator.rightTrigger().whileTrue(cmds.shoot());
         operator.rightTrigger().whileTrue(transit.runForwards());
+        operator.rightBumper().whileTrue(transit.runBackward());
 
-        operator.a().onTrue(transit.feedIn());
+        // TODO: do we want this? I think right-trigger covers this.
+        // operator.a().onTrue(transit.feedIn());
         operator.y().whileTrue(cmds.primeSubwoofer());
-
-        operator.b().whileTrue(transit.runBackward());
         operator.x().whileTrue(intake.runOut());
 
-        // Zeroes the pivot, assuming it is at intaking position.
+        // Zeroes the pivot, assuming it is at intake position.
         operator.start().onTrue(new InstantCommand(pivot::currentZeroingSequence));
 
         // TODO: Add climb command

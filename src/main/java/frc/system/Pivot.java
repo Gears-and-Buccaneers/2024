@@ -148,8 +148,6 @@ public class Pivot implements LoggedSubsystems {
         pivotConf.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         rightMotor.getConfigurator().apply(pivotConf);
 
-        MotionMagicCtrlMode.FeedForward = 0;
-
         zeroToIntakePose();
     }
 
