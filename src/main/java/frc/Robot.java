@@ -214,8 +214,6 @@ public class Robot extends TimedRobot {
         // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
         
         driver.x().whileTrue(drivetrain.brake());
-        // TODO: Is this a test control? Should it be removed?
-        driver.y().onTrue(cmds.shootSpeakerAuto2());
         
         // ---------- OPERATOR CONTROLS ----------
             
@@ -230,8 +228,7 @@ public class Robot extends TimedRobot {
         operator.rightTrigger().whileTrue(transit.runForwards());
         operator.rightBumper().whileTrue(transit.runBackward());
 
-        // TODO: do we want this? I think right-trigger covers this.
-        // operator.a().onTrue(transit.feedIn());
+        operator.a().whileTrue(shooter.shootSpeaker());
         operator.b().whileTrue(pivot.toIntakeUntilAimed());
         operator.y().whileTrue(cmds.primeSubwoofer());
         operator.x().whileTrue(intake.runOut());

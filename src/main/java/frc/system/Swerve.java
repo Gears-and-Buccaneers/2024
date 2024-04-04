@@ -33,6 +33,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.Robot;
 import frc.config.SwerveConfig;
@@ -88,10 +90,9 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         this.Table = NetworkTableInstance.getDefault().getTable("Subsystems").getSubTable(simpleName);
 
         zeroGyro();
-        if (cam.isConnected()) {
-            photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
-        }
+        // if (cam.isConnected()) {
+        photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+        // }
 
         // Autos
         configurePathPlanner();
@@ -109,6 +110,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         ntPose3d = Table.getStructTopic("Pose3d", new Pose3dStruct()).publish();
         ntSwerveModuleState = Table.getStructArrayTopic("SwerveModuleState", SwerveModuleState.struct).publish();
         ntSwerveModuleTarget = Table.getStructArrayTopic("SwerveModuleTarget", SwerveModuleState.struct).publish();
+        Field2d f = new Field2d();
 
         registerTelemetry((s) -> {
             ntPose2d.set(s.Pose);
@@ -116,6 +118,8 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
             ntPose3d.set(new Pose3d(s.Pose));
             ntSwerveModuleState.set(s.ModuleStates);
             ntSwerveModuleTarget.set(s.ModuleTargets);
+            f.setRobotPose(s.Pose);
+            SmartDashboard.putData("field", f);
         });
 
         if (Utils.isSimulation()) {
@@ -291,12 +295,8 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         return photonPoseEstimator.update();
     }
 
-    public boolean isCamConnected() {
-        return cam.isConnected();
-    }
-
     public void addPhotonVision() {
-        if (cam.isConnected()) {
+        // if (cam.isConnected()) {
             Optional<EstimatedRobotPose> robotPose = getEstimatedGlobalPose(pose());
             // System.out.println(robotPose.toString());
 
@@ -307,7 +307,7 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
                 // - (cam.getLatestResult().getLatencyMillis() * 1000));
                 // visionPose2d.set(robotPose.get().estimatedPose.toPose2d());
             }
-        }
+        // }
     }
 
     // ---------- Sim ----------
