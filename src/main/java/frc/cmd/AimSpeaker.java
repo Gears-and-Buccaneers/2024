@@ -115,6 +115,11 @@ public class AimSpeaker extends Command {
 
         if (shooterSpeed > 5000)
             shooterSpeed = 5000;
+
+        // TODO: switch to voltage
+        // shooterSpeed = 0.75;
+        // shooterSpeed += 0.05 * distance;
+        // shooterSpeed += shooterFudge.get(0);
     }
 
     @Override
@@ -125,8 +130,8 @@ public class AimSpeaker extends Command {
         pivot.MMPositionCtrl(rotations);
         drivetrain.setRotationOverride(Rotation2d.fromRadians(yaw));
         shooter.VelocityOpenLoop(true, shooterSpeed);
-        // alongWith(pivot.MMPositionCtrl(rotations1)); // Testing this is this does not
-        // work the above line works
+        // TODO: switch to voltage
+        // shooter.voltageCtrl(shooterSpeed);
     }
 
     @Override

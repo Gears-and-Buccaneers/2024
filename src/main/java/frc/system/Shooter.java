@@ -2,6 +2,7 @@ package frc.system;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -19,6 +20,7 @@ public class Shooter implements LoggedSubsystems {
     private final LoggedTalonFX leftMotor;
     private final LoggedTalonFX rightMotor;
     private DutyCycleOut DutyCycleCtrlMode = new DutyCycleOut(0);
+    private VoltageOut ctrl = new VoltageOut(0);
 
     // Network
     /** the sub table where all logging for Shooter should go */
@@ -29,6 +31,9 @@ public class Shooter implements LoggedSubsystems {
 
     private final DoublePublisher setShooterSpeed;
     // Vars
+    /** The maximum voltage to apply to the shooter motors. */
+    private final double voltageMax = 10.0;
+
     /** the max RMP of the shooting wheals */
     private final double maxShooterSpeed = 6000;
     /** the default Speaker RMP for shooting */
@@ -93,21 +98,28 @@ public class Shooter implements LoggedSubsystems {
 
     // ---------- Generic Functions ----------
 
-    // ---------- Command CtrlModes ----------
+    /** Runs the shooter at the specified percent of its maximum output voltage. */
+    public void voltageCtrl(double percent) {
+        if (percent > 1) percent = 1;
+        else if (percent < -1) percent = -1;
+
+        ctrl.Output = percent * voltageMax;
+    }
+
+    
     public void VelocityOpenLoop(boolean forwards, double RPM) {
         if (RPM > maxShooterSpeed || RPM < -maxShooterSpeed) {
             DriverStation.reportWarning(
-                    "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
-        }
+                "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
+            }
         DutyCycleCtrlMode.Output = (forwards ? RPM : -RPM)
-                / maxShooterSpeed;
-
+        / maxShooterSpeed;
+        
         leftMotor.setControl(DutyCycleCtrlMode);
         rightMotor.setControl(DutyCycleCtrlMode);
     }
 
-
-    
+        // ---------- Commands ----------
 
     /**
      * Controls the shooter based on a direction and speed.
@@ -133,6 +145,17 @@ public class Shooter implements LoggedSubsystems {
         return cmd;
     }
 
+    public Command voltageCmd(double percent) {
+        Command cmd = new Command() {
+            public void initialize() {
+                voltageCtrl(percent);
+            }
+        };
+
+        cmd.addRequirements(this);
+        return cmd;
+    }
+
     /**
      * stops/disable the shooter motors
      * 
@@ -151,7 +174,6 @@ public class Shooter implements LoggedSubsystems {
         return cmd;
     }
 
-    // ---------- Commands ----------
     /**
      * spins the shooter weals at a const speakerSpeed(NT)
      * 
@@ -163,26 +185,7 @@ public class Shooter implements LoggedSubsystems {
 
         return cmd;
     }
-
-    public Command shootSpeakerAuto() {
-        Command cmd = new Command() {
-            public void initialize() {
-                if (speakerSpeed > maxShooterSpeed || speakerSpeed < -maxShooterSpeed) {
-                    DriverStation.reportWarning(
-                            "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
-                }
-                DutyCycleCtrlMode.Output = speakerSpeed
-                        / maxShooterSpeed;
-
-                leftMotor.setControl(DutyCycleCtrlMode);
-                rightMotor.setControl(DutyCycleCtrlMode);
-            }
-        };
-
-        cmd.addRequirements(this);
-        return cmd;
-    }
-
+    
     /**
      * spins the shooter weals at a const speed of 1000 rpm
      * 
@@ -195,6 +198,26 @@ public class Shooter implements LoggedSubsystems {
         return cmd;
     }
 
+    // public Command shootSpeakerAuto() {
+    //     Command cmd = new Command() {
+    //         public void initialize() {
+    //             if (speakerSpeed > maxShooterSpeed || speakerSpeed < -maxShooterSpeed) {
+    //                 DriverStation.reportWarning(
+    //                         "setting Shooter VelocityOpenLoop RPM outside of controllable range", true);
+    //             }
+    //             DutyCycleCtrlMode.Output = speakerSpeed
+    //                     / maxShooterSpeed;
+
+    //             leftMotor.setControl(DutyCycleCtrlMode);
+    //             rightMotor.setControl(DutyCycleCtrlMode);
+    //         }
+    //     };
+
+    //     cmd.addRequirements(this);
+    //     return cmd;
+    // }
+
+
     /**
      * spins the shooter weals at a const speed of 500 rpm BACKWARD
      * 
@@ -203,7 +226,6 @@ public class Shooter implements LoggedSubsystems {
      */
     public Command reverse() {
         Command cmd = VelocityOpenLoopCmd(false, 500);
-
         return cmd;
     }
 
@@ -212,7 +234,7 @@ public class Shooter implements LoggedSubsystems {
      * @return a new wait Until Command that waits until the both shooter weals are
      *         at the desired velocity
      */
-    public Command waitPrimed() {// TODO: not quite sure if this will work
+    public Command waitPrimed() {
         // double leftMotorError = Math
         // .abs(leftMotor.getRotorVelocity().getValue() - DutyCycleCtrlMode.Output *
         // maxShooterSpeed);
@@ -227,6 +249,7 @@ public class Shooter implements LoggedSubsystems {
     }
 
     // ---------- Logging ----------
+
     public void log() {
         leftMotor.log();
         rightMotor.log();

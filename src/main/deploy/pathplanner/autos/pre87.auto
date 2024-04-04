@@ -56,6 +56,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -91,6 +97,12 @@
           "type": "path",
           "data": {
             "pathName": "CloserToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]
