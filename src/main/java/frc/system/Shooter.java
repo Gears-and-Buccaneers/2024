@@ -26,9 +26,6 @@ public class Shooter implements LoggedSubsystems {
     /** the sub table where all logging for Shooter should go */
     private final NetworkTable shooterTable;
 
-    /** the speed for shooting in Speaker */
-    public double speakerSpeed;
-
     private final DoublePublisher setShooterSpeed;
     // Vars
     /** The maximum voltage to apply to the shooter motors. */
@@ -37,7 +34,7 @@ public class Shooter implements LoggedSubsystems {
     /** the max RMP of the shooting wheals */
     private final double maxShooterSpeed = 6000;
     /** the default Speaker RMP for shooting */
-    private final double defaultSpeakerSpeed = 5000;
+    private final double speakerSpeed = 5000;
     /** amount of acceptable error for shooter in RPM */
     private final double deadBand = 250;
 

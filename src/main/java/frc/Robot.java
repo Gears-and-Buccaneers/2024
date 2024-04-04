@@ -35,7 +35,7 @@ import frc.system.*;
 import frc.cmd.*;
 
 public class Robot extends TimedRobot {
-    public static boolean isRedAlliance;
+    public static boolean isRedAlliance = false;
 
     SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 
@@ -53,33 +53,13 @@ public class Robot extends TimedRobot {
     private final Shooter shooter = new Shooter(subsystemsTable);
     private final Pivot pivot = new Pivot(subsystemsTable);
 
-    // Commands
+    // public Robot() {
+        // ! DO NOT USE
+    // }
 
     // Utilities
     static double squareInput(double input) {
         return Math.copySign(input * input, input);
-    }
-
-    public Robot() {
-        // Register alliance
-        isRedAlliance = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent();
-        configButtonBindings();
-        // Add to NetworkTables for verification
-        SmartDashboard.putBoolean("isRedAlliance", isRedAlliance);
-
-        // ------------------- Logging -------------------
-        DataLogManager.start();
-        DriverStation.startDataLog(DataLogManager.getLog());
-
-        if (isSimulation()) {
-            DriverStation.silenceJoystickConnectionWarning(true);
-        }
-
-        PortForwarder.add(5800, "photonvision.local", 5800);
-        configNamedCommands();
-        autonomousChooser = AutoBuilder.buildAutoChooser();
-        configAutos();
-
     }
 
     // TODO: add comments
@@ -270,6 +250,24 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        // Register alliance
+        isRedAlliance = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent();
+        // Add to NetworkTables for verification
+        SmartDashboard.putBoolean("isRedAlliance", isRedAlliance);
+        configButtonBindings();
+
+        // ------------------- Logging -------------------
+        DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
+
+        if (isSimulation()) {
+            DriverStation.silenceJoystickConnectionWarning(true);
+        }
+
+        PortForwarder.add(5800, "photonvision.local", 5800);
+        configNamedCommands();
+        autonomousChooser = AutoBuilder.buildAutoChooser();
+        configAutos();
     }
 
     @Override
