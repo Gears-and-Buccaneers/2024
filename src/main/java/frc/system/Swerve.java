@@ -17,7 +17,6 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.*;
 import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.*;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.*;
 import com.pathplanner.lib.util.*;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -32,11 +31,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.Robot;
 import frc.config.SwerveConfig;
 
@@ -66,7 +63,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
 
     PhotonPoseEstimator photonPoseEstimator;
     // vars
-    private final PathConstraints ppConstraints;
     private final Rotation2d autoAimDeadband = Rotation2d.fromDegrees(5);
 
     private boolean hasPose = false;
@@ -84,7 +80,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
     private Rotation2d rotationOverride;
 
     public Swerve(
-            PathConstraints constraints,
             double kSpeedAt12VoltsMps,
             SwerveDrivetrainConstants driveTrainConstants,
             SwerveModuleConstants... modules) {
@@ -99,7 +94,6 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         }
 
         // Autos
-        this.ppConstraints = constraints;
         configurePathPlanner();
 
         cachedFieldCentricFacing.HeadingController = new PhoenixPIDController(8, 0, .2);

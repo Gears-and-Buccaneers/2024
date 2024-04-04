@@ -149,7 +149,8 @@ public class Robot extends TimedRobot {
         }
 
         /**
-         * curently crases the robt code do not use
+         * Currently crashes the robot code; do not use. 
+         * TODO: Why?!
          * 
          * @return
          */

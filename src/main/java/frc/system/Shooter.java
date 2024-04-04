@@ -33,7 +33,7 @@ public class Shooter implements LoggedSubsystems {
     private final double maxShooterSpeed = 6000;
     /** the default Speaker RMP for shooting */
     private final double defaultSpeakerSpeed = 5000;
-    /** amount of accseptable error for shooter in RPM */
+    /** amount of acceptable error for shooter in RPM */
     private final double deadBand = 250;
 
     // ---------- Config ----------

@@ -4,7 +4,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
-import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
 
@@ -137,8 +136,6 @@ public class SwerveConfig {
             kInvertRightSide);
 
     public static final Swerve swerve = new Swerve(
-            new PathConstraints(kSpeedAt12VoltsMps, 4, Units.degreesToRadians(520),
-                    Units.degreesToRadians(720)),
             kSpeedAt12VoltsMps, DrivetrainConstants, FrontLeft, FrontRight, BackLeft,
             BackRight);
 
