@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 // pathplanner
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.net.PortForwarder;
 // Logging
 import edu.wpi.first.networktables.NetworkTable;
@@ -121,7 +122,18 @@ public class Robot extends TimedRobot {
         }
 
         Command primeAmp() {
-            return pivot.toAmp().alongWith(shooter.shootAmp());
+            return pivot.toAmp().alongWith(shooter.shootAmp(), new Command() {
+                @Override
+                public void initialize() {
+                    // Point the shooter towards positive y, the direction of the amp entrance.
+                    drivetrain.setRotationOverride(Rotation2d.fromDegrees(90));
+                }
+
+                @Override
+                public void end(boolean interrupted) {
+                    drivetrain.setRotationOverride(null);
+                }
+            });
         }
 
         Command primeSpeaker() {
@@ -209,8 +221,8 @@ public class Robot extends TimedRobot {
         pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
 
         // TODO: make button map printout for operator
-        // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
+        // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftBumper().whileTrue(cmds.primeAmp());
 
         // operator.rightTrigger().whileTrue(cmds.shoot());
@@ -219,6 +231,7 @@ public class Robot extends TimedRobot {
 
         // TODO: do we want this? I think right-trigger covers this.
         // operator.a().onTrue(transit.feedIn());
+        operator.b().whileTrue(pivot.toIntakeUntilAimed());
         operator.y().whileTrue(cmds.primeSubwoofer());
         operator.x().whileTrue(intake.runOut());
 

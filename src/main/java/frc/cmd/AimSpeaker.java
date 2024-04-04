@@ -9,8 +9,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.Robot;
 import frc.system.Pivot;
@@ -31,7 +29,7 @@ public class AimSpeaker extends Command {
 
     /**
      * the offset for the rotation of the pivot positive shoots higher/lower
-     */// TODO: check
+     */
     private final DoubleSubscriber rotationFudge;
     /** offest the rotation of the robot RADS Positive rottes x */
     private final DoubleSubscriber yawFudge;
@@ -51,7 +49,7 @@ public class AimSpeaker extends Command {
 
     // Vars
     private final Translation3d speakerPosition;
-    // private DoubleSubscriber fudeFactor;
+    // private DoubleSubscriber fudgeFactor;
 
     public AimSpeaker(Swerve drivetrain, Pivot pivot, Shooter shooter) {
         // Network tables
@@ -133,7 +131,7 @@ public class AimSpeaker extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.rotationOverride = null;
+        drivetrain.setRotationOverride(null);
         // shooter.disable();
     }
 
