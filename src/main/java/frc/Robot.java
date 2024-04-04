@@ -195,19 +195,19 @@ public class Robot extends TimedRobot {
             // Note: rotation does not need to be inverted based on alliance side, since rotational direction is not orientation-dependent.
             () -> -driver.getRightX()));
             
-            driver.leftTrigger().whileTrue(cmds.intakeNote());
-            driver.leftBumper().onTrue(drivetrain.zeroGyro());
-            
-            // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
-            
-            driver.x().whileTrue(drivetrain.brake());
-            // TODO: Is this a test control? Should it be removed?
-            driver.y().onTrue(cmds.shootSpeakerAuto2());
-            
-            // ---------- OPERATOR CONTROLS ----------
+        driver.leftTrigger().whileTrue(cmds.intakeNote());
+        driver.leftBumper().onTrue(drivetrain.zeroGyro());
+        
+        // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
+        
+        driver.x().whileTrue(drivetrain.brake());
+        // TODO: Is this a test control? Should it be removed?
+        driver.y().onTrue(cmds.shootSpeakerAuto2());
+        
+        // ---------- OPERATOR CONTROLS ----------
             
         pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
-        
+
         // TODO: make button map printout for operator
         // TODO: Pathfind to the amp using a PathfindToPose command
         operator.leftTrigger().whileTrue(cmds.primeSpeaker());
