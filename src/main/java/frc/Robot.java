@@ -35,304 +35,305 @@ import frc.system.*;
 import frc.cmd.*;
 
 public class Robot extends TimedRobot {
-    public static boolean isRedAlliance = false;
+	public static boolean isRedAlliance = false;
 
-    SendableChooser<Command> autonomousChooser = new SendableChooser<>();
+	SendableChooser<Command> autonomousChooser = new SendableChooser<>();
 
-    // Controllers
-    private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+	// Controllers
+	private final CommandXboxController driver = new CommandXboxController(0);
+	private final CommandXboxController operator = new CommandXboxController(1);
 
-    // Subsystems
-    private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
+	// Subsystems
+	private final NetworkTable subsystemsTable = NetworkTableInstance.getDefault().getTable("Subsystems");
 
-    private final Swerve drivetrain = SwerveConfig.swerve;
+	private final Swerve drivetrain = SwerveConfig.swerve;
 
-    private final Transit transit = new Transit(subsystemsTable);
-    private final Intake intake = new Intake(subsystemsTable);
-    private final Shooter shooter = new Shooter(subsystemsTable);
-    private final Pivot pivot = new Pivot(subsystemsTable);
+	private final Transit transit = new Transit(subsystemsTable);
+	private final Intake intake = new Intake(subsystemsTable);
+	private final Shooter shooter = new Shooter(subsystemsTable);
+	private final Pivot pivot = new Pivot(subsystemsTable);
 
-    // public Robot() {
-        // ! DO NOT USE
-    // }
+	// public Robot() {
+	// ! DO NOT USE
+	// }
 
-    // Utilities
-    static double squareInput(double input) {
-        return Math.copySign(input * input, input);
-    }
+	// Utilities
+	static double squareInput(double input) {
+		return Math.copySign(input * input, input);
+	}
 
-    // TODO: add comments
-    private class Commands {
-        Command rumble(RumbleType type, double strength, double duration,
-                CommandXboxController... controllers) {
-            return new Command() {
-                @Override
-                public void initialize() {
-                    for (CommandXboxController controller : controllers)
-                        controller.getHID().setRumble(type, strength);
-                }
+	// TODO: add comments
+	private class Commands {
+		Command rumble(RumbleType type, double strength, double duration,
+				CommandXboxController... controllers) {
+			return new Command() {
+				@Override
+				public void initialize() {
+					for (CommandXboxController controller : controllers)
+						controller.getHID().setRumble(type, strength);
+				}
 
-                @Override
-                public void end(boolean interrupted) {
-                    for (CommandXboxController controller : controllers)
-                        controller.getHID().setRumble(type, 0);
-                }
-            }.withTimeout(duration);
-        }
+				@Override
+				public void end(boolean interrupted) {
+					for (CommandXboxController controller : controllers)
+						controller.getHID().setRumble(type, 0);
+				}
+			}.withTimeout(duration);
+		}
 
-        /**
-         * <ol>
-         * <li>Runs both the intake and the transit in.</li>
-         * <li>the intake will stop once the note is in the transit and then it will
-         * rumble the driver and operator</li>
-         * <li>the transit will stop when it has finished its feed in procedure (runs
-         * it in till it seas a note than backs it out and then runs it back in until
-         * it sees the note)</li>
-         * </ol>
-         * 
-         * @return Command that requires PIVOT, INTAKE and TRANSIT
-         */
-        Command intakeNote() {
-            return pivot.toIntakeUntilAimed()
-                    .alongWith(
-                            intake.runIn().until(() -> transit.hasNote())
-                                    .andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)),
-                            transit.feedIn());
-        }
+		/**
+		 * <ol>
+		 * <li>Runs both the intake and the transit in.</li>
+		 * <li>the intake will stop once the note is in the transit and then it will
+		 * rumble the driver and operator</li>
+		 * <li>the transit will stop when it has finished its feed in procedure (runs
+		 * it in till it seas a note than backs it out and then runs it back in until
+		 * it sees the note)</li>
+		 * </ol>
+		 *
+		 * @return Command that requires PIVOT, INTAKE and TRANSIT
+		 */
+		Command intakeNote() {
+			return pivot.toIntakeUntilAimed()
+					.alongWith(
+							intake.runIn().until(() -> transit.hasNote())
+									.andThen(rumble(RumbleType.kBothRumble, .75, .5, driver, operator)),
+							transit.feedIn());
+		}
 
-        Command primeAmp() {
-            return pivot.toAmp().alongWith(shooter.shootAmp(), new Command() {
-                @Override
-                public void initialize() {
-                    // Point the shooter towards positive y, the direction of the amp entrance.
-                    drivetrain.setRotationOverride(Rotation2d.fromDegrees(90));
-                }
+		Command primeAmp() {
+			return pivot.toAmp().alongWith(shooter.shootAmp(), new Command() {
+				@Override
+				public void initialize() {
+					// Point the shooter towards positive y, the direction of the amp entrance.
+					drivetrain.setRotationOverride(Rotation2d.fromDegrees(90));
+				}
 
-                @Override
-                public void end(boolean interrupted) {
-                    drivetrain.setRotationOverride(null);
-                }
-            });
-        }
+				@Override
+				public void end(boolean interrupted) {
+					drivetrain.setRotationOverride(null);
+				}
+			});
+		}
 
-        Command primeSpeaker() {
-            return new AimSpeaker(drivetrain, pivot, shooter);
-        }
+		Command primeSpeaker() {
+			return new AimSpeaker(drivetrain, pivot, shooter);
+		}
 
-        Command primeSubwoofer() {
-            return pivot.toSubwoofer().alongWith(shooter.shootSpeaker());
-        }
+		Command primeSubwoofer() {
+			return pivot.toSubwoofer().alongWith(shooter.shootSpeaker());
+		}
 
-        Command waitThenFeed() {
-            return new WaitCommand(2).andThen(transit.feedOut());
-        }
+		Command waitThenFeed() {
+			return new WaitCommand(2).andThen(transit.feedOut());
+		}
 
-        /**
-         * Currently crashes the robot code; do not use. 
-         * TODO: Why?!
-         * 
-         * @return
-         */
-        @Deprecated
-        Command shoot() {
-            return transit.feedOut().andThen(
-                    rumble(RumbleType.kBothRumble, .75, .5, driver, operator),
-                    pivot.toIntakeUntilAimed());
-        }
+		/**
+		 * Currently crashes the robot code; do not use.
+		 * TODO: Why?!
+		 *
+		 * @return
+		 */
+		@Deprecated
+		Command shoot() {
+			return transit.feedOut().andThen(
+					rumble(RumbleType.kBothRumble, .75, .5, driver, operator),
+					pivot.toIntakeUntilAimed());
+		}
 
-        // Auto Commands
-        Command intakeNoteAuto() {
-            return pivot.toIntakeUntilAimed()
-                    .andThen(
-                            intake.runIn().alongWith(transit.runForwards()))
-                    .until(() -> transit.hasNote());
-        }
+		// Auto Commands
+		Command intakeNoteAuto() {
+			return pivot.toIntakeUntilAimed()
+					.andThen(
+							intake.runIn().alongWith(transit.runForwards()))
+					.until(() -> transit.hasNote());
+		}
 
-        Command primeSpeakerAuto() {
-            return primeSpeaker().alongWith(
-                    drivetrain.driveDutyCycle(() -> 0, () -> 0, () -> 0));
-        }
+		Command primeSpeakerAuto() {
+			return primeSpeaker().alongWith(
+					drivetrain.driveDutyCycle(() -> 0, () -> 0, () -> 0));
+		}
 
-        Command shootSpeakerAuto() {
-            return primeSpeakerAuto()
-                    .alongWith(new WaitCommand(1).andThen(transit.runForwards()))
-                    .until((() -> !transit.hasNote()));
-        }
+		Command shootSpeakerAuto() {
+			return primeSpeakerAuto()
+					.alongWith(new WaitCommand(1).andThen(transit.runForwards()))
+					.until((() -> !transit.hasNote()));
+		}
 
-        Command shootSpeakerAuto2() {
-            return primeSpeakerAuto()
-                    .raceWith(
-                            new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
-                                    .andThen(transit.runForwards().until((() -> !transit.hasNote()))));
-        }
-    }
+		Command shootSpeakerAuto2() {
+			return primeSpeakerAuto()
+					.raceWith(
+							new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
+									.andThen(transit.runForwards().until((() -> !transit.hasNote()))));
+		}
+	}
 
-    private final Commands cmds = new Commands();
+	private final Commands cmds = new Commands();
 
-    private void configButtonBindings() {
-        // ----------- DEFAULT COMMANDS -----------
+	private void configButtonBindings() {
+		// ----------- DEFAULT COMMANDS -----------
 
-        // NOTE: it appears that default commands are immediately rescheduled if they
-        // finish. Looks like we'll have to implement some special logic to go to the
-        // intake by default.
-        // pivot.setDefaultCommand(pivot.toIntake());
-    
-        shooter.setDefaultCommand(shooter.VelocityOpenLoopCmd(true, 500));
-        
-        // ----------- DRIVER CONTROLS -----------
-        
-        drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
-            isRedAlliance ? () -> squareInput(driver.getLeftY()) : () -> squareInput(-driver.getLeftY()),
-            isRedAlliance ? () -> squareInput(driver.getLeftX()) : () -> squareInput(-driver.getLeftX()),
-            // Note: rotation does not need to be inverted based on alliance side, since rotational direction is not orientation-dependent.
-            () -> -driver.getRightX()));
-            
-        driver.leftTrigger().whileTrue(cmds.intakeNote());
-        driver.leftBumper().onTrue(drivetrain.zeroGyro());
-        
-        // driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
-        
-        driver.x().whileTrue(drivetrain.brake());
-        
-        // ---------- OPERATOR CONTROLS ----------
-            
-        pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
+		// NOTE: it appears that default commands are immediately rescheduled if they
+		// finish. Looks like we'll have to implement some special logic to go to the
+		// intake by default.
+		// pivot.setDefaultCommand(pivot.toIntake());
 
-        // TODO: make button map printout for operator
-        operator.leftTrigger().whileTrue(cmds.primeSpeaker());
-        // TODO: Pathfind to the amp using a PathfindToPose command
-        operator.leftBumper().whileTrue(cmds.primeAmp());
+		shooter.setDefaultCommand(shooter.VelocityOpenLoopCmd(true, 500));
 
-        // operator.rightTrigger().whileTrue(cmds.shoot());
-        operator.rightTrigger().whileTrue(transit.runForwards());
-        operator.rightBumper().whileTrue(transit.runBackward());
+		// ----------- DRIVER CONTROLS -----------
 
-        operator.a().whileTrue(shooter.shootSpeaker());
-        operator.b().whileTrue(pivot.toIntakeUntilAimed());
-        operator.y().whileTrue(cmds.primeSubwoofer());
-        operator.x().whileTrue(intake.runOut());
+		drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
+				isRedAlliance ? () -> squareInput(driver.getLeftY()) : () -> squareInput(-driver.getLeftY()),
+				isRedAlliance ? () -> squareInput(driver.getLeftX()) : () -> squareInput(-driver.getLeftX()),
+				// Note: rotation does not need to be inverted based on alliance side, since
+				// rotational direction is not orientation-dependent.
+				() -> -driver.getRightX()));
 
-        // Zeroes the pivot, assuming it is at intake position.
-        operator.start().onTrue(new InstantCommand(pivot::currentZeroingSequence));
+		driver.leftTrigger().whileTrue(cmds.intakeNote());
+		driver.rightTrigger().whileTrue(intake.runOut());
 
-        // TODO: Add climb command
-    }
+		driver.leftBumper().onTrue(drivetrain.zeroGyro());
 
-    private void configAutos() {
-        configNamedCommands();
-        // ------------------ AUTOS ------------------
+		// driver.rightBumper().onTrue(drivetrain.zeroGyroToSubwoofer());
 
-        autonomousChooser.addOption("Shoot",
-                cmds.primeSpeaker().raceWith(
-                        new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
-                                .andThen(cmds.waitThenFeed()))
-                        // TODO: configure the next two as default commands (not working)
-                        .andThen(shooter.stop().alongWith(pivot.toIntakeUntilAimed())));
+		driver.x().whileTrue(drivetrain.brake());
 
-        autonomousChooser.addOption("Shoot against subwoofer",
-                new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
+		// ---------- OPERATOR CONTROLS ----------
 
-        autonomousChooser.addOption("Drive 3m (Red)",
-                drivetrain.driveVelocity(() -> -1, () -> 0, () -> 0)
-                        .until(() -> {
-                            return drivetrain.pose().getX() < -3.0;
-                        }).andThen(drivetrain.brake()));
+		pivot.setDefaultCommand(pivot.dutyCycleCtrl(operator::getLeftY));
 
-        SmartDashboard.putData("auto", autonomousChooser);
-    }
 
-    private void configNamedCommands() {
-        NamedCommands.registerCommand("intake", cmds.intakeNoteAuto());
-        NamedCommands.registerCommand("feedIn", transit.feedIn());
-        NamedCommands.registerCommand("shoot", cmds.shootSpeakerAuto());
-    }
+		// TODO: make button map printout for operator
+		operator.leftTrigger().whileTrue(cmds.primeSpeaker());
+		// TODO: Pathfind to the amp using a PathfindToPose command
+		operator.leftBumper().whileTrue(cmds.primeAmp());
 
-    @Override
-    public void robotInit() {
-        // Register alliance
-        isRedAlliance = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent();
-        // Add to NetworkTables for verification
-        SmartDashboard.putBoolean("isRedAlliance", isRedAlliance);
-        configButtonBindings();
+		operator.rightTrigger().whileTrue(transit.runForwards());
+		operator.rightBumper().whileTrue(transit.runBackward());
 
-        // ------------------- Logging -------------------
-        DataLogManager.start();
-        DriverStation.startDataLog(DataLogManager.getLog());
+		operator.a().whileTrue(shooter.shootSpeaker());
+		operator.y().whileTrue(cmds.primeSubwoofer());
 
-        if (isSimulation()) {
-            DriverStation.silenceJoystickConnectionWarning(true);
-        }
+		// Zeroes the pivot, assuming it is at intake position.
+		operator.start().onTrue(new InstantCommand(pivot::currentZeroingSequence));
 
-        PortForwarder.add(5800, "photonvision.local", 5800);
-        configNamedCommands();
-        autonomousChooser = AutoBuilder.buildAutoChooser();
-        configAutos();
-    }
+		// TODO: Add climb command
+	}
 
-    @Override
-    public void robotPeriodic() {
-        CommandScheduler.getInstance().run();
-        // if (drivetrain.isCamConnected()) {
-        drivetrain.addPhotonVision();
-        // }
+	private void configAutos() {
+		configNamedCommands();
+		// ------------------ AUTOS ------------------
 
-    }
+		autonomousChooser.addOption("Shoot",
+				cmds.primeSpeaker().raceWith(
+						new WaitUntilCommand(() -> drivetrain.isAimed() && pivot.isAimed())
+								.andThen(cmds.waitThenFeed()))
+						// TODO: configure the next two as default commands (not working)
+						.andThen(shooter.stop().alongWith(pivot.toIntakeUntilAimed())));
 
-    @Override
-    public void disabledInit() {
-    }
+		autonomousChooser.addOption("Shoot against subwoofer",
+				new WaitCommand(5).andThen(cmds.primeSubwoofer().raceWith(cmds.waitThenFeed())));
 
-    @Override
-    public void disabledPeriodic() {
-    }
+		autonomousChooser.addOption("Drive 3m (Red)",
+				drivetrain.driveVelocity(() -> -1, () -> 0, () -> 0)
+						.until(() -> {
+							return drivetrain.pose().getX() < -3.0;
+						}).andThen(drivetrain.brake()));
 
-    @Override
-    public void disabledExit() {
-    }
+		SmartDashboard.putData("auto", autonomousChooser);
+	}
 
-    private Command autonomousCommand;
+	private void configNamedCommands() {
+		NamedCommands.registerCommand("intake", cmds.intakeNoteAuto());
+		NamedCommands.registerCommand("feedIn", transit.feedIn());
+		NamedCommands.registerCommand("shoot", cmds.shootSpeakerAuto());
+	}
 
-    @Override
-    public void autonomousInit() {
-        autonomousCommand = autonomousChooser.getSelected();
-        if (autonomousCommand != null)
-            autonomousCommand.schedule();
-    }
+	@Override
+	public void robotInit() {
+		// Register alliance
+		isRedAlliance = DriverStation.getAlliance().filter(a -> a == Alliance.Red).isPresent();
+		// Add to NetworkTables for verification
+		SmartDashboard.putBoolean("isRedAlliance", isRedAlliance);
+		configButtonBindings();
 
-    @Override
-    public void autonomousPeriodic() {
-    }
+		// ------------------- Logging -------------------
+		DataLogManager.start();
+		DriverStation.startDataLog(DataLogManager.getLog());
 
-    @Override
-    public void autonomousExit() {
-        if (autonomousCommand != null)
-            autonomousCommand.cancel();
-    }
+		if (isSimulation()) {
+			DriverStation.silenceJoystickConnectionWarning(true);
+		}
 
-    @Override
-    public void teleopInit() {
-    }
+		PortForwarder.add(5800, "photonvision.local", 5800);
+		configNamedCommands();
+		autonomousChooser = AutoBuilder.buildAutoChooser();
+		configAutos();
+	}
 
-    @Override
-    public void teleopPeriodic() {
-    }
+	@Override
+	public void robotPeriodic() {
+		CommandScheduler.getInstance().run();
+		// if (drivetrain.isCamConnected()) {
+		drivetrain.addPhotonVision();
+		// }
 
-    @Override
-    public void teleopExit() {
-    }
+	}
 
-    @Override
-    public void testInit() {
-        // TODO: Run an automated full systems check
-        CommandScheduler.getInstance().cancelAll();
-    }
+	@Override
+	public void disabledInit() {
+	}
 
-    @Override
-    public void testPeriodic() {
-    }
+	@Override
+	public void disabledPeriodic() {
+	}
 
-    @Override
-    public void testExit() {
-    }
+	@Override
+	public void disabledExit() {
+	}
+
+	private Command autonomousCommand;
+
+	@Override
+	public void autonomousInit() {
+		autonomousCommand = autonomousChooser.getSelected();
+		if (autonomousCommand != null)
+			autonomousCommand.schedule();
+	}
+
+	@Override
+	public void autonomousPeriodic() {
+	}
+
+	@Override
+	public void autonomousExit() {
+		if (autonomousCommand != null)
+			autonomousCommand.cancel();
+	}
+
+	@Override
+	public void teleopInit() {
+	}
+
+	@Override
+	public void teleopPeriodic() {
+	}
+
+	@Override
+	public void teleopExit() {
+	}
+
+	@Override
+	public void testInit() {
+		// TODO: Run an automated full systems check
+		CommandScheduler.getInstance().cancelAll();
+	}
+
+	@Override
+	public void testPeriodic() {
+	}
+
+	@Override
+	public void testExit() {
+	}
 }
