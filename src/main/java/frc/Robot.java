@@ -40,10 +40,6 @@ public class Robot extends TimedRobot {
 
 	private final Intake intake = new Intake(subsystemsTable);
 
-	// public Robot() {
-	// ! DO NOT USE
-	// }
-
 	// Utilities
 	static double squareInput(double input) {
 		return Math.copySign(input * input, input);
