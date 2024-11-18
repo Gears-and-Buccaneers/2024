@@ -36,10 +36,11 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.Robot;
 import frc.config.SwerveConfig;
 
-public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
+public class Swerve extends SwerveDrivetrain implements Subsystem {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Control Modes
@@ -325,17 +326,5 @@ public class Swerve extends SwerveDrivetrain implements LoggedSubsystems {
         });
 
         m_simNotifier.startPeriodic(kSimLoopPeriod);
-    }
-
-    // ---------- Logging ----------
-    @Override
-    public void log() {
-        // TODO: add motor data
-
-    }
-
-    @Override
-    public void close() {
-
     }
 }

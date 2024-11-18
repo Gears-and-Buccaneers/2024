@@ -3,18 +3,19 @@ package frc.system;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.hardware.LoggedTalonSRX;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class Intake implements LoggedSubsystems {
+public class Intake implements Subsystem {
     private final String simpleName = this.getClass().getSimpleName();
 
     // Hardware
-    private final LoggedTalonSRX leftMotor;
-    private final LoggedTalonSRX rightMotor;
+    private final TalonSRX leftMotor;
+    private final TalonSRX rightMotor;
 
     // Network
     private final NetworkTable Table;
@@ -27,8 +28,8 @@ public class Intake implements LoggedSubsystems {
         this.Table = networkTable.getSubTable(simpleName);
 
         // Motors
-        leftMotor = new LoggedTalonSRX(9, this.Table, "leftIntake");
-        rightMotor = new LoggedTalonSRX(10, this.Table, "rightIntake");
+        leftMotor = new TalonSRX(9);
+        rightMotor = new TalonSRX(10);
 
         // Configs
         leftMotor.setInverted(false);
@@ -55,9 +56,7 @@ public class Intake implements LoggedSubsystems {
         System.out.println("\t" + leftMotor.getClass().getSimpleName() + " ID:" + leftMotor.getDeviceID());
         System.out.println("\t" + rightMotor.getClass().getSimpleName() + " ID:" + rightMotor.getDeviceID());
 
-        // Publish logged data to network table on startup
-        this.log();
-        register();
+		register();
     }
     // ---------- Generic Control ----------
     // TODO: I think all of Generic Control should be private if they are
@@ -66,7 +65,7 @@ public class Intake implements LoggedSubsystems {
     /**
      * runs the intake with PercentOutput control w/ "intakeSpeed" from NT or
      * defaultIntakeSpeed if no val in NT
-     * 
+     *
      * @param forwards runs the intake forward when true and backwards when false.
      */
     private Command feed(boolean forwards, double percentMaxSpeed) {
@@ -118,21 +117,4 @@ public class Intake implements LoggedSubsystems {
     public Command runOut() {
         return feed(false, 1);
     }
-
-    // ---------- Logging ----------
-    @Override
-    public void log() {
-        // Subsystem states
-
-        // Hardware
-        leftMotor.log();
-        rightMotor.log();
-    }
-
-    @Override
-    public void close() {
-        leftMotor.close();
-        rightMotor.close();
-    }
-
 }
