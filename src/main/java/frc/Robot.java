@@ -18,6 +18,9 @@ public class Robot extends TimedRobot {
 	// Subsystems
 	private final Swerve drivetrain = SwerveConfig.swerve;
 	private final Intake intake = new Intake();
+
+	private final Vision vision = new Vision();
+
 	private final Shooter shooterLeft = new Shooter(15);
 	private final Shooter shooterRight = new Shooter(16);
 
