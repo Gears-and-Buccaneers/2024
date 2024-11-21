@@ -16,7 +16,7 @@ public class Shooter implements Subsystem {
 
     public Shooter(int id) {
         // Motor
-        shooterMotor = new TalonSRX(int id);
+        shooterMotor = new TalonSRX(id);
 
         // Configs
         shooterMotor.setInverted(false);
