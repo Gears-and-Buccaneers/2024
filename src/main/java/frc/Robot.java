@@ -4,7 +4,9 @@
 
 package frc;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -19,10 +21,13 @@ public class Robot extends TimedRobot {
 	private final Swerve drivetrain = SwerveConfig.swerve;
 	private final Intake intake = new Intake();
 
-	private final Vision vision = new Vision();
-
 	private final Shooter shooterLeft = new Shooter(15);
 	private final Shooter shooterRight = new Shooter(16);
+
+	private final Vision vision = new Vision(new Vision.Target[] {
+		new Vision.Target(0.2, 0.2, 0.3, 0.3, 200, shooterLeft.runHiInterrupt()),
+		new Vision.Target(0.5, 0.5, 0.3, 0.3, 200, shooterRight.runHiInterrupt())
+	});
 
 	// Utilities
 	static double squareInput(double input) {
@@ -32,18 +37,46 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		// Configure our controller bindings.
+
+		// Driving
 		drivetrain.setDefaultCommand(drivetrain.driveDutyCycle(
 			() -> squareInput(driver.getLeftY()),
 			() -> squareInput(driver.getLeftX()),
 			// Note: rotation does not need to be inverted based on alliance side, since
 			// rotational direction is not orientation-dependent.
 			() -> -driver.getRightX()));
+		driver.start().onTrue(drivetrain.zeroGyro());
+		driver.x().whileTrue(drivetrain.brake());
 
-	driver.rightTrigger().whileTrue(intake.runOut());
+		// Intake
+		driver.leftTrigger().whileTrue(intake.runIn());	
+		driver.a().whileTrue(intake.runOut());
 
-	driver.leftBumper().onTrue(drivetrain.zeroGyro());
+		// Shooter
+		driver.rightTrigger().whileTrue(new ParallelCommandGroup(
+			shooterLeft.runLo(),
+			shooterRight.runLo()
+		));
+		driver.rightBumper().whileTrue(new ParallelCommandGroup(
+			shooterLeft.runHi(),
+			shooterRight.runHi()
+		));
 
-	driver.x().whileTrue(drivetrain.brake());
+		Command autoShooter = new Command() {
+			@Override
+			public void initialize() {
+				// Start the vision thread
+				vision.start();
+			}
+
+			@Override
+			public void end(boolean interrupted) {
+				// Kill the vision thread
+				vision.requestStop();
+			}
+		}.alongWith(shooterLeft.runLo(), shooterRight.runLo());
+
+		driver.leftBumper().whileTrue(autoShooter);
 	}
 
 	@Override
