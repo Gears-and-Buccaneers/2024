@@ -65,14 +65,14 @@ public class Robot extends TimedRobot {
 		Command autoShooter = new Command() {
 			@Override
 			public void initialize() {
-				// Start the vision thread
-				vision.start();
+				// Resume the vision thread.
+				vision.notifyStart();
 			}
 
 			@Override
 			public void end(boolean interrupted) {
-				// Kill the vision thread
-				vision.requestStop();
+				// Pause the vision thread.
+				vision.notifyStop();
 			}
 		}.alongWith(shooterLeft.runLo(), shooterRight.runLo());
 
