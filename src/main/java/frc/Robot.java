@@ -23,6 +23,7 @@ public class Robot extends TimedRobot {
 
 	private final Shooter shooterLeft = new Shooter(15);
 	private final Shooter shooterRight = new Shooter(16);
+	private final Transit transit = new Transit(14);
 
 	private final Vision vision = new Vision(new Vision.Target[] {
 		new Vision.Target(0.2, 0.2, 0.3, 0.3, 200, shooterLeft.runHiInterrupt()),
