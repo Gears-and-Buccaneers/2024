@@ -5,6 +5,7 @@
 package frc;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -36,12 +37,24 @@ public class Robot extends TimedRobot {
 			// Note: rotation does not need to be inverted based on alliance side, since
 			// rotational direction is not orientation-dependent.
 			() -> -driver.getRightX()));
+		driver.start().onTrue(drivetrain.zeroGyro());
+		driver.x().whileTrue(drivetrain.brake());
 
-	driver.rightTrigger().whileTrue(intake.runOut());
+		// Intake
+		driver.leftTrigger().whileTrue(intake.runIn());	
+		driver.a().whileTrue(intake.runOut());
 
-	driver.leftBumper().onTrue(drivetrain.zeroGyro());
-
-	driver.x().whileTrue(drivetrain.brake());
+		// Shooter
+		driver.rightTrigger().whileTrue(new ParallelCommandGroup(
+			shooterLeft.runLo(),
+			shooterRight.runLo(),
+			transit.runIn()
+		));
+		driver.rightBumper().whileTrue(new ParallelCommandGroup(
+			shooterLeft.runHi(),
+			shooterRight.runHi(),
+			transit.runIn()
+		));
 	}
 
 	@Override
