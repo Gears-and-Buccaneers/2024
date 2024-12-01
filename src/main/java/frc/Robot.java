@@ -56,11 +56,13 @@ public class Robot extends TimedRobot {
 		// Shooter
 		driver.rightTrigger().whileTrue(new ParallelCommandGroup(
 			shooterLeft.runLo(),
-			shooterRight.runLo()
+			shooterRight.runLo(),
+			transit.runIn()
 		));
 		driver.rightBumper().whileTrue(new ParallelCommandGroup(
 			shooterLeft.runHi(),
-			shooterRight.runHi()
+			shooterRight.runHi(),
+			transit.runIn()
 		));
 
 		Command autoShooter = new Command() {
@@ -75,7 +77,7 @@ public class Robot extends TimedRobot {
 				// Pause the vision thread.
 				vision.notifyStop();
 			}
-		}.alongWith(shooterLeft.runLo(), shooterRight.runLo());
+		}.alongWith(shooterLeft.runLo(), shooterRight.runLo(), transit.runIn());
 
 		driver.leftBumper().whileTrue(autoShooter);
 	}
