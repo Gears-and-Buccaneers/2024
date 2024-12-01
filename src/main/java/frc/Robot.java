@@ -20,6 +20,7 @@ public class Robot extends TimedRobot {
 	private final Intake intake = new Intake();
 	private final Shooter shooterLeft = new Shooter(15);
 	private final Shooter shooterRight = new Shooter(16);
+	private final Transit transit = new Transit(14);
 
 	// Utilities
 	static double squareInput(double input) {
