@@ -4,11 +4,13 @@
 
 package frc;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import frc.cmd.Curve;
 import frc.config.SwerveConfig;
 import frc.system.*;
 
@@ -27,6 +29,11 @@ public class Robot extends TimedRobot {
 	static double squareInput(double input) {
 		return Math.copySign(input * input, input);
 	}
+
+	// The autonomous routine.
+	private final Command auto = new Curve(drivetrain, t -> {
+		return new Translation2d(0.1, 5 * Math.cos(t / 2));
+	}).alongWith(intake.runOut());
 
 	@Override
 	public void robotInit() {
@@ -76,6 +83,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
+		auto.schedule();
 	}
 
 	@Override
@@ -84,6 +92,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousExit() {
+		auto.cancel();
 	}
 
 	@Override
