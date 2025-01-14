@@ -12,7 +12,7 @@ public class Shooter implements Subsystem {
     // Hardware
     private final TalonSRX shooterMotor;
 
-    private double hi = 0.8;
+    private double hi = 0.6;
     private double lo = 0.2;
 
     public Shooter(int id) {
@@ -31,17 +31,15 @@ public class Shooter implements Subsystem {
 
         shooterMotor.configSupplyCurrentLimit(currentLimits);
 
-		register();
+        setDefaultCommand(feed(0.2));
     }
 
-    private Command feed(double speed) {
+    public Command feed(double speed) {
         Command cmd = new Command() {
+            @Override
             public void initialize() {
+                System.out.println("Setting speed to " + speed);
                 shooterMotor.set(TalonSRXControlMode.PercentOutput, speed);
-            }
-
-            public void end(boolean interrupted) {
-                shooterMotor.set(TalonSRXControlMode.Disabled, 0);
             }
         };
 

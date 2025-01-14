@@ -1,33 +1,24 @@
 package frc.system;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class Transit implements Subsystem {
     // Hardware
-    private final TalonSRX motor;
+    private final TalonFX motor;
 
-    private final double defaultSpeed = .8;
+    private final double defaultSpeed = -0.1;
 
     public Transit(int id) {
         // Motors
-        motor = new TalonSRX(id);
+        motor = new TalonFX(id);
 
         // Configs
         motor.setInverted(false);
-        motor.setNeutralMode(NeutralMode.Brake);
-
-        SupplyCurrentLimitConfiguration currentLimits = new SupplyCurrentLimitConfiguration();
-
-        currentLimits.currentLimit = 40;
-        currentLimits.enable = true;
-
-        motor.configSupplyCurrentLimit(currentLimits);
 
 		register();
     }
@@ -38,7 +29,7 @@ public class Transit implements Subsystem {
                 double speed = forwards ? defaultSpeed : -defaultSpeed;
                 speed *= percentMaxSpeed;
 
-                motor.set(TalonSRXControlMode.PercentOutput, speed);
+                motor.setControl(new DutyCycleOut(speed));
             }
 
             public void end(boolean interrupted) {
@@ -52,7 +43,7 @@ public class Transit implements Subsystem {
     }
 
     private void disable() {
-        motor.set(TalonSRXControlMode.Disabled, 0);
+        motor.setControl(new NeutralOut());
     }
 
     /**

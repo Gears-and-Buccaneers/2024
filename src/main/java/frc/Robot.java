@@ -6,7 +6,6 @@ package frc;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,7 +21,6 @@ public class Robot extends TimedRobot {
 	private final Swerve drivetrain = SwerveConfig.swerve;
 	private final Intake intake = new Intake();
 	private final Shooter shooterLeft = new Shooter(15);
-	private final Shooter shooterRight = new Shooter(16);
 	private final Transit transit = new Transit(14);
 
 	// Utilities
@@ -32,7 +30,7 @@ public class Robot extends TimedRobot {
 
 	// The autonomous routine.
 	private final Command auto = new Curve(drivetrain, t -> {
-		return new Translation2d(0.1, 5 * Math.cos(t / 2));
+		return new Translation2d(-0.2, 0.5 * Math.cos(t));
 	}).alongWith(intake.runOut());
 
 	@Override
@@ -51,17 +49,15 @@ public class Robot extends TimedRobot {
 		driver.leftTrigger().whileTrue(intake.runIn());	
 		driver.a().whileTrue(intake.runOut());
 
+		// Transit
+		driver.leftBumper().whileTrue(transit.runIn());
+		driver.y().whileTrue(transit.runOut());
+
 		// Shooter
-		driver.rightTrigger().whileTrue(new ParallelCommandGroup(
-			shooterLeft.runLo(),
-			shooterRight.runLo(),
-			transit.runIn()
-		));
-		driver.rightBumper().whileTrue(new ParallelCommandGroup(
-			shooterLeft.runHi(),
-			shooterRight.runHi(),
-			transit.runIn()
-		));
+		driver.rightTrigger().whileTrue(shooterLeft.runLo());
+		driver.rightBumper().whileTrue(shooterLeft.runHi());
+
+		drivetrain.zeroGyro();
 	}
 
 	@Override
@@ -83,6 +79,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
+		drivetrain.zeroGyro();
 		auto.schedule();
 	}
 

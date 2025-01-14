@@ -13,7 +13,7 @@ public class Intake implements Subsystem {
     private final TalonSRX leftMotor;
     private final TalonSRX rightMotor;
 
-    private double defaultIntakeSpeed = .8;
+    private double defaultIntakeSpeed = 1.0;
 
     public Intake() {
         // Motors
@@ -21,7 +21,7 @@ public class Intake implements Subsystem {
         rightMotor = new TalonSRX(10);
 
         // Configs
-        leftMotor.setInverted(false);
+        leftMotor.setInverted(true);
         rightMotor.setInverted(true);
 
         leftMotor.setNeutralMode(NeutralMode.Coast);
